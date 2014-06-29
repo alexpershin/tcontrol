@@ -17,6 +17,8 @@ public class ConsoleTools {
      */
     public static void main(String[] args) {
         System.out.println("Hello");
+        System.out.println("I'm a program");
+
     }
     
 }

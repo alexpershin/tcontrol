@@ -16,7 +16,7 @@ import javax.jws.WebMethod;
  *
  * @author alexey
  */
-@WebService(serviceName = "NewWebService")
+@WebService(serviceName = "SensorsWebservice")
 @Stateless()
 public class SensorsWebservice {
     @EJB

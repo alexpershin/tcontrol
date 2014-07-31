@@ -3,7 +3,6 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package com.tcontrol.prof.soapws;
 
 /**
@@ -16,7 +15,7 @@ public class Sensor {
         this.id = id;
         this.name = name;
     }
-    
+
     private int id;
 
     /**

@@ -3,7 +3,6 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package com.tcontrol.prof.soapws;
 
 import java.util.List;
@@ -19,6 +18,7 @@ import javax.jws.WebMethod;
 @WebService(serviceName = "SensorsWebservice")
 @Stateless()
 public class SensorsWebservice {
+
     @EJB
     private SensorsBeanLocal ejbRef;
 
@@ -26,5 +26,4 @@ public class SensorsWebservice {
     public List<Sensor> sensors() {
         return ejbRef.sensors();
     }
-    
 }

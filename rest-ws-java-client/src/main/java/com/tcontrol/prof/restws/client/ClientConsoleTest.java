@@ -19,19 +19,17 @@ public class ClientConsoleTest {
     public static void main(String[] args) {
         JerseySensorsClient client = new JerseySensorsClient();
         try {
-            String result =//client.getSensors().toString();
-                    client.getStatus();
+            String result = client.getStatus();
             System.out.println("Status=" + result);
             System.out.print("Sensors:");
-            for(Sensor sensor:client.getSensors()){
-                System.out.print(sensor+";");
+            for (Sensor sensor : client.getSensors()) {
+                System.out.print(sensor + ";");
             }
             System.out.println();
-            
+
         } finally {
             client.close();
         }
-
     }
 
 }

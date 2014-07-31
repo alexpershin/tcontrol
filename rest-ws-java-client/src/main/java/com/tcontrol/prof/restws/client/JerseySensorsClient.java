@@ -3,7 +3,6 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package com.tcontrol.prof.restws.client;
 
 import com.sun.jersey.api.client.Client;
@@ -19,24 +18,26 @@ import java.util.List;
  * @author alexey
  */
 public class JerseySensorsClient {
+
     private WebResource webTarget;
     private Client client;
-    private static final String BASE_URI = 
-            "http://localhost:8080/rest-ws-web/webresources";
+    private static final String BASE_URI
+            = "http://localhost:8080/rest-ws-web/webresources";
 
     public JerseySensorsClient() {
         ClientConfig clientConfig = new DefaultClientConfig();
 
-			clientConfig.getFeatures().put(
-					JSONConfiguration.FEATURE_POJO_MAPPING, Boolean.TRUE);
+        clientConfig.getFeatures().put(
+                JSONConfiguration.FEATURE_POJO_MAPPING, Boolean.TRUE);
         client = Client.create(clientConfig);
         webTarget = client.resource(BASE_URI);
     }
 
-    public List<Sensor>  getSensors() {
+    public List<Sensor> getSensors() {
         WebResource resource = webTarget;
-        List<Sensor> sensors = resource.path("sensors").get(new GenericType<List<Sensor>>(){});
-        return sensors;   
+        List<Sensor> sensors = resource.path("sensors").get(new GenericType<List<Sensor>>() {
+        });
+        return sensors;
     }
 
     public String getStatus() {
@@ -47,5 +48,5 @@ public class JerseySensorsClient {
     public void close() {
         client.destroy();
     }
-    
+
 }

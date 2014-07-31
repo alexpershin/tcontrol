@@ -3,7 +3,6 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package com.tcontrol.prof;
 
 import javax.xml.bind.annotation.XmlElement;
@@ -23,8 +22,8 @@ public class Sensor {
         this.name = name;
         this.id = id;
     }
-    
-    @XmlElement(name="name")
+
+    @XmlElement(name = "name")
     public String name;
 
     /**
@@ -44,8 +43,8 @@ public class Sensor {
     public void setName(String nane) {
         this.name = nane;
     }
-    
-    @XmlElement(name="id")
+
+    @XmlElement(name = "id")
     public int id;
 
     /**
@@ -65,11 +64,9 @@ public class Sensor {
     public void setId(int id) {
         this.id = id;
     }
-    
+
     @Override
-    public String toString(){
-        return "id = "+id+ ", name = "+name;
+    public String toString() {
+        return "id = " + id + ", name = " + name;
     }
-
-
 }

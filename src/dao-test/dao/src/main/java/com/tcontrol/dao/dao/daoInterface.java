@@ -26,5 +26,6 @@ int checkReferenceOfSensorToUser(int sernsorId); //returns int Id of the user th
 
 int newUserAssignment(String userLogin, String userPassword, String userName, String userSurname, String userRole); //assign a new user in a DB, returns an Id of newly added user, by default the role is user
 
+boolean userDeletion(int userId); //true if the user is marked as deleted and all his/her sensors are not related to this user anymore
 //TODO: Add getters and setters for 
 }

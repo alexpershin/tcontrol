@@ -6,6 +6,7 @@
 
 package com.tcontrol.dao.dao;
 
+import java.sql.Time;
 import java.util.ArrayList;
 import java.util.Date;
 
@@ -21,11 +22,11 @@ ArrayList<String> addValues(int sensorId, ArrayList<Double> Values); //add value
 ArrayList<String> addSensor(int Sensor);// TODO: int is not good here, we should specify the type of the added sensor 
 boolean addSensorToUser(int sensorId,int userId); //true if the sensor is now related to user with specified ID
 boolean removeSensorFromUser(int sensorId); //true if the sensor is now removed from the user with specified ID and NOT related to any user
-boolean checkFreedomOfSensor(int sernsorId); //true if the sensor is now NOT related to any
-int checkReferenceOfSensorToUser(int sernsorId); //returns int Id of the user the sensor is related to
+boolean checkFreedomOfSensor(int sensorId); //true if the sensor is now NOT related to any
+int checkReferenceOfSensorToUser(int sensorId); //returns int Id of the user the sensor is related to
 
-int newUserAssignment(String userLogin, String userPassword, String userName, String userSurname, String userRole); //assign a new user in a DB, returns an Id of newly added user, by default the role is user
+//int newUserAssignment(String userLogin, String userPassword, String userName, String userSurname, String userRole); //assign a new user in a DB, returns an Id of newly added user, by default the role is user
 
-boolean userDeletion(int userId); //true if the user is marked as deleted and all his/her sensors are not related to this user anymore
+//boolean userDeletion(int userId); //true if the user is marked as deleted and all his/her sensors are not related to this user anymore
 //TODO: Add getters and setters for 
 }

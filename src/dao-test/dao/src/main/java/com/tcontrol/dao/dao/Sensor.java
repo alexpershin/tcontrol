@@ -5,13 +5,27 @@
  */
 package com.tcontrol.dao.dao;
 
-import java.util.ArrayList;
-
+//import java.util.ArrayList;
 /**
  *
  * @author Anton Buslavskii
  */
 public interface Sensor {
+
+    public static enum sensorType {
+
+        temperature,
+        fireAlarm,
+        alarm,
+        glassBrokeSensor,
+        stateGivingSensor
+
+//temperature - returns a double of temperature
+//fireAlarm - returns alarm as an excess of the given level (SHOULD BE ABLE TO AUTO CALL TO Java app in a case of alarm)
+//alarm - returns alarm as a change of state (boolean)
+//glassBrokeSensor - returns alarm as a change of state (boolean)
+//stateGivingSensor - - returns alarm as a one option of a set of options
+    }
 
     public static enum sensorState {
 

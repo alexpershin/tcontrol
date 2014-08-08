@@ -26,8 +26,17 @@ public interface daoInterface {
 
     void addSensor(String SensorType);// we specify the type of the added sensor as it name
 
-    boolean addSensorToUser(int sensorId, int userId); //true if the sensor is now related to user with specified ID
+    /**
+     * Adds the specified sensor to specified user
+     * @param sensorId
+     * @param userId
+     */
+    void addSensorToUser(int sensorId, int userId); 
 
+    /**
+     *
+     * @param sensorId
+     */
     void removeSensorFromUser(int sensorId); //true if the sensor is now removed from the user with specified ID and NOT related to any user
 
     /**

@@ -51,10 +51,12 @@ public interface Sensor {
          * no alarm, everything is OK with sensor's state;
          */
         GREEN, 
+
+        /**
+         * sensor is intentionally disabled by user, right now it is not implemented yet
+         */
         GREY;
-//YELLOW - not stable connection, trying to define condition of the sensor;
-//GREEN - no alarm, everything is OK with sensor's state;
-//GREY - sensor is intentionally disabled by user, 
+
     }
 
 }

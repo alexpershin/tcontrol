@@ -30,11 +30,16 @@ public interface daoInterface {
 
     void removeSensorFromUser(int sensorId); //true if the sensor is now removed from the user with specified ID and NOT related to any user
 
+    /**
+     *
+     * @param userId
+     * @return Returns a list of sensors IDs when gets the user ID as integer
+     */
     List<Integer> getSensorsLinkedToUser(int userId); 
     
-    boolean checkFreedomOfSensor(int sensorId); //true if the sensor is now NOT related to any
+    //boolean checkFreedomOfSensor(int sensorId); //true if the sensor is now NOT related to any
 
-    int checkReferenceOfSensorToUser(int sensorId); //returns int Id of the user the sensor is related to
+    //int checkReferenceOfSensorToUser(int sensorId); //returns int Id of the user the sensor is related to
 
 //int newUserAssignment(String userLogin, String userPassword, String userName, String userSurname, String userRole); //assign a new user in a DB, returns an Id of newly added user, by default the role is user
 //boolean userDeletion(int userId); //true if the user is marked as deleted and all his/her sensors are not related to this user anymore

@@ -37,8 +37,21 @@ public interface Sensor {
 
     public static enum sensorState {
 
-        RED, YELLOW, GREEN, GREY;
-//RED - alarm on the sensor, 
+        /**
+         * alarm on the sensor
+         */
+        RED, 
+
+        /**
+         * not stable connection, trying to define condition of the sensor;
+         */
+        YELLOW, 
+
+        /**
+         * no alarm, everything is OK with sensor's state;
+         */
+        GREEN, 
+        GREY;
 //YELLOW - not stable connection, trying to define condition of the sensor;
 //GREEN - no alarm, everything is OK with sensor's state;
 //GREY - sensor is intentionally disabled by user, 

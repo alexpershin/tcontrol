@@ -33,11 +33,11 @@ public interface daoInterface {
      */
     void addSensorToUser(int sensorId, int userId); 
 
-    /**
+    /** Removes the sensor with specified ID from user with specified ID
      *
      * @param sensorId
      */
-    void removeSensorFromUser(int sensorId); //true if the sensor is now removed from the user with specified ID and NOT related to any user
+    void removeSensorFromUser(int userId, int sensorId);
 
     /**
      *

@@ -10,8 +10,10 @@ package com.tcontrol.dao.dao;
  * @author Anton Buslavskii
  */
 public interface SensorValue {
+
+int sensorId = 0;
 //int id = 0;
 //String  name = "Name of Sensor"; 
 //enum type {};
-// TODO: add varibles    
+// TODO: add initial values of a variables    
 }

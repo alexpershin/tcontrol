@@ -14,17 +14,25 @@ public interface Sensor {
 
     public static enum sensorType {
 
-        temperature,
-        fireAlarm,
-        alarm,
-        glassBrokeSensor,
-        stateGivingSensor
+        /** 
+         * temperature in double
+         */
+        temp,
 
-//temperature - returns a double of temperature
-//fireAlarm - returns alarm as an excess of the given level (SHOULD BE ABLE TO AUTO CALL TO Java app in a case of alarm)
-//alarm - returns alarm as a change of state (boolean)
-//glassBrokeSensor - returns alarm as a change of state (boolean)
-//stateGivingSensor - - returns alarm as a one option of a set of options
+        /**
+         * alarm as a change of state
+         */
+        alarm,
+        
+        /**
+         * on or off
+         */
+        onoff,
+
+        /**
+         * voltage in double
+         */
+        voltage
     }
 
     public static enum sensorState {

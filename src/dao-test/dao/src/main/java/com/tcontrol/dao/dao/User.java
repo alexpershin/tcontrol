@@ -20,11 +20,17 @@ public interface User {
      */
     int addUser (String userLogin, String userPassword);
     
-    
-    
     void editUser (int userId, String userPassword);
     
-    /** Removes the specified user with given ID
+    void editUser (int userId, String userPassword, String userName);
+    
+    void editUser (int userId, String userPassword, String userName, String userSurname);
+    
+    void editUser (int userId, String userPassword, String userName, String userSurname, int userRole);
+    
+    
+     
+   /** Removes the specified user with given ID
      *
      * @param userId
      */

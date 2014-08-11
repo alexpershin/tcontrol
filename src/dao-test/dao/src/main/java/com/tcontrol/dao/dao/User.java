@@ -12,4 +12,21 @@ package com.tcontrol.dao.dao;
  */
 public interface User {
     
+    /** Adds a new user with default role
+     *
+     * @param userLogin
+     * @param userPassword
+     * @return int userId of recently created user
+     */
+    int addUser (String userLogin, String userPassword);
+    
+    
+    
+    void editUser (int userId, String userPassword);
+    
+    /** Removes the specified user with given ID
+     *
+     * @param userId
+     */
+    void removeUser (int userId);
 }

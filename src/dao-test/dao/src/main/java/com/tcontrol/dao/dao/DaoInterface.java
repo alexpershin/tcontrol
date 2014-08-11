@@ -26,6 +26,7 @@ public interface DaoInterface {
     
     /**
      * Get sensors by identifiers.
+     * @param ids
      * @return list of sensors;
      */
     List<Sensor> getSensors(List<Integer> ids); 
@@ -49,7 +50,7 @@ public interface DaoInterface {
      * @param sensorType type of sensor to be added;
      * @return return sensorId of new sensor, NULL otherwise;
      */
-    Integer addSensor(String sensorType);// we specify the type of the added sensor as it name
+    Integer addSensor(String sensorType);// we specify the type of the added sensor as it name 
 
     
     /**
@@ -83,7 +84,31 @@ public interface DaoInterface {
 
     //int checkReferenceOfSensorToUser(int sensorId); //returns int Id of the user the sensor is related to
 
-//int newUserAssignment(String userLogin, String userPassword, String userName, String userSurname, String userRole); //assign a new user in a DB, returns an Id of newly added user, by default the role is user
-//boolean userDeletion(int userId); //true if the user is marked as deleted and all his/her sensors are not related to this user anymore
-//TODO: Add getters and setters for 
+
+    
+    /** Adds a new user with default role
+     *
+     * @param userLogin
+     * @param userPassword
+     * @return The userId (integer) of recently created user
+     */
+    int addUser (String userLogin, String userPassword);
+    
+    void editUser (int userId, String userPassword);
+    
+    void editUser (int userId, String userPassword, String userName);
+    
+    void editUser (int userId, String userPassword, String userName, String userSurname);
+    
+    void editUser (int userId, String userPassword, String userName, String userSurname, int userRole);
+    
+    
+     
+   /** Removes the specified user with given ID. All sensors were related with this user become unlinked. 
+     *
+     * @param userId
+     */
+    void removeUser (int userId);
+    
+    //TODO: Add getters and setters for 
 }

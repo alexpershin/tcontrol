@@ -11,28 +11,11 @@ package com.tcontrol.dao.dao;
  * @author Anton Buslavskii
  */
 public interface User {
+   
+ //TODO: String getName();
+ //TODO: String setName();
     
-    /** Adds a new user with default role
-     *
-     * @param userLogin
-     * @param userPassword
-     * @return The userId (integer) of recently created user
-     */
-    int addUser (String userLogin, String userPassword);
-    
-    void editUser (int userId, String userPassword);
-    
-    void editUser (int userId, String userPassword, String userName);
-    
-    void editUser (int userId, String userPassword, String userName, String userSurname);
-    
-    void editUser (int userId, String userPassword, String userName, String userSurname, int userRole);
-    
-    
-     
-   /** Removes the specified user with given ID
-     *
-     * @param userId
-     */
-    void removeUser (int userId);
+ //TODO:  int getId();
+ //TODO:  int setId();
+
 }

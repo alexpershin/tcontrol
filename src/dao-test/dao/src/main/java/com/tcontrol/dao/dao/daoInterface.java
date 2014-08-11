@@ -7,7 +7,7 @@ package com.tcontrol.dao.dao;
 
 //import java.sql.Time;
 import java.util.ArrayList;
-import java.util.Date;
+//import java.util.Date;
 import java.util.List;
 
 /**
@@ -22,8 +22,17 @@ public interface daoInterface {
     List<SensorValue> getCurrentValues(int userId, int[] sensorIds); //returns list of SensorValues
 //TODO: realize this method: List<SensorValue> getValues(int userId, int[] SensorIdList, Date FromPeriod, Date UpToPeriod); // returns all values for listed sensor on specified period of time
 
-    void addValues(int sensorId, ArrayList<Double> Values); //add values with specified ID, TODO: add datetime to each value
+    /** Adds values to sensor with specified ID
+     *
+     * @param sensorId
+     * @param Values
+     */
+    void addValues(int sensorId, ArrayList<Double> Values); //TODO: add datetime to each value
 
+    /** Adds a new sensor of specified type
+     *
+     * @param SensorType
+     */
     void addSensor(String SensorType);// we specify the type of the added sensor as it name
 
     /**
@@ -35,6 +44,7 @@ public interface daoInterface {
 
     /** Removes the sensor with specified ID from user with specified ID
      *
+     * @param userId
      * @param sensorId
      */
     void removeSensorFromUser(int userId, int sensorId);

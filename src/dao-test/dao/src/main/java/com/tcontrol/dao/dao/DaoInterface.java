@@ -17,17 +17,23 @@ import java.util.List;
 public interface DaoInterface {
 //    TODO: correlate all input parameters and all parameters being returned
 
+    
     /**
-     * returns all sensors ID for the specified user
-     * @param userId user identifier;
-     * @return all sensor identifiers, null if user doesn't exists;
+     * Get all sensors in the system.
+     * @return list of identifiers;
      */
-    List<Integer> getSensors(int userId); 
+    List<Sensor> getSensors(); 
+    
+    /**
+     * Get sensors by identifiers.
+     * @return list of sensors;
+     */
+    List<Sensor> getSensors(List<Integer> ids); 
 
     /**
      * Returns last(current) values for sensors belong to specified user.
      * @param userId the user which sensor values to be extracted from the store;
-     * @return list of SensorValues;
+     * @return list of sensor values;
      */
     List<SensorValue> getCurrentValues(int userId); 
     
@@ -45,6 +51,13 @@ public interface DaoInterface {
      */
     Integer addSensor(String sensorType);// we specify the type of the added sensor as it name
 
+    
+    /**
+     * Saves sensor data to storage;
+     * @param sensor 
+     */
+    void saveSensor(Sensor sensor);
+    
     /**
      * Adds the specified sensor to specified user
      * @param sensorId
@@ -64,7 +77,7 @@ public interface DaoInterface {
      * @param userId
      * @return Returns a list of sensors IDs when gets the user ID as integer
      */
-    List<Integer> getSensorsLinkedToUser(int userId); 
+    List<Integer> getSensorIdsLinkedToUser(int userId); 
     
     //boolean checkFreedomOfSensor(int sensorId); //true if the sensor is now NOT related to any
 

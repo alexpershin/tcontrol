@@ -16,7 +16,7 @@ public interface User {
      *
      * @param userLogin
      * @param userPassword
-     * @return int userId of recently created user
+     * @return The userId (integer) of recently created user
      */
     int addUser (String userLogin, String userPassword);
     

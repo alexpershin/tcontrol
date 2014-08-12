@@ -5,7 +5,6 @@
  */
 package com.tcontrol.dao;
 
-import com.tcontrol.dao.User;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -107,5 +106,12 @@ public interface DaoInterface {
      * @param userId
      */
     void removeUser(int userId);
+    
+    /**
+     * Returns next unique number for entity identifiers in the project;
+     * Use DB sequence here.
+     * @return next unique number;
+     */
+    int nextId();
 
 }

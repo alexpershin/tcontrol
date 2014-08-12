@@ -3,8 +3,9 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.tcontrol.dao.dao;
+package com.tcontrol.dao;
 
+import com.tcontrol.dao.User;
 import java.util.ArrayList;
 import java.util.List;
 

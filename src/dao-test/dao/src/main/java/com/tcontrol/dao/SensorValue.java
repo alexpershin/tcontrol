@@ -11,9 +11,9 @@ package com.tcontrol.dao;
  */
 public class SensorValue {
 
-private int sensorId = 0;
-private long timestamp;
-private double value;
+    private int sensorId = 0;
+    private long timestamp;
+    private double value;
 
     public SensorValue() {
     }

@@ -3,7 +3,6 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package com.tcontrol.dao.dao;
 
 /**
@@ -11,25 +10,23 @@ package com.tcontrol.dao.dao;
  * @author Anton Buslavskii
  */
 public class User {
-   private int id;
-   private String name;
-   private String surname;
-   private int role;
+
+    private int id;
+    private String name;
+    private String surname;
+    private int role;
 
     public User() {
     }
 
-   
     public User(int id, String name, String surname, int role) {
         this.id = id;
         this.name = name;
         this.surname = surname;
         this.role = role;
     }
-   
-   
-   
-   public int getId() {
+
+    public int getId() {
         return id;
     }
 

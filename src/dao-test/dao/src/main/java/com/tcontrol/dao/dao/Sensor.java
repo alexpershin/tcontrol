@@ -10,50 +10,102 @@ package com.tcontrol.dao.dao;
  *
  * @author Anton Buslavskii
  */
-public interface Sensor {
+public class Sensor {
 
-    public static enum sensorType {
+    private int id;
+    private int name;
+    private SensorType type;
+    private SensorState state;
+    private int description;
 
-        /** 
+    public Sensor() {
+    }
+
+    public Sensor(int id, int name, SensorType type, SensorState state, int description) {
+        this.id = id;
+        this.name = name;
+        this.type = type;
+        this.state = state;
+        this.description = description;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public int getName() {
+        return name;
+    }
+
+    public void setName(int name) {
+        this.name = name;
+    }
+
+    public SensorType getType() {
+        return type;
+    }
+
+    public void setType(SensorType type) {
+        this.type = type;
+    }
+
+    public SensorState getState() {
+        return state;
+    }
+
+    public void setState(SensorState state) {
+        this.state = state;
+    }
+
+    public int getDescription() {
+        return description;
+    }
+
+    public void setDescription(int description) {
+        this.description = description;
+    }
+
+    public static enum SensorType {
+
+        /**
          * temperature in double
          */
-        temp,
-
+        TEMPERATURE,
         /**
          * alarm as a change of state
          */
-        alarm,
-        
+        ALARM,
         /**
          * on or off
          */
-        onoff,
-
+        ON_OF,
         /**
          * voltage in double
          */
-        voltage
+        VOLTAGE
     }
 
-    public static enum sensorState {
+    public static enum SensorState {
 
         /**
          * alarm on the sensor
          */
-        RED, 
-
+        RED,
         /**
          * not stable connection, trying to define condition of the sensor;
          */
-        YELLOW, 
-
+        YELLOW,
         /**
          * no alarm, everything is OK with sensor's state;
          */
-        GREEN, 
-
+        GREEN,
         /**
-         * sensor is intentionally disabled by user, right now it is not implemented yet
+         * sensor is intentionally disabled by user, right now it is not
+         * implemented yet
          */
         GREY;
 

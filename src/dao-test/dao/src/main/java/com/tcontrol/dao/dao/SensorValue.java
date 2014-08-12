@@ -9,11 +9,42 @@ package com.tcontrol.dao.dao;
  *
  * @author Anton Buslavskii
  */
-public interface SensorValue {
+public class SensorValue {
 
-int sensorId = 0;
-//int id = 0;
-//String  name = "Name of Sensor"; 
-//enum type {};
-// TODO: add initial values of a variables    
+private int sensorId = 0;
+private long timestamp;
+private double value;
+
+    public SensorValue() {
+    }
+
+    public SensorValue(long timestamp, double value) {
+        this.timestamp = timestamp;
+        this.value = value;
+    }
+
+    public int getSensorId() {
+        return sensorId;
+    }
+
+    public void setSensorId(int sensorId) {
+        this.sensorId = sensorId;
+    }
+
+    public long getTimestamp() {
+        return timestamp;
+    }
+
+    public void setTimestamp(long timestamp) {
+        this.timestamp = timestamp;
+    }
+
+    public double getValue() {
+        return value;
+    }
+
+    public void setValue(double value) {
+        this.value = value;
+    }
+
 }

@@ -33,10 +33,10 @@ userRole varchar (256)
 ); 
 
 
-INSERT into userRoles (userRoleId, userRoleName) VALUES 
-('1', 'User'),
-('2', 'SuperUser'),
-('3', 'Admin');
+INSERT into userRoles (userRoleId, userRoleName) 
+    VALUES ('1', 'User'),
+           ('2', 'SuperUser'),
+           ('3', 'Admin');
 
 
 INSERT INTO users (userEmail, userLogin, userPassword, userName, userSurname, userRole)

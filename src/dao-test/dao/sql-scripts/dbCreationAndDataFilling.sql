@@ -1,42 +1,43 @@
 DROP DATABASE IF EXISTS dbtcontrol; 
 
-CREATE DATABASE IF NOT EXISTS dbtcontrol; -- IF NOT EXISTS;
+CREATE DATABASE IF NOT EXISTS dbtcontrol;-- IF NOT EXISTS;
 
 
 CREATE TABLE IF NOT EXISTS dbtcontrol.sensors (
-SENSOR_ID bigint unsigned auto_increment PRIMARY KEY,
-SENSOR_NAME varchar(1024)
+    SENSOR_ID BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    SENSOR_NAME VARCHAR(1024)
 );
  
 
 CREATE TABLE dbtcontrol.sensorValues (
-sensorId bigint unsigned, 
-valueDateTime datetime default null,
-valueFigure double,
-FOREIGN KEY (sensorId) references sensors(SENSOR_ID)
-); 
+    sensorId BIGINT UNSIGNED,
+    valueDateTime DATETIME DEFAULT NULL,
+    valueFigure DOUBLE,
+    FOREIGN KEY (sensorId)
+        REFERENCES sensors (SENSOR_ID)
+);
  
 
 CREATE TABLE dbtcontrol.users (
-userId bigint unsigned auto_increment PRIMARY KEY, 
-userEmail varchar (256),
-userLogin varchar (256),
-userPassword varchar (256), 
-userName varchar (256),
-userSurname varchar (256),
-userRole int (1),
-userAccost varchar (128)
-); 
+    userId BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    userEmail VARCHAR(256),
+    userLogin VARCHAR(256),
+    userPassword VARCHAR(256),
+    userName VARCHAR(256),
+    userSurname VARCHAR(256),
+    userRole INT(1),
+    userAccost VARCHAR(128)
+);
 
  
 
 CREATE TABLE dbtcontrol.userRoles (
-userRoleId int, 
-userRole varchar (256)
+    userRoleId INT,
+    userRole VARCHAR(256)
 ); 
 
 
-INSERT into dbtcontrol.userRoles (userRoleId, userRole) 
+INSERT INTO dbtcontrol.userRoles (userRoleId, userRole) 
     VALUES ('1', 'User'),
            ('2', 'SuperUser'),
            ('3', 'Admin');

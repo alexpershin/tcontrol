@@ -11,7 +11,7 @@ import java.util.List;
 
 /**
  *
- * @author buba
+ * @author Anton Buslavskii
  */
 public class DaoImplemetingClass implements DaoInterface {
 

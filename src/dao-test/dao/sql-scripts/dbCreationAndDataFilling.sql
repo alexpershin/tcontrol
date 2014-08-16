@@ -1,49 +1,49 @@
 DROP DATABASE IF EXISTS dbtcontrol; 
 
-CREATE DATABASE IF NOT EXISTS dbtcontrol;-- IF NOT EXISTS;
+CREATE DATABASE IF NOT EXISTS dbtcontrol; -- IF NOT EXISTS;
 
 
 CREATE TABLE IF NOT EXISTS dbtcontrol.sensors (
-    SENSOR_ID BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-    SENSOR_NAME VARCHAR(1024)
+    sensor_id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    sensor_name VARCHAR(1024)
 );
  
 
 CREATE TABLE dbtcontrol.sensorValues (
-    sensorId BIGINT UNSIGNED,
-    valueDateTime DATETIME DEFAULT NULL,
-    valueFigure DOUBLE,
-    FOREIGN KEY (sensorId)
-        REFERENCES sensors (SENSOR_ID)
+    sensor_id BIGINT UNSIGNED,
+    value_datetime DATETIME DEFAULT NULL,
+    value_figure DOUBLE,
+    FOREIGN KEY (sensor_id)
+        REFERENCES dbtcontrol.sensors (sensor_id)
 );
  
 
 CREATE TABLE dbtcontrol.users (
-    userId BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-    userEmail VARCHAR(256),
-    userLogin VARCHAR(256),
-    userPassword VARCHAR(256),
-    userName VARCHAR(256),
-    userSurname VARCHAR(256),
-    userRole INT(1),
-    userAccost VARCHAR(128)
+    user_id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    user_email VARCHAR(256),
+    user_login VARCHAR(256),
+    user_password VARCHAR(256),
+    user_name VARCHAR(256),
+    user_surname VARCHAR(256),
+    user_role INT(1),
+    user_accost VARCHAR(128)
 );
 
  
 
 CREATE TABLE dbtcontrol.userRoles (
-    userRoleId INT,
-    userRole VARCHAR(256)
+    user_role_id INT,
+    user_role VARCHAR(256)
 ); 
 
 
-INSERT INTO dbtcontrol.userRoles (userRoleId, userRole) 
+INSERT INTO dbtcontrol.userRoles (user_role_id, user_role) 
     VALUES ('1', 'User'),
            ('2', 'SuperUser'),
            ('3', 'Admin');
 
 
-INSERT INTO dbtcontrol.users (userEmail, userLogin, userPassword, userName, userSurname, userRole, userAccost)
+INSERT INTO dbtcontrol.users (user_email, user_login, user_password, user_name, user_surname, user_role, user_accost)
        VALUES  	('Alex.Pershin@gmail.com', 'alex', 'TheSnake', 'Alex', 'Pershin', '3', 'Mr. '),
          	('buslavskii@gmail.com', 'anton', 'TheBeast', 'Anton', 'Buslavskii', '3', 'Sir '),
          	('test@gmail.com', 'test', 'TheTest', 'Test', 'Testov', '1', 'Mrs. '),
@@ -51,14 +51,14 @@ INSERT INTO dbtcontrol.users (userEmail, userLogin, userPassword, userName, user
          	('test2@gmail.com', 'test2', 'TheTest2', 'Test2', 'Testov2', '1', 'Dearest Mr. ');
 
 
-INSERT INTO dbtcontrol.sensors (SENSOR_NAME)
+INSERT INTO dbtcontrol.sensors (sensor_name)
        VALUES  	('Fire Sensor'),
          	('Glass Break Sensor'),
          	('On or Off sensor'),
          	('Light Sensor');
 
 
-INSERT INTO dbtcontrol.sensorValues (sensorId, valueDateTime, valueFigure)
+INSERT INTO dbtcontrol.sensorValues (sensor_id, value_datetime, value_figure)
        VALUES  	('1', '2014-08-08 00:01:02', '123456'),
          	('1', '2014-08-08 00:10:11', '1011'),
          	('1', '2014-08-09 10:12:02', '101202'),

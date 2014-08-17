@@ -9,7 +9,7 @@ CREATE TABLE IF NOT EXISTS dbtcontrol.sensors (
 );
  
 
-CREATE TABLE dbtcontrol.sensorValues (
+CREATE TABLE dbtcontrol.sensor_values (
     sensor_id BIGINT UNSIGNED,
     value_datetime DATETIME DEFAULT NULL,
     value_figure DOUBLE,
@@ -31,13 +31,13 @@ CREATE TABLE dbtcontrol.users (
 
  
 
-CREATE TABLE dbtcontrol.userRoles (
+CREATE TABLE dbtcontrol.user_roles (
     user_role_id INT,
     user_role VARCHAR(256)
 ); 
 
 
-INSERT INTO dbtcontrol.userRoles (user_role_id, user_role) 
+INSERT INTO dbtcontrol.user_roles (user_role_id, user_role) 
     VALUES ('1', 'User'),
            ('2', 'SuperUser'),
            ('3', 'Admin');
@@ -58,7 +58,7 @@ INSERT INTO dbtcontrol.sensors (sensor_name)
          	('Light Sensor');
 
 
-INSERT INTO dbtcontrol.sensorValues (sensor_id, value_datetime, value_figure)
+INSERT INTO dbtcontrol.sensor_values (sensor_id, value_datetime, value_figure)
        VALUES  	('1', '2014-08-08 00:01:02', '123456'),
          	('1', '2014-08-08 00:10:11', '1011'),
          	('1', '2014-08-09 10:12:02', '101202'),

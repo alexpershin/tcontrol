@@ -10,6 +10,7 @@ CREATE TABLE IF NOT EXISTS dbtcontrol.sensors (
  
 
 CREATE TABLE dbtcontrol.sensor_values (
+    id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     sensor_id BIGINT UNSIGNED,
     value_datetime DATETIME DEFAULT NULL,
     value_figure DOUBLE,
@@ -32,7 +33,7 @@ CREATE TABLE dbtcontrol.users (
  
 
 CREATE TABLE dbtcontrol.user_roles (
-    user_role_id INT,
+    user_role_id INT PRIMARY KEY,
     user_role VARCHAR(256)
 ); 
 

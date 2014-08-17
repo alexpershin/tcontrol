@@ -6,6 +6,7 @@ package com.tcontrol.dao;
  */
 public class SensorValue {
 
+    private int sensorValueId = 0;
     private int sensorId = 0;
     private long timestamp;
     private double value;
@@ -18,6 +19,18 @@ public class SensorValue {
         this.value = value;
     }
 
+    
+    
+    public int getSensorValueId() {
+        return sensorValueId;
+    }
+
+    public void setSensorValueId(int sensorValueId) {
+        this.sensorValueId = sensorValueId;
+    }
+    
+    
+    
     public int getSensorId() {
         return sensorId;
     }

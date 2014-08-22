@@ -9,7 +9,60 @@ public class Sensor {
     private int id;
     private int name;
     private SensorType type;
+    
+    /**
+     * Lower threshold of value to change the sensor state.
+     */
+    private double lowThreshold;
+    
+    /**
+     * Hight threshold of value to change the sensor state.
+     */
+    private double highThreshold;
+
+    public double getLowThreshold() {
+        return lowThreshold;
+    }
+
+    public void setLowThreshold(double lowThreshold) {
+        this.lowThreshold = lowThreshold;
+    }
+
+    public double getHighThreshold() {
+        return highThreshold;
+    }
+
+    public void setHighThreshold(double highThreshold) {
+        this.highThreshold = highThreshold;
+    }
+
+    public double getThresholdDelta() {
+        return thresholdDelta;
+    }
+
+    public void setThresholdDelta(double thresholdDelta) {
+        this.thresholdDelta = thresholdDelta;
+    }
+    
+    /**
+     * Threshold delta. 
+     * When value is getting closer to a threshold 
+     * the state can be set to YELLOW. 
+     */
+    private double thresholdDelta;
+    
+    /**
+     * State of the sensor.
+     * Are not stored in the database.
+     * It should be calculated in accordance with the sensor value 
+     * and the low and hight threshold. 
+     * For example when temperature inside a house is lower than low threshold 
+     * set to 12 degrees, the sensor state must be RED, also if 
+     * the temperature is higher than 30 degrees it must be RED, 
+     * when temperature is between low and high thresholds the state is GREEN.    
+     */
     private SensorState state;
+    
     private int description;
 
     public Sensor() {

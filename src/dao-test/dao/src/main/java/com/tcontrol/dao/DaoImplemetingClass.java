@@ -61,7 +61,7 @@ public class DaoImplemetingClass implements DaoInterface {
     }
 
     @Override
-    public void addUser(User user) {try
+    public void addUser(User user) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 

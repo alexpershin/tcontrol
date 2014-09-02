@@ -3,11 +3,17 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package com.tcontrol.dao;
 
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -15,9 +21,66 @@ import java.util.List;
  */
 public class DaoImplemetingClass implements DaoInterface {
 
+    private static final String dbDriver = "here_is_the_driver";
+    private static final String dbConnection = "connection_data";
+    private static final String dbUser = "user";
+    private static final String dbPassword = "password";
+
+    private static Connection getDbConnection() {
+
+        Connection dbConnection = null;
+
+        try {
+
+            Class.forName(dbDriver);
+
+        } catch (ClassNotFoundException e) {
+
+            System.out.println(e.getMessage());
+
+        }
+
+        try {
+
+            dbConnection = DriverManager.getConnection(
+                    dbConnection, dbUser, dbPassword);
+            return dbConnection;
+
+        } catch (SQLException e) {
+
+            System.out.println(e.getMessage());
+
+        }
+
+        return dbConnection;
+
+    }
+
     @Override
     public List<Sensor> getSensors() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+
+        Connection dbConnection = null;
+        PreparedStatement preparedStatement;
+        List<Sensor> listOfSensorsToReturn;
+        
+        
+        try {
+            String selectSQL = "SELECT id from dbtcontrol.sensors where id = ?";
+            /*PreparedStatement */ preparedStatement = dbConnection.prepareStatement(selectSQL);
+            preparedStatement.setInt(1, 1001); 
+            ResultSet rs = preparedStatement.executeQuery(selectSQL);
+            while (rs.next()) {
+                
+                String userid = rs.getString("USER_ID");
+                String username = rs.getString("USERNAME");
+            }
+
+            throw new SQLException("Impossible to get sensors from the DB."); //To change body of generated methods, choose Tools | Templates.
+        } catch (SQLException ex) {
+            Logger.getLogger(DaoImplemetingClass.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        //TODO: implement  listOfSensorsToReturn!!!
+        return listOfSensorsToReturn;
     }
 
     @Override
@@ -79,5 +142,5 @@ public class DaoImplemetingClass implements DaoInterface {
     public int nextId() {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
-    
+
 }

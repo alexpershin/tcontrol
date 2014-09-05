@@ -22,7 +22,7 @@ import java.util.logging.Logger;
 public class DaoImplemetingClass implements DaoInterface {
 
     private static final String dbDriver = "here_is_the_driver";
-    private static final String dbConnection = "connection_data";
+    private static final String dbConn = "connection_data";
     private static final String dbUser = "user";
     private static final String dbPassword = "password";
 
@@ -43,7 +43,7 @@ public class DaoImplemetingClass implements DaoInterface {
         try {
 
             dbConnection = DriverManager.getConnection(
-                    dbConnection, dbUser, dbPassword);
+                    dbConn, dbUser, dbPassword);
             return dbConnection;
 
         } catch (SQLException e) {
@@ -61,18 +61,24 @@ public class DaoImplemetingClass implements DaoInterface {
 
         Connection dbConnection = null;
         PreparedStatement preparedStatement;
-        List<Sensor> listOfSensorsToReturn;
-        
+        List<Sensor> listOfSensorsToReturn = new ArrayList<>();
+        Sensor sensorVariable;
         
         try {
             String selectSQL = "SELECT id from dbtcontrol.sensors where id = ?";
+            int i = 1;
             /*PreparedStatement */ preparedStatement = dbConnection.prepareStatement(selectSQL);
-            preparedStatement.setInt(1, 1001); 
+            preparedStatement.setInt(i, 1001); 
             ResultSet rs = preparedStatement.executeQuery(selectSQL);
+            
             while (rs.next()) {
-                
-                String userid = rs.getString("USER_ID");
-                String username = rs.getString("USERNAME");
+                              
+                System.out.println( "RS is " + rs);
+                String userid = rs.getString("id");
+                Sensor snsr = new Sensor();
+                snsr.setId(Integer.parseInt(userid));
+                listOfSensorsToReturn.add(snsr);
+               
             }
 
             throw new SQLException("Impossible to get sensors from the DB."); //To change body of generated methods, choose Tools | Templates.

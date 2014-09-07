@@ -66,9 +66,9 @@ public class DaoImplemetingClass implements DaoInterface {
         
         try {
             String selectSQL = "SELECT id from dbtcontrol.sensors where id = ?";
-            int i = 1;
+           
             /*PreparedStatement */ preparedStatement = dbConnection.prepareStatement(selectSQL);
-            preparedStatement.setInt(i, 1001); 
+            preparedStatement.setInt(1, 1001); 
             ResultSet rs = preparedStatement.executeQuery(selectSQL);
             
             while (rs.next()) {

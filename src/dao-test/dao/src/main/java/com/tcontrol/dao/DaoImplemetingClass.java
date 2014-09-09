@@ -85,18 +85,48 @@ public class DaoImplemetingClass implements DaoInterface {
         } catch (SQLException ex) {
             Logger.getLogger(DaoImplemetingClass.class.getName()).log(Level.SEVERE, null, ex);
         }
-        //TODO: implement  listOfSensorsToReturn!!!
+        
         return listOfSensorsToReturn;
     }
 
-    @Override
-    public List<Sensor> getSensors(List<Integer> ids) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
 
     @Override
     public List<SensorValue> getCurrentValues(int userId) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        
+        Connection dbConnection = null;
+        PreparedStatement preparedStatement;
+        List<SensorValue> listOfCurrentValuesForExactUserToReturn = new ArrayList<>();
+        SensorValue sensorVariable = new SensorValue();
+        
+        
+        
+        try {
+            String selectSQL = "SELECT value from dbtcontrol.sensor_values where sensor_id  in (select sensor_id from dbtcontrol.users where id = ?))";
+           
+            /*PreparedStatement */ preparedStatement = dbConnection.prepareStatement(selectSQL);
+            preparedStatement.setInt(1, userId); 
+            ResultSet rs = preparedStatement.executeQuery(selectSQL);
+            
+            while (rs.next()) {
+                              
+                //System.out.println( "RS is " + rs);
+                String sensorStringValue = rs.getString("value");
+                //SensorValue snsrValue = new SensorValue();
+                
+                sensorVariable.setValue(Integer.parseInt(sensorStringValue));
+                listOfCurrentValuesForExactUserToReturn.add(sensorVariable);
+               
+            }
+
+            throw new SQLException("Impossible to get sensors values for the user with ID = " + userId + " from the DB."); 
+    //To change body of generated methods, choose Tools | Templates.
+        } catch (SQLException ex) {
+            Logger.getLogger(DaoImplemetingClass.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
+        return listOfCurrentValuesForExactUserToReturn;
+        //throw new UnsupportedOperationException("Not supported yet."); 
+        //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override

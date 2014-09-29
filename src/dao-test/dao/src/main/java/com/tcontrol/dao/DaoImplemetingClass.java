@@ -57,73 +57,132 @@ public class DaoImplemetingClass implements DaoInterface {
     }
 
     @Override
-    public List<Sensor> getSensors() {
+    public List<Sensor> getAllSensors() {
 
         Connection dbConnection = null;
         PreparedStatement preparedStatement;
         List<Sensor> listOfSensorsToReturn = new ArrayList<>();
         Sensor sensorVariable;
-        
+
+
         try {
             String selectSQL = "SELECT id from dbtcontrol.sensors where id = ?";
-           
+
+
             /*PreparedStatement */ preparedStatement = dbConnection.prepareStatement(selectSQL);
-            preparedStatement.setInt(1, 1001); 
+            preparedStatement.setInt(1, 1001);
             ResultSet rs = preparedStatement.executeQuery(selectSQL);
-            
+
+
             while (rs.next()) {
-                              
-                System.out.println( "RS is " + rs);
+
+
+                System.out.println("RS is " + rs);
                 String userid = rs.getString("id");
                 Sensor snsr = new Sensor();
                 snsr.setId(Integer.parseInt(userid));
                 listOfSensorsToReturn.add(snsr);
-               
+
+
             }
 
             throw new SQLException("Impossible to get sensors from the DB."); //To change body of generated methods, choose Tools | Templates.
         } catch (SQLException ex) {
             Logger.getLogger(DaoImplemetingClass.class.getName()).log(Level.SEVERE, null, ex);
         }
-        
+
+
         return listOfSensorsToReturn;
     }
 
+    @Override
+    public List<Sensor> getSensors(List<Sensor> ids) {
 
+        int sizeOfListInInputtedParameter = ids.size();
+        //System.out.println("Size of list being inputted is " + sizeOfListInInputtedParameter);
+        List<Sensor> listOfSensorsWithExactIdsToReturn = new ArrayList<>();
+
+        Connection dbConnection = null;
+        PreparedStatement preparedStatement;
+        Sensor sensorVariable;
+
+        int[] sensorsIds = new int[sizeOfListInInputtedParameter];
+
+        try {
+
+            for (int i = 1; i < sensorsIds.length; i++) {
+
+                String selectSQL = "SELECT id from dbtcontrol.sensors where id = ?";
+
+                /*PreparedStatement */ preparedStatement = dbConnection.prepareStatement(selectSQL);
+                preparedStatement.setInt(i, 1001);
+                ResultSet rs = preparedStatement.executeQuery(selectSQL);
+
+                while (rs.next()) {
+
+                    System.out.println("RS is " + rs);
+                    String userid = rs.getString("id");
+                    Sensor snsr = new Sensor();
+                    snsr.setId(Integer.parseInt(userid));
+                    listOfSensorsWithExactIdsToReturn.add(snsr);
+
+                }
+
+                throw new SQLException("Impossible to get sensors from the DB."); //To change body of generated methods, choose Tools | Templates.
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(DaoImplemetingClass.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+        return listOfSensorsWithExactIdsToReturn;
+
+    }
+
+    ;
+    
+    
     @Override
     public List<SensorValue> getCurrentValues(int userId) {
-        
+
+
         Connection dbConnection = null;
         PreparedStatement preparedStatement;
         List<SensorValue> listOfCurrentValuesForExactUserToReturn = new ArrayList<>();
         SensorValue sensorVariable = new SensorValue();
-        
-        
-        
+
+
+
+
         try {
             String selectSQL = "SELECT value from dbtcontrol.sensor_values where sensor_id  in (select sensor_id from dbtcontrol.users where id = ?))";
-           
+
+
             /*PreparedStatement */ preparedStatement = dbConnection.prepareStatement(selectSQL);
-            preparedStatement.setInt(1, userId); 
+            preparedStatement.setInt(1, userId);
             ResultSet rs = preparedStatement.executeQuery(selectSQL);
-            
+
+
             while (rs.next()) {
-                              
+
+
                 //System.out.println( "RS is " + rs);
                 String sensorStringValue = rs.getString("value");
                 //SensorValue snsrValue = new SensorValue();
-                
+
+
                 sensorVariable.setValue(Integer.parseInt(sensorStringValue));
                 listOfCurrentValuesForExactUserToReturn.add(sensorVariable);
-               
+
+
             }
 
-            throw new SQLException("Impossible to get sensors values for the user with ID = " + userId + " from the DB."); 
-    //To change body of generated methods, choose Tools | Templates.
+            throw new SQLException("Impossible to get sensors values for the user with ID = " + userId + " from the DB.");
+            //To change body of generated methods, choose Tools | Templates.
         } catch (SQLException ex) {
             Logger.getLogger(DaoImplemetingClass.class.getName()).log(Level.SEVERE, null, ex);
         }
-        
+
+
         return listOfCurrentValuesForExactUserToReturn;
         //throw new UnsupportedOperationException("Not supported yet."); 
         //To change body of generated methods, choose Tools | Templates.
@@ -180,3 +239,5 @@ public class DaoImplemetingClass implements DaoInterface {
     }
 
 }
+
+

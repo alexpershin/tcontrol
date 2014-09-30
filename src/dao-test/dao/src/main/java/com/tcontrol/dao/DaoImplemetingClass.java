@@ -96,7 +96,7 @@ public class DaoImplemetingClass implements DaoInterface {
     }
 
     @Override
-    public List<Sensor> getSensors(List<Sensor> ids) {
+    public List<Sensor> getSensors(List<Integer> ids) {
 
         int sizeOfListInInputtedParameter = ids.size();
         //System.out.println("Size of list being inputted is " + sizeOfListInInputtedParameter);

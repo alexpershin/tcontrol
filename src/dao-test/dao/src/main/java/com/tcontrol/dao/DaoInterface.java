@@ -28,7 +28,7 @@ public interface DaoInterface {
      * @param ids
      * @return list of sensors with all available parameters;
      */
-    List<Sensor> getSensors(List<Sensor> ids);
+    List<Sensor> getSensors(List<Integer> ids);
 
     /**
      * Returns last(current) values for sensors belong to specified user.

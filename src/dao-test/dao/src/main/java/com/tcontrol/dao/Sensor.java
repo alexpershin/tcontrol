@@ -47,7 +47,7 @@ public class Sensor {
     /**
      * Threshold delta. 
      * When value is getting closer to a threshold 
-     * the state can be set to YELLOW. 
+     * the state can be set to pre alarm. 
      */
     private double thresholdDelta;
     
@@ -139,20 +139,20 @@ public class Sensor {
     public static enum SensorState {
 
         /**
-         * alarm on the sensor
+         * alarm on the sensor.
          */
         RED,
         /**
-         * not stable connection, trying to define condition of the sensor;
+         * pre alarm state.
          */
         YELLOW,
         /**
-         * no alarm, everything is OK with sensor's state;
+         * no alarm, everything is OK with sensor's state.
          */
         GREEN,
         /**
          * sensor is intentionally disabled by user, right now it is not
-         * implemented yet
+         * implemented yet.
          */
         GREY;
 

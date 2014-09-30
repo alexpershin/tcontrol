@@ -69,3 +69,7 @@ INSERT INTO dbtcontrol.sensor_values (sensor_id, timestamp, value) VALUE
 	('4', '2014-08-09 09:42:19', '1'),
 	('4', '2014-08-10 23:59:59', '1'),
 	('5', '2014-08-11 15:16:17', '230.4');
+
+INSERT INTO dbtcontrol.sensors (name, type, low_thresshold, hight_threshold,
+								threshold_delta, description) VALUES
+	( 'test_sensor', 'TEMPERATURE', 10, 30, 2, 'Indoor Temperature Sensor');

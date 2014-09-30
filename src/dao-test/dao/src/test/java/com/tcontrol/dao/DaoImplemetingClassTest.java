@@ -53,7 +53,7 @@ public class DaoImplemetingClassTest {
         System.out.println("check of existing sensors");
         DaoImplemetingClass daoImplemInstance = new DaoImplemetingClass();
         
-        List<Sensor> testList = new ArrayList<>;
+        List<Sensor> testList = new ArrayList<Sensor>();
         //TODO: add existing sensor ids into testList and feed this list to getSensors(List<Sensor> ids) method.
         //Then - get the list of Sensors being returned and compare to the pre-defined list
      
@@ -68,7 +68,7 @@ public class DaoImplemetingClassTest {
         
         System.out.println("start of a test");
         DaoImplemetingClass daoImplClassInstance = new DaoImplemetingClass();
-        daoImplClassInstance.getSensors(testList);
+      //  daoImplClassInstance.getSensors(testList);
         
        
     

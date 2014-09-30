@@ -20,7 +20,7 @@ import java.util.List;
 public class MySqlJDBCDaoImpl implements DaoInterface {
 
     @Override
-    public List<Sensor> getSensors() {
+    public List<Sensor> getAllSensors() {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 

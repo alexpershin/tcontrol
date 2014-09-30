@@ -48,8 +48,8 @@ public class UserTest {
         User instance = new User();
         assertThat(instance.getId(), is(0));
         assertThat(instance.getRole(), is(0));
-        assertNull(instance.getName(), is());
-        assertNull(instance.getSurname(), is());
+        assertNull(instance.getName());
+        assertNull(instance.getSurname());
         
     }
 

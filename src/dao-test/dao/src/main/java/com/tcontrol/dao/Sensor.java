@@ -7,7 +7,7 @@ package com.tcontrol.dao;
 public class Sensor {
 
     private int id;
-    private int name;
+    private String name;
     private SensorType type;
     
     /**
@@ -63,12 +63,12 @@ public class Sensor {
      */
     private SensorState state;
     
-    private int description;
+    private String description;
 
     public Sensor() {
     }
 
-    public Sensor(int id, int name, SensorType type, SensorState state, int description) {
+    public Sensor(int id, String name, SensorType type, SensorState state, String description) {
         this.id = id;
         this.name = name;
         this.type = type;
@@ -84,11 +84,11 @@ public class Sensor {
         this.id = id;
     }
 
-    public int getName() {
+    public String getName() {
         return name;
     }
 
-    public void setName(int name) {
+    public void setName(String name) {
         this.name = name;
     }
 
@@ -108,11 +108,11 @@ public class Sensor {
         this.state = state;
     }
 
-    public int getDescription() {
+    public String getDescription() {
         return description;
     }
 
-    public void setDescription(int description) {
+    public void setDescription(String description) {
         this.description = description;
     }
 

@@ -3,25 +3,87 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package com.tcontrol.dao.impl;
 
+import com.tcontrol.dao.DaoImplemetingClass;
 import com.tcontrol.dao.DaoInterface;
 import com.tcontrol.dao.Sensor;
+import com.tcontrol.dao.Sensor.SensorType;
 import com.tcontrol.dao.SensorValue;
 import com.tcontrol.dao.User;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import org.apache.commons.lang3.EnumUtils;
 
 /**
- *  
+ *
  * @author Anton Buslavskii
  */
 public class MySqlJDBCDaoImpl implements DaoInterface {
 
+    private Logger LOGGER = Logger.getLogger(MySqlJDBCDaoImpl.class.getName());
+    private Connection dbConnection;
+
     @Override
     public List<Sensor> getAllSensors() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        List<Sensor> listOfSensorsToReturn = new ArrayList<>();
+        Statement statement = null;
+        ResultSet resultSet = null;
+        try {
+            String selectSQL = "SELECT id, name, type, description, low_thresshold, "
+                    + "high_thresshold, threshold_delta from dbtcontrol.sensors";
+
+            statement = dbConnection.createStatement();
+
+            resultSet = statement.executeQuery(selectSQL);
+
+            while (resultSet.next()) {
+                //extract sensor's fields
+                int id = resultSet.getInt("id");
+                String name = resultSet.getString("name");
+                String description = resultSet.getString("description");
+                SensorType type = EnumUtils.getEnum(SensorType.class, resultSet.getString("type"));
+                double lowThresshold = resultSet.getDouble("low_thresshold");
+                double highThresshold = resultSet.getDouble("high_thresshold");
+                double thressholdDelta = resultSet.getDouble("threshold_delta");
+
+                //build sensor object
+                Sensor sensor = new Sensor(id, name, type, null, description);
+                sensor.setLowThreshold(lowThresshold);
+                sensor.setHighThreshold(highThresshold);
+                sensor.setThresholdDelta(thressholdDelta);
+
+                //add sensor to result list
+                listOfSensorsToReturn.add(sensor);
+            }
+        } catch (SQLException ex) {
+            LOGGER.log(Level.SEVERE, null, ex);
+        } finally {
+            try {
+                if (resultSet != null) {
+                    resultSet.close();
+                }
+            } catch (SQLException ex) {
+                LOGGER.log(Level.SEVERE, null, ex);
+            }
+
+            try {
+                if (statement != null) {
+                    statement.close();
+                }
+            } catch (SQLException ex) {
+                LOGGER.log(Level.SEVERE, null, ex);
+            }
+        }
+
+        return listOfSensorsToReturn;
     }
 
     @Override
@@ -83,5 +145,19 @@ public class MySqlJDBCDaoImpl implements DaoInterface {
     public int nextId() {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
-    
+
+    /**
+     * @return the dbConnection
+     */
+    public Connection getDbConnection() {
+        return dbConnection;
+    }
+
+    /**
+     * @param dbConnection the dbConnection to set
+     */
+    public void setDbConnection(Connection dbConnection) {
+        this.dbConnection = dbConnection;
+    }
+
 }

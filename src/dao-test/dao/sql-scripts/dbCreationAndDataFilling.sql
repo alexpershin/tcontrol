@@ -8,7 +8,7 @@ CREATE TABLE IF NOT EXISTS dbtcontrol.sensors (
     type VARCHAR(20) NOT NULL,
     description VARCHAR(1024) DEFAULT NULL,
 	low_thresshold DOUBLE,
-	hight_threshold DOUBLE,
+	high_thresshold DOUBLE,
 	threshold_delta DOUBLE
 );
 
@@ -45,7 +45,7 @@ INSERT INTO dbtcontrol.users (email, login, password, name, surname, role, accos
 	('Alex.Pershin@gmail.com', 'alex', 'TheSnake', 'Alex', 'Pershin', '3', 'Mr. '),
 	('buslavskii@gmail.com', 'anton', 'TheBeast', 'Anton', 'Buslavskii', '3', 'Sir ');
 
-INSERT INTO dbtcontrol.sensors (id, name, type, low_thresshold, hight_threshold,
+INSERT INTO dbtcontrol.sensors (id, name, type, low_thresshold, high_thresshold,
 								threshold_delta, description) VALUES
 	(1, 'Indoor', 'TEMPERATURE', 10, 30, 2, 'Indoor Temperature Sensor'),
 	(2, 'Outdoor', 'TEMPERATURE', -25, null, 5, 'Outdor Temperature Sensor'),
@@ -70,6 +70,6 @@ INSERT INTO dbtcontrol.sensor_values (sensor_id, timestamp, value) VALUE
 	('4', '2014-08-10 23:59:59', '1'),
 	('5', '2014-08-11 15:16:17', '230.4');
 
-INSERT INTO dbtcontrol.sensors (name, type, low_thresshold, hight_threshold,
+INSERT INTO dbtcontrol.sensors (name, type, low_thresshold, high_thresshold,
 								threshold_delta, description) VALUES
 	( 'test_sensor', 'TEMPERATURE', 10, 30, 2, 'Indoor Temperature Sensor');

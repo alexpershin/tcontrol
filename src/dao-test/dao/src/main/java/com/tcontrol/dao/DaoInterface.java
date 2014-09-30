@@ -20,15 +20,15 @@ public interface DaoInterface {
      *
      * @return list of identifiers;
      */
-    List<Sensor> getSensors();
+    List<Sensor> getAllSensors();
 
     /**
-     * Get sensors by identifiers.
+     * Get sensors by identifiers in Sensor objects.
      *
      * @param ids
-     * @return list of sensors;
+     * @return list of sensors with all available parameters;
      */
-    List<Sensor> getSensors(List<Integer> ids);
+    List<Sensor> getSensors(List<Sensor> ids);
 
     /**
      * Returns last(current) values for sensors belong to specified user.

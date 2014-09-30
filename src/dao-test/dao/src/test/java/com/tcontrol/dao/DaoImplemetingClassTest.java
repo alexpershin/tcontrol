@@ -57,12 +57,20 @@ public class DaoImplemetingClassTest {
         //TODO: add existing sensor ids into testList and feed this list to getSensors(List<Sensor> ids) method.
         //Then - get the list of Sensors being returned and compare to the pre-defined list
      
-       Integer[] alreadyExistingSensorIds = {1, 2, 3, 4, 5};
+       Integer[] alreadyExistingSensorIds = {1, 2, 3, 4, 5}; //we have sensors with such IDs
+       Double[] alreadyExistingSensorValues = {1.0, 2.0, 3.0, 4.0, 5.8}; //TODO: add existing values, not fake data
                
-        /*for (int i = 0; i < testList.size(); i++) {
-            Sensor setId = testList    .get(i);
-            
-        } */
+        for (int i = 0; i < alreadyExistingSensorIds.length - 1 ; i++) {
+            Sensor sensorWithId = new Sensor();
+            sensorWithId.setId(alreadyExistingSensorIds[i]);
+            testList.add(sensorWithId);
+         } //here we have our List of Sensor objects with set IDs
+        
+        System.out.println("start of a test");
+        DaoImplemetingClass daoImplClassInstance = new DaoImplemetingClass();
+        daoImplClassInstance.getSensors(testList);
+        
+       
     
     }
 

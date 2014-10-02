@@ -22,7 +22,6 @@ import java.util.logging.Logger;
 import org.h2.tools.RunScript;
 import org.h2.tools.Server;
 import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.is;
 import org.junit.After;
 import org.junit.AfterClass;
 import static org.junit.Assert.*;
@@ -129,7 +128,7 @@ public class MySqlJDBCDaoImplUnitTest {
         //check total count of sensors
         assertThat(sensors.size(), is(3));
 
-        Map<Integer, Sensor> sensorByIdMap = new HashMap<Integer, Sensor>();
+        Map<Integer, Sensor> sensorByIdMap = new HashMap<>();
         for (Sensor sensor : sensors) {
             sensorByIdMap.put(sensor.getId(), sensor);
         }

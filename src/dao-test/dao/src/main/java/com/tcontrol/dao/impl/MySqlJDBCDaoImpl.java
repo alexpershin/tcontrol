@@ -28,7 +28,7 @@ import org.apache.commons.lang3.EnumUtils;
  */
 public class MySqlJDBCDaoImpl implements DaoInterface {
 
-    private Logger LOGGER = Logger.getLogger(MySqlJDBCDaoImpl.class.getName());
+    private static final Logger LOGGER = Logger.getLogger(MySqlJDBCDaoImpl.class.getName());
     private Connection dbConnection;
 
     @Override

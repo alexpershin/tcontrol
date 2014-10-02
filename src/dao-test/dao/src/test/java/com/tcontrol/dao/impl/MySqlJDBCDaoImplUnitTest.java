@@ -35,6 +35,7 @@ import org.junit.Test;
  * @author alexey
  */
 public class MySqlJDBCDaoImplUnitTest {
+
     private static final Logger LOGGER = Logger.getLogger(MySqlJDBCDaoImplUnitTest.class.getName());
     private static final String USER_PASSWORD = "";
     private static final String USER_LOGIN = "sa";
@@ -49,18 +50,24 @@ public class MySqlJDBCDaoImplUnitTest {
     @BeforeClass
     public static void setUpClass() {
         dao = new MySqlJDBCDaoImpl();
+        connection=createH2Connection();
+        //connection = createMySqlConnection();
+        ((MySqlJDBCDaoImpl) dao).setDbConnection(connection);
+        assertNotNull(((MySqlJDBCDaoImpl) dao).getDbConnection());
+    }
+
+    private static Connection createH2Connection() {
+        Connection h2Connection = null;
         try {
             server = Server.createTcpServer(new String[]{}).start();
-            
+
             Class.forName("org.h2.Driver");
-            connection = DriverManager.getConnection("jdbc:h2:~/test", USER_LOGIN, USER_PASSWORD);
-            
+            h2Connection = DriverManager.getConnection("jdbc:h2:~/test", USER_LOGIN, USER_PASSWORD);
+
             //Create and fill H2 database for unit tests part
-            Reader reader= new FileReader("sql-scripts/create-test-h2-tcontrol-db.sql");
-            RunScript.execute(connection, reader);
-            
-            ((MySqlJDBCDaoImpl)dao).setDbConnection(connection);
-            
+            Reader reader = new FileReader("sql-scripts/create-test-h2-tcontrol-db.sql");
+            RunScript.execute(h2Connection, reader);
+
         } catch (SQLException ex) {
             LOGGER.log(Level.SEVERE, null, ex);
         } catch (ClassNotFoundException ex) {
@@ -68,17 +75,40 @@ public class MySqlJDBCDaoImplUnitTest {
         } catch (FileNotFoundException ex) {
             LOGGER.log(Level.SEVERE, null, ex);
         }
+        return h2Connection;
     }
- 
+
+    private static Connection createMySqlConnection() {
+        Connection mysqlConnection = null;
+        try {
+            server = Server.createTcpServer(new String[]{}).start();
+
+            Class.forName("com.mysql.jdbc.Driver");
+            mysqlConnection = DriverManager.getConnection(
+                    "jdbc:mysql://localhost?"
+                    + "user=testuser&password=testuser");
+        } catch (SQLException ex) {
+            LOGGER.log(Level.SEVERE, null, ex);
+        } catch (ClassNotFoundException ex) {
+            LOGGER.log(Level.SEVERE, null, ex);
+        }
+        return mysqlConnection;
+    }
+
     @AfterClass
     public static void tearDownClass() {
         if (server != null) {
             server.stop();
-            try {
-                connection.close();
-            } catch (SQLException ex) {
-                Logger.getLogger(MySqlJDBCDaoImplUnitTest.class.getName()).log(Level.SEVERE, null, ex);
+            if (connection != null) {
+                try {
+                    connection.close();
+                } catch (SQLException ex) {
+                    Logger.getLogger(MySqlJDBCDaoImplUnitTest.class.getName()).log(Level.SEVERE, null, ex);
+                } finally {
+                    connection = null;
+                }
             }
+            server = null;
         }
     }
 
@@ -91,29 +121,24 @@ public class MySqlJDBCDaoImplUnitTest {
     }
 
     @Test
-    public void h2ConnectionTest() {
-        assertNotNull(((MySqlJDBCDaoImpl)dao).getDbConnection());
-    }
-    
-    @Test
     public void getAllSensorsTest() {
         List<Sensor> sensors = dao.getAllSensors();
-        
+
         assertNotNull(sensors);
-        
+
         //check total count of sensors
-        assertThat(sensors.size() , is(3));
-        
-        Map<Integer, Sensor> sensorByIdMap=new HashMap<Integer, Sensor>();
-        for(Sensor sensor:sensors){
+        assertThat(sensors.size(), is(3));
+
+        Map<Integer, Sensor> sensorByIdMap = new HashMap<Integer, Sensor>();
+        for (Sensor sensor : sensors) {
             sensorByIdMap.put(sensor.getId(), sensor);
         }
-        
+
         //Check that sensors are unique
-        assertThat(sensorByIdMap.size() , is(3));
-        
+        assertThat(sensorByIdMap.size(), is(3));
+
         //get one sensor and check that all it's field loaded correctly
-        Sensor sensor1=sensorByIdMap.get(1);
+        Sensor sensor1 = sensorByIdMap.get(1);
         assertNotNull(sensor1);
         assertThat(sensor1.getName(), is("Indoor"));
         assertThat(sensor1.getDescription(), is("Indoor Temperature Sensor"));

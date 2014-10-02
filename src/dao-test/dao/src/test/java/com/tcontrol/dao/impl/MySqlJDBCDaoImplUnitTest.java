@@ -50,7 +50,7 @@ public class MySqlJDBCDaoImplUnitTest {
     public static void setUpClass() {
         dao = new MySqlJDBCDaoImpl();
         connection=createH2Connection();
-        //connection = createMySqlConnection();
+        // connection = createMySqlConnection();
         ((MySqlJDBCDaoImpl) dao).setDbConnection(connection);
         assertNotNull(((MySqlJDBCDaoImpl) dao).getDbConnection());
     }
@@ -61,6 +61,8 @@ public class MySqlJDBCDaoImplUnitTest {
             server = Server.createTcpServer(new String[]{}).start();
 
             Class.forName("org.h2.Driver");
+            
+            //TODO: disable storage in file:MV_STORE=FALSE and ;TRACE_LEVEL_SYSTEM_OUT=0
             h2Connection = DriverManager.getConnection("jdbc:h2:~/test", USER_LOGIN, USER_PASSWORD);
 
             //Create and fill H2 database for unit tests part
@@ -82,6 +84,7 @@ public class MySqlJDBCDaoImplUnitTest {
         try {
             server = Server.createTcpServer(new String[]{}).start();
 
+            //TODO set current chema: currentschema=MYDESIREDSCHEMA
             Class.forName("com.mysql.jdbc.Driver");
             mysqlConnection = DriverManager.getConnection(
                     "jdbc:mysql://localhost?"

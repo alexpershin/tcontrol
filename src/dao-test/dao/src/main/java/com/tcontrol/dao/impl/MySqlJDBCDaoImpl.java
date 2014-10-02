@@ -5,7 +5,6 @@
  */
 package com.tcontrol.dao.impl;
 
-import com.tcontrol.dao.DaoImplemetingClass;
 import com.tcontrol.dao.DaoInterface;
 import com.tcontrol.dao.Sensor;
 import com.tcontrol.dao.Sensor.SensorType;
@@ -37,6 +36,7 @@ public class MySqlJDBCDaoImpl implements DaoInterface {
         Statement statement = null;
         ResultSet resultSet = null;
         try {
+            //TODO remove schema
             String selectSQL = "SELECT id, name, type, description, low_thresshold, "
                     + "high_thresshold, threshold_delta from dbtcontrol.sensors";
 

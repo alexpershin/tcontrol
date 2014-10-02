@@ -19,8 +19,6 @@ public class SensorValue {
         this.value = value;
     }
 
-    
-    
     public int getSensorValueId() {
         return sensorValueId;
     }
@@ -28,9 +26,7 @@ public class SensorValue {
     public void setSensorValueId(int sensorValueId) {
         this.sensorValueId = sensorValueId;
     }
-    
-    
-    
+
     public int getSensorId() {
         return sensorId;
     }

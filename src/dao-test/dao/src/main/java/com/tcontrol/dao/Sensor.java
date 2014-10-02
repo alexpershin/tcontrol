@@ -9,12 +9,12 @@ public class Sensor {
     private int id;
     private String name;
     private SensorType type;
-    
+
     /**
      * Lower threshold of value to change the sensor state.
      */
     private double lowThreshold;
-    
+
     /**
      * Hight threshold of value to change the sensor state.
      */
@@ -43,26 +43,23 @@ public class Sensor {
     public void setThresholdDelta(double thresholdDelta) {
         this.thresholdDelta = thresholdDelta;
     }
-    
+
     /**
-     * Threshold delta. 
-     * When value is getting closer to a threshold 
-     * the state can be set to pre alarm. 
+     * Threshold delta. When value is getting closer to a threshold the state
+     * can be set to pre alarm.
      */
     private double thresholdDelta;
-    
+
     /**
-     * State of the sensor.
-     * Are not stored in the database.
-     * It should be calculated in accordance with the sensor value 
-     * and the low and hight threshold. 
-     * For example when temperature inside a house is lower than low threshold 
-     * set to 12 degrees, the sensor state must be RED, also if 
-     * the temperature is higher than 30 degrees it must be RED, 
-     * when temperature is between low and high thresholds the state is GREEN.    
+     * State of the sensor. Are not stored in the database. It should be
+     * calculated in accordance with the sensor value and the low and hight
+     * threshold. For example when temperature inside a house is lower than low
+     * threshold set to 12 degrees, the sensor state must be RED, also if the
+     * temperature is higher than 30 degrees it must be RED, when temperature is
+     * between low and high thresholds the state is GREEN.
      */
     private SensorState state;
-    
+
     private String description;
 
     public Sensor() {

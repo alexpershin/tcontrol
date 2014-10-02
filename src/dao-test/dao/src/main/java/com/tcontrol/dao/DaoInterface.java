@@ -106,10 +106,11 @@ public interface DaoInterface {
      * @param userId
      */
     void removeUser(int userId);
-    
+
     /**
-     * Returns next unique number for entity identifiers in the project;
-     * Use DB sequence here.
+     * Returns next unique number for entity identifiers in the project; Use DB
+     * sequence here.
+     *
      * @return next unique number;
      */
     int nextId();

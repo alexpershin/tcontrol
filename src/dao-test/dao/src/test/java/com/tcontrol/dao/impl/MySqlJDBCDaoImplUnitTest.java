@@ -49,7 +49,7 @@ public class MySqlJDBCDaoImplUnitTest {
     @BeforeClass
     public static void setUpClass() {
         dao = new MySqlJDBCDaoImpl();
-        connection=createH2Connection();
+        connection = createH2Connection();
         // connection = createMySqlConnection();
         ((MySqlJDBCDaoImpl) dao).setDbConnection(connection);
         assertNotNull(((MySqlJDBCDaoImpl) dao).getDbConnection());
@@ -61,7 +61,7 @@ public class MySqlJDBCDaoImplUnitTest {
             server = Server.createTcpServer(new String[]{}).start();
 
             Class.forName("org.h2.Driver");
-            
+
             //TODO: disable storage in file:MV_STORE=FALSE and ;TRACE_LEVEL_SYSTEM_OUT=0
             h2Connection = DriverManager.getConnection("jdbc:h2:~/test", USER_LOGIN, USER_PASSWORD);
 

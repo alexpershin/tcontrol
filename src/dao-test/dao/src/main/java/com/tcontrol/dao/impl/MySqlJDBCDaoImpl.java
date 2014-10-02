@@ -72,8 +72,8 @@ public class MySqlJDBCDaoImpl implements DaoInterface {
                 }
             } catch (SQLException ex) {
                 LOGGER.log(Level.SEVERE, null, ex);
-            } finally{
-                resultSet=null;
+            } finally {
+                resultSet = null;
             }
 
             try {
@@ -82,8 +82,8 @@ public class MySqlJDBCDaoImpl implements DaoInterface {
                 }
             } catch (SQLException ex) {
                 LOGGER.log(Level.SEVERE, null, ex);
-            } finally{
-                statement=null;
+            } finally {
+                statement = null;
             }
         }
 

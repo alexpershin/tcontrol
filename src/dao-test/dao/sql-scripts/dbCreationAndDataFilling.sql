@@ -32,7 +32,7 @@ CREATE TABLE dbtcontrol.users (
 );
 
 
-CREATE TABLE dbtcontrol.user_to_sensor_links (
+CREATE TABLE dbtcontrol.profiles (
    link_id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
    user_id BIGINT UNSIGNED not null,
    FOREIGN KEY (user_id) REFERENCES dbtcontrol.users (id),  
@@ -80,22 +80,16 @@ INSERT INTO dbtcontrol.sensor_values (sensor_id, timestamp, value) VALUE
 	('4', '2014-08-10 23:59:59', '1'),
 	('5', '2014-08-11 15:16:17', '230.4');
 
-/*CREATE TABLE dbtcontrol.user_to_sensor_links (
-   link_id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-   user_id BIGINT UNSIGNED not null,
-   FOREIGN KEY (user_id) REFERENCES dbtcontrol.users (id),  
-   sensor_id BIGINT UNSIGNED not null,
-   FOREIGN KEY (sensor_id) REFERENCES dbtcontrol.sensors (id) 
-); */
 
-INSERT INTO dbtcontrol.user_to_sensor_links (user_id, sensor_id) VALUES
+
+INSERT INTO dbtcontrol.profiles (user_id, sensor_id) VALUES
   	('1', '1'),        
   	('1', '2'),        
   	('1', '3'),        
-  	('1', '6'),        
+  	('1', '5'),        
   	('2', '2'),        
-  	('2', '5'),        
-  	('2', '6');        
+  	('2', '3'),        
+  	('2', '5');        
   	
 
 

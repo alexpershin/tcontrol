@@ -65,6 +65,12 @@ INSERT INTO dbtcontrol.sensors (id, name, type,  description) VALUES
 	(3, 'Power', 'ON_OF', 'Power On or Off Sensor'),
     (4, 'Door Closed', 'ALARM','Door Closed Sensor');
 
+
+INSERT INTO dbtcontrol.sensors (name, type, low_thresshold, high_thresshold,
+								threshold_delta, description) VALUES
+	( 'test_sensor', 'TEMPERATURE', 10, 30, 2, 'Indoor Temperature Sensor');
+
+
 INSERT INTO dbtcontrol.sensor_values (sensor_id, timestamp, value) VALUE
   	('1', '2014-08-08 00:01:02', '20.1'),        
 	('1', '2014-08-08 00:10:11', '20.25'),
@@ -85,14 +91,9 @@ INSERT INTO dbtcontrol.sensor_values (sensor_id, timestamp, value) VALUE
 INSERT INTO dbtcontrol.profiles (user_id, sensor_id) VALUES
   	('1', '1'),        
   	('1', '2'),        
-  	('1', '3'),        
-  	('1', '5'),        
-  	('2', '2'),        
+  	('1', '4'),        
+  	('1', '6'),        
   	('2', '3'),        
-  	('2', '5');        
+  	('2', '5'),        
+  	('2', '6');        
   	
-
-
-INSERT INTO dbtcontrol.sensors (name, type, low_thresshold, high_thresshold,
-								threshold_delta, description) VALUES
-	( 'test_sensor', 'TEMPERATURE', 10, 30, 2, 'Indoor Temperature Sensor');

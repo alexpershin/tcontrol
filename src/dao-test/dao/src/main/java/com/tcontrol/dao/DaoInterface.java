@@ -83,7 +83,7 @@ public interface DaoInterface {
      * @param userId
      * @return Returns a list of sensors IDs when gets the user ID as integer
      */
-    List<Integer> getSensorIdsLinkedToUser(int userId);
+    List<Integer>  getUserSensors (int userId);
 
     /**
      * Adds a new user

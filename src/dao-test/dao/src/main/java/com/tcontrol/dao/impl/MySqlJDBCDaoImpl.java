@@ -126,7 +126,7 @@ public class MySqlJDBCDaoImpl implements DaoInterface {
     }
 
     @Override
-    public List<Integer> getSensorIdsLinkedToUser(int userId) {
+    public List<Integer> getUserSensors(int userId) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 

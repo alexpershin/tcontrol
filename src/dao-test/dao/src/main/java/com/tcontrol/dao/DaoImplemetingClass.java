@@ -137,9 +137,7 @@ public class DaoImplemetingClass implements DaoInterface {
 
         return listOfSensorsWithExactIdsToReturn;
 
-    }
-
-    ;
+    };
     
     
     @Override
@@ -215,7 +213,7 @@ public class DaoImplemetingClass implements DaoInterface {
     }
 
     @Override
-    public List<Integer> getSensorIdsLinkedToUser(int userId) {
+    public List<Integer> getUserSensors(int userId) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 

@@ -97,7 +97,62 @@ public class MySqlJDBCDaoImpl implements DaoInterface {
 
     @Override
     public List<SensorValue> getCurrentValues(int userId) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        List<SensorValue> listOfSensorValuesToReturnForTheUser = new ArrayList<>();
+        //Statement statement = null; //We'll use a PreparedStatement
+        ResultSet resultSet = null;
+        PreparedStatement preparedStatement;
+
+        try {
+
+            String selectSQL = "SELECT value from dbtcontrol.sensor_values"
+                    + "where sensor_id in "
+                    + "(select sensor_id from dbtcontrol.profiles"
+                    + "where user_id = ?)";
+            //here must be selected max of timestamp either
+
+            
+            preparedStatement = dbConnection.prepareStatement(selectSQL);
+            preparedStatement.setInt(1, userId);
+            ResultSet rs = preparedStatement.executeQuery(selectSQL);
+
+            //TODO remove schema
+            while (rs.next()) {
+                //extract sensor's fields
+                double value = rs.getDouble("value");
+
+                //build sensor object
+                SensorValue sensorsValue = new SensorValue(value);
+                sensorsValue.setValue(value);
+
+                listOfSensorValuesToReturnForTheUser.add(sensorsValue);
+            }
+        } catch (SQLException ex) {
+            LOGGER.log(Level.SEVERE, null, ex);
+        } finally {
+            try {
+                if (resultSet != null) {
+                    resultSet.close();
+                }
+            } catch (SQLException ex) {
+                LOGGER.log(Level.SEVERE, null, ex);
+            } finally {
+                resultSet = null;
+            }
+
+//            try {
+//                if (preparedStatement != null) {
+//                    preparedStatement.close();
+//                }
+//            } catch (SQLException ex) {
+//                LOGGER.log(Level.SEVERE, null, ex);
+//            } finally {
+//                preparedStatement = null;
+//            }
+        }
+
+        return listOfSensorValuesToReturnForTheUser;
+
+        //throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
@@ -107,6 +162,7 @@ public class MySqlJDBCDaoImpl implements DaoInterface {
 
     @Override
     public Integer addSensor(String sensorType) {
+
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 

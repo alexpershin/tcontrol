@@ -19,6 +19,12 @@ public class SensorValue {
         this.value = value;
     }
 
+    
+     public SensorValue(double value) {
+        this.value = value;
+    }
+    
+
     public int getSensorValueId() {
         return sensorValueId;
     }

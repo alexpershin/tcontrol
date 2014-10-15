@@ -17,7 +17,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- *
+ * TODO remove this class, all logic should be moved to MySqlJDBCDaoImpl
  * @author Anton Buslavskii
  */
 public class DaoImplemetingClass implements DaoInterface {

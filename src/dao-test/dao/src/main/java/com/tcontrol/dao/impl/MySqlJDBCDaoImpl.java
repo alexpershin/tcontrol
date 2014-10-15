@@ -40,7 +40,7 @@ public class MySqlJDBCDaoImpl implements DaoInterface {
             String selectSQL = "SELECT id, name, type, description, low_thresshold, "
                     + "high_thresshold, threshold_delta from dbtcontrol.sensors";
 
-            statement = dbConnection.createStatement();
+            statement = getDbConnection().createStatement();
 
             resultSet = statement.executeQuery(selectSQL);
 
@@ -207,6 +207,7 @@ public class MySqlJDBCDaoImpl implements DaoInterface {
     }
 
     /**
+     * TODO use connection pool here instead of connection instance
      * @return the dbConnection
      */
     public Connection getDbConnection() {

@@ -45,6 +45,7 @@ public class Sensor {
     }
 
     /**
+     * TODO Rename SD - Switching differential
      * Threshold delta. When value is getting closer to a threshold the state
      * can be set to pre alarm.
      */

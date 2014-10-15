@@ -117,10 +117,10 @@ public class MySqlJDBCDaoImpl implements DaoInterface {
 
             //TODO remove schema
             while (rs.next()) {
-                //extract sensor's fields
+                
                 double value = rs.getDouble("value");
 
-                //build sensor object
+                //build sensorValue object
                 SensorValue sensorsValue = new SensorValue(value);
                 sensorsValue.setValue(value);
 

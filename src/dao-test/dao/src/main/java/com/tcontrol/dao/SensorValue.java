@@ -1,5 +1,7 @@
 package com.tcontrol.dao;
 
+import java.sql.Timestamp;
+
 /**
  *
  * @author Anton Buslavskii
@@ -8,13 +10,13 @@ public class SensorValue {
 
     private int sensorValueId = 0;
     private int sensorId = 0;
-    private long timestamp;
+    private Timestamp timestamp;
     private double value;
 
     public SensorValue() {
     }
 
-    public SensorValue(long timestamp, double value) {
+    public SensorValue(Timestamp timestamp, double value) {
         this.timestamp = timestamp;
         this.value = value;
     }
@@ -41,11 +43,11 @@ public class SensorValue {
         this.sensorId = sensorId;
     }
 
-    public long getTimestamp() {
+    public Timestamp getTimestamp() {
         return timestamp;
     }
 
-    public void setTimestamp(long timestamp) {
+    public void setTimestamp(Timestamp timestamp) {
         this.timestamp = timestamp;
     }
 

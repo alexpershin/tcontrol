@@ -79,7 +79,7 @@ public interface DaoInterface {
     void removeSensorFromUser(int userId, int sensorId);
 
     /**
-     * TODO rename to getUserSensors
+     * Returns all sensors linked to a user with a given user ID
      * @param userId
      * @return Returns a list of sensors IDs when gets the user ID as integer
      */

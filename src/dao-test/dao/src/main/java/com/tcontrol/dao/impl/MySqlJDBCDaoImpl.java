@@ -15,6 +15,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
@@ -104,27 +105,37 @@ public class MySqlJDBCDaoImpl implements DaoInterface {
 
         try {
 
-            String selectSQL = "SELECT value from dbtcontrol.sensor_values"
-                    + "where sensor_id in "
-                    + "(select sensor_id from dbtcontrol.profiles"
-                    + "where user_id = ?)";
-            //here must be selected max of timestamp either
+            // String selectSQL = "SELECT value from dbtcontrol.sensor_values  where sensor_id in (select sensor_id from dbtcontrol.profiles where user_id = ?)";
+            String selectSQL = "select v.sensor_id, max(v.timestamp), v.value " +
+                    " from dbtcontrol.sensor_values v, dbtcontrol.profiles p " +
+                    " where v.sensor_id = p.sensor_id " +
+                    " and p.user_id = ? " +
+                    " group by v.sensor_id ";
 
-            
+//here must be selected max of timestamp either
             preparedStatement = dbConnection.prepareStatement(selectSQL);
             preparedStatement.setInt(1, userId);
             ResultSet rs = preparedStatement.executeQuery(selectSQL);
 
             //TODO remove schema
             while (rs.next()) {
-                
-                double value = rs.getDouble("value");
 
+                double value = rs.getDouble("v.value");
+                Timestamp timeStamp = rs.getTimestamp("v.timestamp");
+                int sensorId = rs.getInt("sensor_id");
+                
                 //build sensorValue object
                 SensorValue sensorsValue = new SensorValue(value);
                 sensorsValue.setValue(value);
+                sensorsValue.setTimestamp(timeStamp);
+                sensorsValue.setSensorId(sensorId);
+                
 
                 listOfSensorValuesToReturnForTheUser.add(sensorsValue);
+                
+                                
+                
+                
             }
         } catch (SQLException ex) {
             LOGGER.log(Level.SEVERE, null, ex);
@@ -208,6 +219,7 @@ public class MySqlJDBCDaoImpl implements DaoInterface {
 
     /**
      * TODO use connection pool here instead of connection instance
+     *
      * @return the dbConnection
      */
     public Connection getDbConnection() {

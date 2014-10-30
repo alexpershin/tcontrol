@@ -69,7 +69,7 @@ public class MySqlJDBCDaoImplUnitAdditionalTest {
             h2Connection = DriverManager.getConnection("jdbc:h2:~/test", USER_LOGIN, USER_PASSWORD);
 
             //Create and fill H2 database for unit tests part
-            Reader reader = new FileReader("create-test-h2-tcontrol-db_additional.sql");
+            Reader reader = new FileReader("sql-scripts/create-test-h2-tcontrol-db_additional.sql");
             RunScript.execute(h2Connection, reader);
 
         } catch (SQLException ex) {

@@ -209,45 +209,44 @@ public class MySqlJDBCDaoImpl implements DaoInterface {
 
         return addedSensorId;
     }
-}
 
-@Override
-        public void saveSensor(Sensor sensor) {
+    @Override
+    public void saveSensor(Sensor sensor) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
-        public void addSensorToUser(int sensorId, int userId) {
+    public void addSensorToUser(int sensorId, int userId) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
-        public void removeSensorFromUser(int userId, int sensorId) {
+    public void removeSensorFromUser(int userId, int sensorId) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
-        public List<Integer> getUserSensors(int userId) {
+    public List<Integer> getUserSensors(int userId) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
-        public void addUser(User user) {
+    public void addUser(User user) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
-        public void updateUser(User user) {
+    public void updateUser(User user) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
-        public void removeUser(int userId) {
+    public void removeUser(int userId) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
-        public int nextId() {
+    public int nextId() {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 

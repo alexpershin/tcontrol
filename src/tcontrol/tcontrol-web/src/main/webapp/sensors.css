@@ -8,5 +8,35 @@ and open the template in the editor.
     Author     : alexey
 */
 
-.sensor_items .sensor_item .sensor_item_body {width:980px; height:115px; margin:0 auto 100px auto; text-align:center; font-size:0;}
-.sensor_item_body .sensor_caption {font:normal 16px/16px Arial; color:#d3dadc; margin:0 0 5px 0;}
+.page_body {background-color:gray}
+
+.sensor_items{list-style-type:none}
+
+.sensor_item{
+    display:none;
+}
+
+.sensor_items .sensor_item .sensor_item_body {
+    width:115px; height:115px; 
+    margin:0 auto 100px auto; 
+    text-align:center; 
+    font:normal 32px/32px Arial;
+    border-radius: 5px; 
+    border: 1px solid;
+    vertical-align: middle;
+    line-height: 95px; /*height - 1.5gradient.height - 2 border*/
+}
+
+.sensor_item_body .sensor_gradient{
+   text-align:right;
+   font:normal 12px/12px Arial; 
+   color:red;
+}
+
+.sensor_item .sensor_caption {
+    text-align:center;
+    font:normal 16px/16px Arial; 
+    color:white; 
+    height:25px;
+    margin:0 0 -5px 0;
+}

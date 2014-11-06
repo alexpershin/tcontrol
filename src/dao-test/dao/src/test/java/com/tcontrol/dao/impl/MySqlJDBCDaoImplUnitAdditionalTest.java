@@ -132,7 +132,7 @@ public class MySqlJDBCDaoImplUnitAdditionalTest {
         assertNotNull(sensors);
 
         //check total count of sensors
-        assertThat(sensors.size(), is(3));
+        assertThat(sensors.size(), is(6));
 
         Map<Integer, Sensor> sensorByIdMap = new HashMap<>();
         for (Sensor sensor : sensors) {
@@ -140,7 +140,7 @@ public class MySqlJDBCDaoImplUnitAdditionalTest {
         }
 
         //Check that sensors are unique
-        assertThat(sensorByIdMap.size(), is(3));
+        assertThat(sensorByIdMap.size(), is(6));
 
         //get one sensor and check that all it's field loaded correctly
         Sensor sensor1 = sensorByIdMap.get(1);

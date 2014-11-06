@@ -106,13 +106,12 @@ public class MySqlJDBCDaoImpl implements DaoInterface {
         try {
 
             // String selectSQL = "SELECT value from dbtcontrol.sensor_values  where sensor_id in (select sensor_id from dbtcontrol.profiles where user_id = ?)";
-            String selectSQL = "select v.sensor_id, max(v.timestamp), v.value " +
-                    " from dbtcontrol.sensor_values v, dbtcontrol.profiles p " +
-                    " where v.sensor_id = p.sensor_id " +
-                    " and p.user_id = ? " +
-                    " group by v.sensor_id ";
+            String selectSQL = "select v.sensor_id, max(v.timestamp), v.value "
+                    + " from dbtcontrol.sensor_values v, dbtcontrol.profiles p "
+                    + " where v.sensor_id = p.sensor_id "
+                    + " and p.user_id = ? "
+                    + " group by v.sensor_id ";
 
-//here must be selected max of timestamp either
             preparedStatement = dbConnection.prepareStatement(selectSQL);
             preparedStatement.setInt(1, userId);
             ResultSet rs = preparedStatement.executeQuery(selectSQL);
@@ -123,19 +122,15 @@ public class MySqlJDBCDaoImpl implements DaoInterface {
                 double value = rs.getDouble("v.value");
                 Timestamp timeStamp = rs.getTimestamp("v.timestamp");
                 int sensorId = rs.getInt("sensor_id");
-                
+
                 //build sensorValue object
                 SensorValue sensorsValue = new SensorValue(value);
                 sensorsValue.setValue(value);
                 sensorsValue.setTimestamp(timeStamp);
                 sensorsValue.setSensorId(sensorId);
-                
 
                 listOfSensorValuesToReturnForTheUser.add(sensorsValue);
-                
-                                
-                
-                
+
             }
         } catch (SQLException ex) {
             LOGGER.log(Level.SEVERE, null, ex);
@@ -173,47 +168,86 @@ public class MySqlJDBCDaoImpl implements DaoInterface {
 
     @Override
     public Integer addSensor(String sensorType) {
+        int addedSensorId = 0;
+        ResultSet resultSet = null;
+        PreparedStatement preparedStatement;
+        double intermediateRandom = (Math.random() * 10000);
+        int randomFigureToAvoidDoublingOfSensors = (int) Math.round(intermediateRandom);
 
+        try {
+
+            int currentTimeInMillisWithRandom = (int) java.lang.System.currentTimeMillis() + randomFigureToAvoidDoublingOfSensors;
+            String selectSQL = "INSERT INTO dbtcontrol.sensors (name, type, description ) "
+                    + "VALUES ('newly added sensor', 'type example', ?);"
+                    + "SELECT id "
+                    + "from dbtcontrol.sensors "
+                    + "WHERE description = ?";
+
+            preparedStatement = dbConnection.prepareStatement(selectSQL);
+            preparedStatement.setInt(1, currentTimeInMillisWithRandom);
+            preparedStatement.setInt(2, currentTimeInMillisWithRandom);
+            ResultSet rs = preparedStatement.executeQuery(selectSQL);
+
+            int sensorIdToReturn = rs.getInt("id");
+
+            addedSensorId = sensorIdToReturn;
+
+        } catch (SQLException ex) {
+            LOGGER.log(Level.SEVERE, null, ex);
+        } finally {
+            try {
+                if (resultSet != null) {
+                    resultSet.close();
+                }
+            } catch (SQLException ex) {
+                LOGGER.log(Level.SEVERE, null, ex);
+            } finally {
+                resultSet = null;
+            }
+
+        }
+
+        return addedSensorId;
+    }
+}
+
+@Override
+        public void saveSensor(Sensor sensor) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
-    public void saveSensor(Sensor sensor) {
+        public void addSensorToUser(int sensorId, int userId) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
-    public void addSensorToUser(int sensorId, int userId) {
+        public void removeSensorFromUser(int userId, int sensorId) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
-    public void removeSensorFromUser(int userId, int sensorId) {
+        public List<Integer> getUserSensors(int userId) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
-    public List<Integer> getUserSensors(int userId) {
+        public void addUser(User user) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
-    public void addUser(User user) {
+        public void updateUser(User user) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
-    public void updateUser(User user) {
+        public void removeUser(int userId) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
-    public void removeUser(int userId) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public int nextId() {
+        public int nextId() {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 

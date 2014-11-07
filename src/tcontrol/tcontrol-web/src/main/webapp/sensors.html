@@ -31,17 +31,22 @@ and open the template in the editor.
             <script  type="text/javascript">
                 //Stub data and rendering test
                 var sensorsJsonData = [
-                    {name: 'Indor', id: 1,  type: 'TEMPERATURE'},
+                    {name: 'Indor', id: 1, type: 'TEMPERATURE'},
                     {name: 'Outdor', id: 2, type: 'TEMPERATURE'},
                     {name: 'Cellar', id: 3, type: 'TEMPERATURE'},
                     {name: 'Loft', id: 4, type: 'TEMPERATURE'},
                     {name: 'Bath Room', id: 5, type: 'TEMPERATURE'},
                     {name: 'Garage', id: 6, type: 'TEMPERATURE'},
-  
-                    {name: 'Heating', id: 7, type: 'ON_OF' },
-                    {name: 'Power', id: 8, type: 'VOLTAGE' },
-                 ];
-                 layout_sensors(sensorsJsonData);
+                    {name: 'Heating', id: 7, type: 'ON_OF'},
+                    {name: 'Power', id: 8, type: 'VOLTAGE'},
+                ];
+                var valuesJsonData = [
+                    {sensorId: 1, value: 25.5},
+                    {sensorId: 2, value: -12.6},
+                ];
+
+                layout_sensors(sensorsJsonData);
+                append_values(sensorsJsonData, valuesJsonData);
             </script>
         </div>
     </body>

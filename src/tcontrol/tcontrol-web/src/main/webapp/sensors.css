@@ -10,15 +10,15 @@ and open the template in the editor.
 
 .page_body {background-color:gray}
 
-.sensor_items{list-style-type:none}
-
 .sensor_item{
     display:none;
+    float: left;
+    margin :43px 43px 27px 27px; 
 }
 
 .sensor_items .sensor_item .sensor_item_body {
     width:115px; height:115px; 
-    margin:0 auto 100px auto; 
+    margin:0 auto 0px auto; 
     text-align:center; 
     font:normal 32px/32px Arial;
     border-radius: 5px; 

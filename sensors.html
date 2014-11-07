@@ -8,6 +8,7 @@ and open the template in the editor.
     <head>
         <title>Sensors</title>
         <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+        <script src="js/sensors.js" type="text/javascript"></script>
         <script src="js/jquery/jquery-2.1.1.js" type="text/javascript"></script>
         <link rel="stylesheet" type="text/css" href="sensors.css" media="screen" />
     </head>
@@ -29,7 +30,7 @@ and open the template in the editor.
             </ul>
             <script  type="text/javascript">
                 //Stub data and rendering test
-                var jsonData = [
+                var sensorsJsonData = [
                     {name: 'Indor', id: 1,  type: 'TEMPERATURE'},
                     {name: 'Outdor', id: 2, type: 'TEMPERATURE'},
                     {name: 'Cellar', id: 3, type: 'TEMPERATURE'},
@@ -40,23 +41,7 @@ and open the template in the editor.
                     {name: 'Heating', id: 7, type: 'ON_OF' },
                     {name: 'Power', id: 8, type: 'VOLTAGE' },
                  ];
-                $(jsonData).each(function(key, value) {
-                    clone = $("#sensor_element").clone();
-                    clone.appendTo(".sensor_items");
-                    
-                    sensorElementId=clone.attr("id") + value.id;
-                    clone.attr("id", sensorElementId);
-                    
-                    
-                    sensorTitle = 
-                            $('#'+sensorElementId+' #sensor_title');
-                    sensorTitle.text(value.name);
-                    
-                    
-                   // alert(value.id);
-
-                    clone.show();
-                });
+                 layout_sensors(sensorsJsonData);
             </script>
         </div>
     </body>

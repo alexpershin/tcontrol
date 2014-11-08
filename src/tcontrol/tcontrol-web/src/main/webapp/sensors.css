@@ -20,19 +20,23 @@ and open the template in the editor.
     width:115px; height:115px; 
     margin:0 auto 0px auto; 
     text-align:center; 
-    font:normal 32px/32px Arial;
     border-radius: 5px; 
     border: 1px solid;
-    vertical-align: middle;
     line-height: 95px; /*height - 1.5gradient.height - 2 border*/
 }
 
 .sensor_item_body .sensor_gradient{
-   text-align:right;
-   font:normal 12px/12px Arial; 
-   color:red;
+    text-align:right;
+    font:normal 12px/12px Arial; 
+    color:red;
 }
 
+.sensor_item_body .sensor_value{
+    text-align:center;
+    font:normal 32px/32px Arial;
+    color:black;
+    margin: 32px 0 0 0;
+}
 .sensor_item .sensor_caption {
     text-align:center;
     font:normal 16px/16px Arial; 

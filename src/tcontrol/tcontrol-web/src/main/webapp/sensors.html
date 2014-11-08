@@ -19,7 +19,7 @@ and open the template in the editor.
                     <div class="sensor_caption" id="sensor_title">Indoor</div>
                     <div class="sensor_item_body"  style ="background-color:greenyellow;" >
                         <div class="sensor_gradient" >&uarr;&darr;</div>
-                        +25&deg
+                        <div class="sensor_value"/>
                     </div>
                 </div>
             </div>
@@ -32,16 +32,22 @@ and open the template in the editor.
                     {name: 'Loft', id: 4, type: 'TEMPERATURE'},
                     {name: 'Bath Room', id: 5, type: 'TEMPERATURE'},
                     {name: 'Garage', id: 6, type: 'TEMPERATURE'},
-                    {name: 'Heating', id: 7, type: 'ON_OF'},
+                    {name: 'Heating', id: 7, type: 'ON_OFF'},
                     {name: 'Power', id: 8, type: 'VOLTAGE'},
                 ];
                 var valuesJsonData = [
                     {sensorId: 1, value: 25.5},
                     {sensorId: 2, value: -12.6},
+                    {sensorId: 3, value: +10.1},
+                    {sensorId: 4, value: -11.6},
+                    {sensorId: 5, value: 23.8},
+                    {sensorId: 6, value: -7.4},
+                    {sensorId: 7, value: 1},
+                    {sensorId: 8, value: 231},
                 ];
-
+                sensorMap = sensorsJsonToMap(sensorsJsonData);
                 layout_sensors(sensorsJsonData);
-                append_values(sensorsJsonData, valuesJsonData);
+                append_values(sensorMap, valuesJsonData);
             </script>
         </div>
     </body>

@@ -17,7 +17,7 @@ and open the template in the editor.
             <div class="sensor_items">
                 <div class="sensor_item" id = "sensor_element">
                     <div class="sensor_caption" id="sensor_title">Indoor</div>
-                    <div class="sensor_item_body"  style ="background-color:greenyellow;" >
+                    <div class="sensor_item_body">
                         <div class="sensor_gradient" >&uarr;&darr;</div>
                         <div class="sensor_value"/>
                     </div>
@@ -45,12 +45,10 @@ and open the template in the editor.
                     {sensorId: 7, value: 1},
                     {sensorId: 8, value: 231},
                 ];
-                sensorMap = sensorsJsonToMap(sensorsJsonData);
-                layout_sensors(sensorsJsonData);
-                append_values(sensorMap, valuesJsonData);
+                sensorMap = convertSensorsJsonToMap(sensorsJsonData);
+                layoutSensors(sensorsJsonData);
+                appendValues(sensorMap, valuesJsonData);
             </script>
         </div>
     </body>
-
-
 </html>

@@ -1,4 +1,4 @@
-function sensorsJsonToMap(sensorsJsonData) {
+function convertSensorsJsonToMap(sensorsJsonData) {
     result = new Map();
     $(sensorsJsonData).each(function(key, value) {
         result.set(value.id, value);
@@ -6,7 +6,7 @@ function sensorsJsonToMap(sensorsJsonData) {
     return result;
 }
 
-function layout_sensors(sensorsJsonData) {
+function layoutSensors(sensorsJsonData) {
     $(sensorsJsonData).each(function(key, value) {
         clone = $('#sensor_element').clone();
         clone.appendTo('.sensor_items');
@@ -22,26 +22,50 @@ function layout_sensors(sensorsJsonData) {
     });
 }
 
-function append_values(sensorsMap, valuesJsonData) {
+function appendValues(sensorsMap, valuesJsonData) {
     $(valuesJsonData).each(function(key, value) {
         if (sensorsMap.has(value.sensorId)) {
             sensor = sensorsMap.get(value.sensorId);
             sensorElementId = '#sensor_element' + value.sensorId;
-            sensorElement = $(sensorElementId);
-            var resValue = '?';
-            if (sensor.type === 'TEMPERATURE') {
-                resValue = value.value + '\xB0';
-            } else if (sensor.type === 'VOLTAGE') {
-                resValue = value.value + ' V';
-            } else if (sensor.type === 'ON_OFF') {
-                if (value.value === 0) {
-                    resValue = 'On';
-                } else if (value.value === 1) {
-                    resValue = 'Off';
-                }
-            }
-            $(sensorElementId + ' .sensor_item_body .sensor_value').text(resValue);
+            appendText(sensorElementId, sensor, value);
+            appendState(sensorElementId, sensor, value);
         }
     });
 }
 
+function appendText(sensorElementId, sensor, value) {
+    sensorElement = $(sensorElementId);
+
+    var resValue = '?';
+    if (sensor.type === 'TEMPERATURE') {
+        resValue = value.value + '\xB0';
+    } else if (sensor.type === 'VOLTAGE') {
+        resValue = value.value + ' V';
+    } else if (sensor.type === 'ON_OFF') {
+        if (value.value === 0) {
+            resValue = 'On';
+        } else if (value.value === 1) {
+            resValue = 'Off';
+        }
+    }
+    $(sensorElementId + ' .sensor_item_body .sensor_value').text(resValue);
+}
+
+
+function appendState(sensorElementId, sensor, value) {
+    sensorBody = $(sensorElementId + ' .sensor_item_body');
+    var background;
+    if (sensor.type === 'TEMPERATURE') {
+        background = "greenyellow";
+    } else if (sensor.type === 'VOLTAGE') {
+        background = "greenyellow";
+    } else if (sensor.type === 'ON_OFF') {
+        if (value.value === 0) {
+            background = "blue";
+        } else if (value.value === 1) {
+            background = "white";
+            ;
+        }
+    }
+    sensorBody.css('background-color', background);
+}

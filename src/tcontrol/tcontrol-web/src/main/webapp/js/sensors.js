@@ -1,19 +1,26 @@
 function renderSensorsOnLoad() {
     //Stub data and rendering test
     var sensorsJsonData = [
-        {name: 'Indor', id: 1, type: 'TEMPERATURE'},
-        {name: 'Outdor', id: 2, type: 'TEMPERATURE'},
-        {name: 'Cellar', id: 3, type: 'TEMPERATURE'},
-        {name: 'Loft', id: 4, type: 'TEMPERATURE'},
-        {name: 'Bath Room', id: 5, type: 'TEMPERATURE'},
-        {name: 'Garage', id: 6, type: 'TEMPERATURE'},
+        {name: 'Indor', id: 1, type: 'TEMPERATURE',
+            lowThreshold: 10, highThreshold: 31, thresholdLag: 2},
+        {name: 'Outdor', id: 2, type: 'TEMPERATURE',
+            lowThreshold: -20, highThreshold: 32, thresholdLag: 2},
+        {name: 'Cellar', id: 3, type: 'TEMPERATURE',
+            lowThreshold: 0, highThreshold: 20, thresholdLag: 3},
+        {name: 'Loft', id: 4, type: 'TEMPERATURE',
+            lowThreshold: -20, highThreshold: 40, thresholdLag: 2},
+        {name: 'Bath Room', id: 5, type: 'TEMPERATURE',
+            lowThreshold: 5, highThreshold: 34, thresholdLag: 2},
+        {name: 'Garage', id: 6, type: 'TEMPERATURE',
+            lowThreshold: -40, highThreshold: 60, thresholdLag: 6},
         {name: 'Heating', id: 7, type: 'ON_OFF'},
-        {name: 'Power', id: 8, type: 'VOLTAGE'},
+        {name: 'Power', id: 8, type: 'VOLTAGE',
+            lowThreshold: 190, highThreshold: 250, thresholdLag: 10},
     ];
     var valuesJsonData = [
         {sensorId: 1, value: 25.5},
-        {sensorId: 2, value: -12.6},
-        {sensorId: 3, value: +10.1},
+        {sensorId: 2, value: -21.6},
+        {sensorId: 3, value: +2.1},
         {sensorId: 4, value: -11.6},
         {sensorId: 5, value: 23.8},
         {sensorId: 6, value: -7.4},
@@ -74,7 +81,15 @@ function temperatureSensorRenderer(sensorElementId, sensor, value) {
     $(sensorElementId + ' .sensor_item_body .sensor_value').text(resValue);
 
     var sensorBody = $(sensorElementId + ' .sensor_item_body');
-    var background = "greenyellow";
+    
+    var background = 'greenyellow';
+    if (value.value <= sensor.lowThreshold) {
+        background = 'red';
+    } else if (value.value <= sensor.lowThreshold + sensor.thresholdLag &&
+            value.value > sensor.lowThreshold) {
+        background = 'yellow';
+    }
+
     sensorBody.css('background-color', background);
 }
 

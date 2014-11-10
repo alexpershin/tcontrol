@@ -1,9 +1,9 @@
 function renderSensorsOnLoad() {
     //Stub data and rendering test
     var sensorsJsonData = [
-        {name: 'Indor', id: 1, type: 'TEMPERATURE',
+        {name: 'Indoor', id: 1, type: 'TEMPERATURE',
             lowThreshold: 10, highThreshold: 31, thresholdLag: 2},
-        {name: 'Outdor', id: 2, type: 'TEMPERATURE',
+        {name: 'Outdoor', id: 2, type: 'TEMPERATURE',
             lowThreshold: -20, highThreshold: 32, thresholdLag: 2},
         {name: 'Cellar', id: 3, type: 'TEMPERATURE',
             lowThreshold: 0, highThreshold: 20, thresholdLag: 3},
@@ -25,7 +25,7 @@ function renderSensorsOnLoad() {
         {sensorId: 5, value: 23.8},
         {sensorId: 6, value: -7.4},
         {sensorId: 7, value: 1},
-        {sensorId: 8, value: 231},
+        {sensorId: 8, value: 241},
     ];
     sensorMap = convertSensorsJsonToMap(sensorsJsonData);
     layoutSensors(sensorsJsonData);
@@ -81,8 +81,13 @@ function temperatureSensorRenderer(sensorElementId, sensor, value) {
     $(sensorElementId + ' .sensor_item_body .sensor_value').text(resValue);
 
     var sensorBody = $(sensorElementId + ' .sensor_item_body');
-    
+    thresholdRenderer(sensorBody, sensor, value);
+}
+
+function thresholdRenderer(sensorBody, sensor, value){
     var background = 'greenyellow';
+    
+    //low thressHold
     if (value.value <= sensor.lowThreshold) {
         background = 'red';
     } else if (value.value <= sensor.lowThreshold + sensor.thresholdLag &&
@@ -90,6 +95,14 @@ function temperatureSensorRenderer(sensorElementId, sensor, value) {
         background = 'yellow';
     }
 
+    //high thressHold
+    if (value.value >= sensor.highThreshold) {
+        background = 'red';
+    } else if (value.value > sensor.highThreshold - sensor.thresholdLag &&
+            value.value < sensor.highThreshold) {
+        background = 'yellow';
+    }
+    
     sensorBody.css('background-color', background);
 }
 
@@ -97,9 +110,8 @@ function voltageSensorRenderer(sensorElementId, sensor, value) {
     var resValue = value.value + ' V';
     $(sensorElementId + ' .sensor_item_body .sensor_value').text(resValue);
 
-    var background = "greenyellow";
     sensorBody = $(sensorElementId + ' .sensor_item_body');
-    sensorBody.css('background-color', background);
+    thresholdRenderer(sensorBody, sensor, value);
 }
 
 function onOffSensorRenderer(sensorElementId, sensor, value) {

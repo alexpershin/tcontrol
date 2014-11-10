@@ -59,7 +59,7 @@ public class MySqlJDBCDaoImpl implements DaoInterface {
                 Sensor sensor = new Sensor(id, name, type, null, description);
                 sensor.setLowThreshold(lowThresshold);
                 sensor.setHighThreshold(highThresshold);
-                sensor.setThresholdDelta(thressholdDelta);
+                sensor.setThresholdLag(thressholdDelta);
 
                 //add sensor to result list
                 listOfSensorsToReturn.add(sensor);

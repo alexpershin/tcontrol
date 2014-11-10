@@ -146,7 +146,7 @@ public class MySqlJDBCDaoImplUnitTest {
         assertThat(sensor1.getDescription(), is("Indoor Temperature Sensor"));
         assertThat(sensor1.getLowThreshold(), is(10.0));
         assertThat(sensor1.getHighThreshold(), is(30.0));
-        assertThat(sensor1.getThresholdDelta(), is(2.0));
+        assertThat(sensor1.getThresholdLag(), is(2.0));
         assertThat(sensor1.getType(), is(SensorType.TEMPERATURE));
     }
 }

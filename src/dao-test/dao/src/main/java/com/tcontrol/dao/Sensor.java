@@ -36,12 +36,12 @@ public class Sensor {
         this.highThreshold = highThreshold;
     }
 
-    public double getThresholdDelta() {
-        return thresholdDelta;
+    public double getThresholdLag() {
+        return thresholdLag;
     }
 
-    public void setThresholdDelta(double thresholdDelta) {
-        this.thresholdDelta = thresholdDelta;
+    public void setThresholdLag(double thresholdDelta) {
+        this.thresholdLag = thresholdDelta;
     }
 
     /**
@@ -49,7 +49,7 @@ public class Sensor {
      * Threshold delta. When value is getting closer to a threshold the state
      * can be set to pre alarm.
      */
-    private double thresholdDelta;
+    private double thresholdLag;
 
     /**
      * State of the sensor. Are not stored in the database. It should be

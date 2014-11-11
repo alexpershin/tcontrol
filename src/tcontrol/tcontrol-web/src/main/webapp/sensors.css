@@ -8,12 +8,15 @@ and open the template in the editor.
     Author     : alexey
 */
 
-.page_body {background-color:gray}
+.page_body {background-color:lightgray;  }
+
+.logo {height:32px;color: darkgrey; 
+            font:normal 16px/16px Verdana; text-align: center;}
 
 .sensor_item{
     display:none;
     float: left;
-    margin :43px 43px 27px 27px; 
+    margin :0px 43px 70px 27px; 
 }
 
 .sensor_items .sensor_item .sensor_item_body {
@@ -21,7 +24,8 @@ and open the template in the editor.
     margin:0 auto 0px auto; 
     text-align:center; 
     border-radius: 5px; 
-    border: 1px solid;
+    border: 2px solid;
+    border-color: darkgrey;
     line-height: 95px; /*height - 1.5gradient.height - 2 border*/
 }
 
@@ -40,7 +44,7 @@ and open the template in the editor.
 .sensor_item .sensor_caption {
     text-align:center;
     font:normal 16px/16px Arial; 
-    color:white; 
+    color:black; 
     height:25px;
     margin:0 0 -5px 0;
 }

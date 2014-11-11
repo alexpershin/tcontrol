@@ -13,9 +13,9 @@ function renderSensorsOnLoad() {
             lowThreshold: 5, highThreshold: 34, thresholdLag: 2},
         {name: 'Garage', id: 6, type: 'TEMPERATURE',
             lowThreshold: -40, highThreshold: 60, thresholdLag: 6},
-        {name: 'Heating', id: 7, type: 'ON_OFF'},
         {name: 'Power', id: 8, type: 'VOLTAGE',
             lowThreshold: 190, highThreshold: 250, thresholdLag: 10},
+        {name: 'Heating', id: 7, type: 'ON_OFF'},
     ];
     var valuesJsonData = [
         {sensorId: 1, value: 25.5},
@@ -84,26 +84,42 @@ function temperatureSensorRenderer(sensorElementId, sensor, value) {
     thresholdRenderer(sensorBody, sensor, value);
 }
 
-function thresholdRenderer(sensorBody, sensor, value){
-    var background = 'greenyellow';
-    
+var STATE_BACKGROUND = (function() {
+    var private = {
+        'NORMAL': 'linear-gradient(to bottom, lightgreen, greenyellow)',
+        'ALERT': 'linear-gradient(to bottom, orange, red)',
+        'WARNING': 'linear-gradient(to bottom, yellow, orange)',
+        'OFF': 'linear-gradient(to bottom, white, lightgrey)',
+        'ON': 'linear-gradient(to bottom, lightblue, lightskyblue )',
+    };
+
+    return {
+        get: function(name) {
+            return private[name];
+        }
+    };
+})();
+
+function thresholdRenderer(sensorBody, sensor, value) {
+    var background = STATE_BACKGROUND.get('NORMAL');
+
     //low thressHold
     if (value.value <= sensor.lowThreshold) {
-        background = 'red';
+        background = STATE_BACKGROUND.get('ALERT');
     } else if (value.value <= sensor.lowThreshold + sensor.thresholdLag &&
             value.value > sensor.lowThreshold) {
-        background = 'yellow';
+        background = STATE_BACKGROUND.get('WARNING');
     }
 
     //high thressHold
     if (value.value >= sensor.highThreshold) {
-        background = 'red';
+        background = STATE_BACKGROUND.get('ALERT');
     } else if (value.value > sensor.highThreshold - sensor.thresholdLag &&
             value.value < sensor.highThreshold) {
-        background = 'yellow';
+        background = STATE_BACKGROUND.get('WARNING');
     }
-    
-    sensorBody.css('background-color', background);
+
+    sensorBody.css('background', background);
 }
 
 function voltageSensorRenderer(sensorElementId, sensor, value) {
@@ -117,19 +133,21 @@ function voltageSensorRenderer(sensorElementId, sensor, value) {
 function onOffSensorRenderer(sensorElementId, sensor, value) {
     var resValue;
     if (value.value === 0) {
-        resValue = 'On';
-    } else if (value.value === 1) {
         resValue = 'Off';
+    } else if (value.value === 1) {
+        resValue = 'On';
     }
     $(sensorElementId + ' .sensor_item_body .sensor_value').text(resValue);
 
     var background;
     if (value.value === 0) {
-        background = "blue";
+        background = STATE_BACKGROUND.get('OFF');
     } else if (value.value === 1) {
-        background = "white";
-        ;
+        background = STATE_BACKGROUND.get('ON');
     }
     sensorBody = $(sensorElementId + ' .sensor_item_body');
-    sensorBody.css('background-color', background);
+    sensorBody.css('background', background);
+
+    h = sensorBody.css('height');
+    sensorBody.css('border-radius', 57.5);
 }

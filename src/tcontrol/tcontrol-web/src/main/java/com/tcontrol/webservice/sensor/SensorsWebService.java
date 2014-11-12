@@ -7,9 +7,15 @@ package com.tcontrol.webservice.sensor;
 
 import com.tcontrol.dao.Sensor;
 import com.tcontrol.dao.Sensor.SensorType;
+import static com.tcontrol.webservice.sensor.SensorValueWeb.SensorValueState.NORMAL;
+import static com.tcontrol.webservice.sensor.SensorValueWeb.SensorValueState.WARNING;
+import java.sql.Timestamp;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
+import javax.ejb.Singleton;
 import javax.enterprise.context.RequestScoped;
+import javax.enterprise.context.SessionScoped;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.PUT;
@@ -25,24 +31,40 @@ import javax.ws.rs.core.UriInfo;
  *
  * @author alexey
  */
-@Path("sensors")
-@RequestScoped
+@Path("/sensor")
+@Singleton
 public class SensorsWebService {
-
-    @Context
-    private UriInfo context;
-
     /**
      * Creates a new instance of SensorsWebService
      */
     public SensorsWebService() {
     }
 
+    /**
+     * Current values.
+     * @return list of values;
+     */
     @GET
+    @Path("/sensor_values")
+    @Produces(MediaType.APPLICATION_JSON)
+    public List<SensorValueWeb> getSensorValues() {
+        long timestamp=new Date().getTime();
+        return Arrays.asList(
+                new SensorValueWeb( 1, timestamp , 23.5, NORMAL),
+                new SensorValueWeb(2,timestamp,-10.6, WARNING));
+    }
+    
+    /**
+     * Returns sensors.
+     * @return sensors list;
+     */
+    @GET
+    @Path("/sensors")
     @Produces(MediaType.APPLICATION_JSON)
     public List<SensorWeb> getSensors() {
         return Arrays.asList(
                 new SensorWeb("indor", 1, SensorType.TEMPERATURE),
                 new SensorWeb("outdor", 2, SensorType.TEMPERATURE));
     }
+    
 }

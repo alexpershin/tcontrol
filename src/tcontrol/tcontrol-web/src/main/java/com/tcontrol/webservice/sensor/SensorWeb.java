@@ -1,6 +1,5 @@
 package com.tcontrol.webservice.sensor;
 
-
 import com.tcontrol.dao.Sensor;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -12,6 +11,15 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement
 public class SensorWeb {
 
+    @XmlElement(name = "id")
+    private int id;
+
+    @XmlElement(name = "type")//, type=String.class)
+    private Sensor.SensorType type;
+
+    @XmlElement(name = "name")
+    private String name;
+
     /**
      * Constructs the sensors.
      */
@@ -20,17 +28,15 @@ public class SensorWeb {
 
     /**
      * Constructs the sensor.
+     *
      * @param name sensor's name;
      * @param id sensor's id;
      */
     public SensorWeb(String name, int id, Sensor.SensorType type) {
         this.name = name;
         this.id = id;
-        this.type=type;
+        this.type = type;
     }
-    
-    @XmlElement(name="name")
-    private String name;
 
     /**
      * Gets the value of name.
@@ -49,9 +55,6 @@ public class SensorWeb {
     public void setName(String nane) {
         this.name = nane;
     }
-    
-    @XmlElement(name="id")
-    private int id;
 
     /**
      * Gets the value of id.
@@ -70,12 +73,10 @@ public class SensorWeb {
     public void setId(int id) {
         this.id = id;
     }
-    
-    @XmlElement(name="type")//, type=String.class)
-    private Sensor.SensorType type;
 
     /**
      * Returns the sensor type.
+     *
      * @return the type;
      */
     public Sensor.SensorType getType() {
@@ -84,6 +85,7 @@ public class SensorWeb {
 
     /**
      * Sets the sensor type.
+     *
      * @param type the type to set;
      */
     public void setType(Sensor.SensorType type) {

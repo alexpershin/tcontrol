@@ -38,7 +38,7 @@ function loadStubDataOnLoad() {
 }
 
 function loadDataFromServer() {
-    $.getJSON("/tcontrol-web/webresources/sensors", {format: "json"},
+    $.getJSON("/tcontrol-web/webresources/sensor/sensors", {format: "json"},
     function(result)
     {
         console.log("sensors processing start");
@@ -53,6 +53,25 @@ function loadDataFromServer() {
         alert(message);
     }).always(function() {
         console.log("sensors loading complete");
+    });
+    
+    $.getJSON("/tcontrol-web/webresources/sensor/sensor_values", 
+        {format: "json"},
+    function(result)
+    {
+        console.log("sensor values processing start");
+        $(result).each(function(key, value) {
+            console.log(value.sensorId + "," + value.timestamp + "," 
+                    + value.value +","+ value.state);
+        });
+    }).done(function() {
+        console.log("sensor values loaded");
+    }).fail(function() {
+        var message = "sensor values loading error";
+        console.log(message);
+        alert(message);
+    }).always(function() {
+        console.log("sensor values loading complete");
     });
 }
 

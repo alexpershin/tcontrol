@@ -3,10 +3,10 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package com.tcontrol.webservice.sensor;
 
 import java.sql.Timestamp;
+import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
@@ -15,17 +15,47 @@ import javax.xml.bind.annotation.XmlRootElement;
  */
 @XmlRootElement
 public class SensorValueWeb {
-    
-   public static enum SensorValueState{
+
+    public static enum SensorValueState {
         NORMAL,
         WARNING,
         ALERT
     }
+    @XmlElement(name = "sensorId")
     private int sensorId;
-    private Timestamp timestamp;
-    private double value;
-    private SensorValueState state;
     
+    @XmlElement(name = "timestamp")
+    private long timestamp;
+    
+    @XmlElement(name = "value")
+    private double value;
+    
+    @XmlElement(name = "state")
+    private SensorValueState state;
+
+    /**
+     * Default constructor
+     */
+    public SensorValueWeb() {
+    }
+
+    
+    
+    /**
+     * Returns current value of the sensor.
+     * @param sensorId sensor's id;
+     * @param timestamp time stamp when value was got;
+     * @param value the value;
+     * @param state the value state;
+     */
+    public SensorValueWeb(int sensorId, long timestamp, 
+            double value, SensorValueState state) {
+        this.sensorId = sensorId;
+        this.timestamp = timestamp;
+        this.value = value;
+        this.state = state;
+    }
+
     /**
      * @return the sensorId
      */
@@ -43,14 +73,14 @@ public class SensorValueWeb {
     /**
      * @return the timestamp
      */
-    public Timestamp getTimestamp() {
+    public long getTimestamp() {
         return timestamp;
     }
 
     /**
      * @param timestamp the timestamp to set
      */
-    public void setTimestamp(Timestamp timestamp) {
+    public void setTimestamp(long timestamp) {
         this.timestamp = timestamp;
     }
 

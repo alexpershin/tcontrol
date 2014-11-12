@@ -30,6 +30,24 @@ function renderSensorsOnLoad() {
     sensorMap = convertSensorsJsonToMap(sensorsJsonData);
     layoutSensors(sensorsJsonData);
     renderSensorValues(sensorMap, valuesJsonData);
+
+
+    $.getJSON("/tcontrol-web/webresources/sensors",
+            {
+                format: "json"
+            },
+    function(result)
+    {
+    })
+            .done(function() {
+                console.log("sensors loaded");
+            })
+            .fail(function() {
+                console.log("error");
+            })
+            .always(function() {
+                console.log("complete");
+            });
 }
 
 function convertSensorsJsonToMap(sensorsJsonData) {

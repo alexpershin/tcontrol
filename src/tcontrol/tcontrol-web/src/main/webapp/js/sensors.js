@@ -1,5 +1,10 @@
 function renderSensorsOnLoad() {
-    //Stub data and rendering test
+    loadStubDataOnLoad();
+    loadDataFromServer();
+}
+
+function loadStubDataOnLoad() {
+//Stub data and rendering test
     var sensorsJsonData = [
         {name: 'Indoor', id: 1, type: 'TEMPERATURE',
             lowThreshold: 10, highThreshold: 31, thresholdLag: 2},
@@ -30,8 +35,9 @@ function renderSensorsOnLoad() {
     sensorMap = convertSensorsJsonToMap(sensorsJsonData);
     layoutSensors(sensorsJsonData);
     renderSensorValues(sensorMap, valuesJsonData);
+}
 
-
+function loadDataFromServer() {
     $.getJSON("/tcontrol-web/webresources/sensors", {format: "json"},
     function(result)
     {
@@ -62,14 +68,11 @@ function layoutSensors(sensorsJsonData) {
     $(sensorsJsonData).each(function(key, value) {
         clone = $('#sensor_element').clone();
         clone.appendTo('.sensor_items');
-
         sensorElementId = clone.attr('id') + value.id;
         clone.attr("id", sensorElementId);
-
         sensorTitle =
                 $('#' + sensorElementId + ' #sensor_title');
         sensorTitle.text(value.name);
-
         clone.show();
     });
 }
@@ -97,7 +100,6 @@ function renderSensor(sensorElementId, sensor, value) {
 function temperatureSensorRenderer(sensorElementId, sensor, value) {
     var resValue = value.value + '\xB0'
     $(sensorElementId + ' .sensor_item_body .sensor_value').text(resValue);
-
     var sensorBody = $(sensorElementId + ' .sensor_item_body');
     thresholdRenderer(sensorBody, sensor, value);
 }
@@ -110,17 +112,14 @@ var STATE_BACKGROUND = (function() {
         'OFF': 'linear-gradient(to bottom, white, lightgrey)',
         'ON': 'linear-gradient(to bottom, lightblue, lightskyblue )',
     };
-
     return {
         get: function(name) {
             return private[name];
         }
     };
 })();
-
 function thresholdRenderer(sensorBody, sensor, value) {
     var background = STATE_BACKGROUND.get('NORMAL');
-
     //low thressHold
     if (value.value <= sensor.lowThreshold) {
         background = STATE_BACKGROUND.get('ALERT');
@@ -143,7 +142,6 @@ function thresholdRenderer(sensorBody, sensor, value) {
 function voltageSensorRenderer(sensorElementId, sensor, value) {
     var resValue = value.value + ' V';
     $(sensorElementId + ' .sensor_item_body .sensor_value').text(resValue);
-
     sensorBody = $(sensorElementId + ' .sensor_item_body');
     thresholdRenderer(sensorBody, sensor, value);
 }
@@ -156,7 +154,6 @@ function onOffSensorRenderer(sensorElementId, sensor, value) {
         resValue = 'On';
     }
     $(sensorElementId + ' .sensor_item_body .sensor_value').text(resValue);
-
     var background;
     if (value.value === 0) {
         background = STATE_BACKGROUND.get('OFF');
@@ -165,7 +162,6 @@ function onOffSensorRenderer(sensorElementId, sensor, value) {
     }
     sensorBody = $(sensorElementId + ' .sensor_item_body');
     sensorBody.css('background', background);
-
     h = sensorBody.css('height');
     sensorBody.css('border-radius', 57.5);
 }

@@ -8,8 +8,8 @@ package com.tcontrol.dao.impl;
 
 import com.tcontrol.dao.DaoInterface;
 import com.tcontrol.dao.Sensor;
-import com.tcontrol.dao.SensorValue;
 import com.tcontrol.dao.Sensor.SensorType;
+import com.tcontrol.dao.SensorValue;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.Reader;
@@ -24,11 +24,13 @@ import java.util.logging.Logger;
 import org.h2.tools.RunScript;
 import org.h2.tools.Server;
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.is;
 import org.junit.After;
 import org.junit.AfterClass;
 import static org.junit.Assert.*;
 import org.junit.Before;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 
 
@@ -125,6 +127,7 @@ public class MySqlJDBCDaoImplUnitAdditionalTest {
     public void tearDown() {
     }
 
+    @Ignore
     @Test
     public void getAllSensorsTest() {
         List<Sensor> sensors = dao.getAllSensors();

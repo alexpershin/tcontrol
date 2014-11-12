@@ -32,22 +32,22 @@ function renderSensorsOnLoad() {
     renderSensorValues(sensorMap, valuesJsonData);
 
 
-    $.getJSON("/tcontrol-web/webresources/sensors",
-            {
-                format: "json"
-            },
+    $.getJSON("/tcontrol-web/webresources/sensors", {format: "json"},
     function(result)
     {
-    })
-            .done(function() {
-                console.log("sensors loaded");
-            })
-            .fail(function() {
-                console.log("error");
-            })
-            .always(function() {
-                console.log("complete");
-            });
+        console.log("sensors processing start");
+        $(result).each(function(key, value) {
+            console.log(value.id + "," + value.type + "," + value.name);
+        });
+    }).done(function() {
+        console.log("sensors loaded");
+    }).fail(function() {
+        var message = "sensors loading error";
+        console.log(message);
+        alert(message);
+    }).always(function() {
+        console.log("sensors loading complete");
+    });
 }
 
 function convertSensorsJsonToMap(sensorsJsonData) {

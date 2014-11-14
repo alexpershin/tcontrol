@@ -5,7 +5,6 @@
  */
 package com.tcontrol.webservice.sensor;
 
-import java.sql.Timestamp;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 

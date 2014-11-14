@@ -19,6 +19,9 @@ public class SensorWeb {
 
     @XmlElement(name = "name")
     private String name;
+    
+    @XmlElement(name = "description")
+    private String description;
 
     /**
      * Constructs the sensors.
@@ -90,5 +93,19 @@ public class SensorWeb {
      */
     public void setType(Sensor.SensorType type) {
         this.type = type;
+    }
+
+    /**
+     * @return the description
+     */
+    public String getDescription() {
+        return description;
+    }
+
+    /**
+     * @param description the description to set
+     */
+    public void setDescription(String description) {
+        this.description = description;
     }
 }

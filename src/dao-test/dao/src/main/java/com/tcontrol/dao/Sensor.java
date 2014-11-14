@@ -45,32 +45,20 @@ public class Sensor {
     }
 
     /**
-     * TODO Rename SD - Switching differential
-     * Threshold delta. When value is getting closer to a threshold the state
-     * can be set to pre alarm.
+     * TODO Rename SD - Switching differential Threshold delta. When value is
+     * getting closer to a threshold the state can be set to pre alarm.
      */
     private double thresholdLag;
-
-    /**
-     * State of the sensor. Are not stored in the database. It should be
-     * calculated in accordance with the sensor value and the low and hight
-     * threshold. For example when temperature inside a house is lower than low
-     * threshold set to 12 degrees, the sensor state must be RED, also if the
-     * temperature is higher than 30 degrees it must be RED, when temperature is
-     * between low and high thresholds the state is GREEN.
-     */
-    private SensorState state;
 
     private String description;
 
     public Sensor() {
     }
 
-    public Sensor(int id, String name, SensorType type, SensorState state, String description) {
+    public Sensor(int id, String name, SensorType type, String description) {
         this.id = id;
         this.name = name;
         this.type = type;
-        this.state = state;
         this.description = description;
     }
 
@@ -96,14 +84,6 @@ public class Sensor {
 
     public void setType(SensorType type) {
         this.type = type;
-    }
-
-    public SensorState getState() {
-        return state;
-    }
-
-    public void setState(SensorState state) {
-        this.state = state;
     }
 
     public String getDescription() {
@@ -132,28 +112,6 @@ public class Sensor {
          * voltage in double
          */
         VOLTAGE
-    }
-
-    public static enum SensorState {
-
-        /**
-         * alarm on the sensor.
-         */
-        RED,
-        /**
-         * pre alarm state.
-         */
-        YELLOW,
-        /**
-         * no alarm, everything is OK with sensor's state.
-         */
-        GREEN,
-        /**
-         * sensor is intentionally disabled by user, right now it is not
-         * implemented yet.
-         */
-        GREY;
-
     }
 
 }

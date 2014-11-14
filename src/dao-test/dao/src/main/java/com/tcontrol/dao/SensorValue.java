@@ -12,20 +12,30 @@ public class SensorValue {
     private int sensorId = 0;
     private Timestamp timestamp;
     private double value;
+    /**
+     * State of the sensor. Are not stored in the database. It should be
+     * calculated in accordance with the sensor value and the low and hight
+     * threshold. For example when temperature inside a house is lower than low
+     * threshold set to 12 degrees, the sensor state must be ALARM, also if the
+     * temperature is higher than 30 degrees it must be ALARM, when temperature
+     * is between low and high thresholds the state is NORMAL.
+     */
+    private SensorState state;
 
     public SensorValue() {
     }
 
-    public SensorValue(Timestamp timestamp, double value) {
+    public SensorValue(int sensorId, Timestamp timestamp, 
+            double value, SensorState state) {
+        this.sensorId = sensorId;
         this.timestamp = timestamp;
         this.value = value;
+        this.state = state;
     }
 
-    
-     public SensorValue(double value) {
+    public SensorValue(double value) {
         this.value = value;
     }
-    
 
     public int getSensorValueId() {
         return sensorValueId;
@@ -59,4 +69,41 @@ public class SensorValue {
         this.value = value;
     }
 
+    public SensorState getState() {
+        return state;
+    }
+
+    public void setState(SensorState state) {
+        this.state = state;
+    }
+
+    public static enum SensorState {
+
+        /**
+         * alarm on the sensor.
+         */
+        ALARM,
+        /**
+         * pre alarm state.
+         */
+        WARNING,
+        /**
+         * no alarm, everything is OK with sensor's state.
+         */
+        NORMAL,
+        /**
+         * sensor is intentionally disabled by user, right now it is not
+         * implemented yet.
+         */
+        DISABLED,
+        /**
+         * sensor is in ON state.
+         */
+        ON,
+        /**
+         * sensor is in ON state.
+         */
+        OFF;
+
+    }
 }

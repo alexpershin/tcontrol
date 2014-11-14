@@ -13,7 +13,9 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  *
@@ -22,16 +24,20 @@ import java.util.List;
 public class DaoStub implements DaoInterface {
 
     @Override
-    public List<Sensor> getAllSensors() {
-        return Arrays.asList(
+    public Map<Integer,Sensor> getAllSensors() {
+        Map<Integer,Sensor> result = new HashMap<Integer,Sensor>();
+        for(Sensor sensor: Arrays.asList(
                 new Sensor(1, "indor",
                         Sensor.SensorType.TEMPERATURE, "inside home sensor"),
                 new Sensor(2, "outdor",
-                        Sensor.SensorType.TEMPERATURE, "outdor temp sensor"));
+                        Sensor.SensorType.TEMPERATURE, "outdor temp sensor"))){
+            result.put(sensor.getId(), sensor);
+        };
+        return result;
    }
 
     @Override
-    public List<Sensor> getSensors(List<Integer> ids) {
+    public Map<Integer,Sensor> getSensors(List<Integer> ids) {
        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
       }
 

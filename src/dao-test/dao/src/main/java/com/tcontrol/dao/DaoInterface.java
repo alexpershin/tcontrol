@@ -7,6 +7,7 @@ package com.tcontrol.dao;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  *
@@ -20,7 +21,7 @@ public interface DaoInterface {
      *
      * @return list of identifiers;
      */
-    List<Sensor> getAllSensors();
+    Map<Integer, Sensor> getAllSensors();
 
     /**
      * Get sensors by identifiers in Sensor objects.
@@ -28,7 +29,7 @@ public interface DaoInterface {
      * @param ids
      * @return list of sensors with all available parameters;
      */
-    List<Sensor> getSensors(List<Integer> ids);
+    Map<Integer, Sensor> getSensors(List<Integer> ids);
 
     /**
      * Returns last(current) values for sensors belong to specified user.
@@ -80,10 +81,11 @@ public interface DaoInterface {
 
     /**
      * Returns all sensors linked to a user with a given user ID
+     *
      * @param userId
      * @return Returns a list of sensors IDs when gets the user ID as integer
      */
-    List<Integer>  getUserSensors (int userId);
+    List<Integer> getUserSensors(int userId);
 
     /**
      * Adds a new user

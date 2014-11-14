@@ -17,7 +17,9 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.apache.commons.lang3.EnumUtils;
@@ -32,8 +34,8 @@ public class MySqlJDBCDaoImpl implements DaoInterface {
     private Connection dbConnection;
 
     @Override
-    public List<Sensor> getAllSensors() {
-        List<Sensor> listOfSensorsToReturn = new ArrayList<>();
+    public Map<Integer, Sensor> getAllSensors() {
+        Map<Integer, Sensor> listOfSensorsToReturn = new HashMap<>();
         Statement statement = null;
         ResultSet resultSet = null;
         try {
@@ -62,7 +64,7 @@ public class MySqlJDBCDaoImpl implements DaoInterface {
                 sensor.setThresholdLag(thressholdDelta);
 
                 //add sensor to result list
-                listOfSensorsToReturn.add(sensor);
+                listOfSensorsToReturn.put(sensor.getId(), sensor);
             }
         } catch (SQLException ex) {
             LOGGER.log(Level.SEVERE, null, ex);
@@ -92,7 +94,7 @@ public class MySqlJDBCDaoImpl implements DaoInterface {
     }
 
     @Override
-    public List<Sensor> getSensors(List<Integer> ids) {
+    public Map<Integer, Sensor> getSensors(List<Integer> ids) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 

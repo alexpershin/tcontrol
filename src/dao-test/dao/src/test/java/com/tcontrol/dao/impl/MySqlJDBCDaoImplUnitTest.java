@@ -124,17 +124,12 @@ public class MySqlJDBCDaoImplUnitTest {
 
     @Test
     public void getAllSensorsTest() {
-        List<Sensor> sensors = dao.getAllSensors();
+        Map<Integer, Sensor> sensorByIdMap = dao.getAllSensors();
 
-        assertNotNull(sensors);
+        assertNotNull(sensorByIdMap);
 
         //check total count of sensors
-        assertThat(sensors.size(), is(3));
-
-        Map<Integer, Sensor> sensorByIdMap = new HashMap<>();
-        for (Sensor sensor : sensors) {
-            sensorByIdMap.put(sensor.getId(), sensor);
-        }
+        assertThat(sensorByIdMap.size(), is(3));
 
         //Check that sensors are unique
         assertThat(sensorByIdMap.size(), is(3));

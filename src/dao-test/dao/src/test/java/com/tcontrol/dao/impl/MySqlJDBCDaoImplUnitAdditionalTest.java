@@ -5,7 +5,6 @@
  */
 package com.tcontrol.dao.impl;
 
-
 import com.tcontrol.dao.DaoInterface;
 import com.tcontrol.dao.Sensor;
 import com.tcontrol.dao.Sensor.SensorType;
@@ -16,14 +15,12 @@ import java.io.Reader;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.h2.tools.RunScript;
 import org.h2.tools.Server;
-import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.is;
 import org.junit.After;
 import org.junit.AfterClass;
@@ -32,7 +29,6 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
-
 
 /**
  *
@@ -130,17 +126,12 @@ public class MySqlJDBCDaoImplUnitAdditionalTest {
     @Ignore
     @Test
     public void getAllSensorsTest() {
-        List<Sensor> sensors = dao.getAllSensors();
+        Map<Integer, Sensor> sensorByIdMap = dao.getAllSensors();
 
-        assertNotNull(sensors);
+        assertNotNull(sensorByIdMap);
 
         //check total count of sensors
-        assertThat(sensors.size(), is(6));
-
-        Map<Integer, Sensor> sensorByIdMap = new HashMap<>();
-        for (Sensor sensor : sensors) {
-            sensorByIdMap.put(sensor.getId(), sensor);
-        }
+        assertThat(sensorByIdMap.size(), is(6));
 
         //Check that sensors are unique
         assertThat(sensorByIdMap.size(), is(6));
@@ -155,10 +146,10 @@ public class MySqlJDBCDaoImplUnitAdditionalTest {
         assertThat(sensor1.getThresholdLag(), is(2.0));
         assertThat(sensor1.getType(), is(SensorType.TEMPERATURE));
     }
-    
+
     @Test
     public void getCurrentValuesTest() {
-        
+
         int userId = 2;
         List<SensorValue> sensorValues = dao.getCurrentValues(userId);
 
@@ -166,15 +157,12 @@ public class MySqlJDBCDaoImplUnitAdditionalTest {
 
         //check total count of sensors
 //        assertThat(sensorValues.size(), is(2));
-
 //       Map<Integer, SensorValue> sensorValueByIdMap = new HashMap<>();
 //       for (SensorValue sensorVl : sensorValues) {
 //            sensorValueByIdMap.put(sensorVl.getSensorId(), sensorVl);
 //        }
-
         //Check that sensors are unique
         //assertThat(sensorByIdMap.size(), is(3));
-
         //get one sensor and check that all it's field loaded correctly
 //        SensorValue sensorVl1 = sensorValueByIdMap.get(2);
 //        assertNotNull(sensorVl1);
@@ -182,5 +170,5 @@ public class MySqlJDBCDaoImplUnitAdditionalTest {
         //assertEquals(sensorVl1.getTimestamp().toString(), '2014-08-11 15:16:17');
         //assertEquals(sensorVl1.getValue(), '230.4');
     }
-    
+
 }

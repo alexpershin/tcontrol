@@ -9,6 +9,7 @@ import com.tcontrol.dao.DaoInterface;
 import com.tcontrol.dao.Sensor;
 import com.tcontrol.dao.SensorValue;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import javax.ejb.Singleton;
 import javax.ws.rs.GET;
@@ -70,17 +71,12 @@ public class SensorsWebService {
     @Path("/sensors")
     @Produces(MediaType.APPLICATION_JSON)
     public List<SensorWeb> getSensors() {
-        List<Sensor> sensors = dao.getAllSensors();
-        List<SensorWeb> webSensors = convertSensorsToWebConverter(sensors);
-        return webSensors;
-    }
-
-    private List<SensorWeb> convertSensorsToWebConverter(List<Sensor> sensors) {
+        Collection<Sensor> sensors = dao.getAllSensors().values();
         List<SensorWeb> webSensors = convertSensorToWeb(sensors);
         return webSensors;
     }
 
-    private List<SensorWeb> convertSensorToWeb(List<Sensor> sensors) {
+    private List<SensorWeb> convertSensorToWeb(Collection<Sensor> sensors) {
         List<SensorWeb> webSensors = new ArrayList<SensorWeb>();
         for (Sensor sensor : sensors) {
             final SensorWeb sensorWeb = new SensorWeb(

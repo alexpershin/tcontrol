@@ -26,11 +26,10 @@ public class SensorValue {
     }
 
     public SensorValue(int sensorId, Timestamp timestamp, 
-            double value, SensorState state) {
+            double value) {
         this.sensorId = sensorId;
         this.timestamp = timestamp;
         this.value = value;
-        this.state = state;
     }
 
     public SensorValue(double value) {

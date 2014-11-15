@@ -62,11 +62,12 @@ public class Sensor {
         this.description = description;
     }
 
-    public Sensor(int id, String name, SensorType type,
+    public Sensor(int id, String name, SensorType type, String description,
             double lowThreshold, double highThreshold, double thresholdLag) {
         this.id = id;
         this.name = name;
         this.type = type;
+        this.description = description;
         this.lowThreshold = lowThreshold;
         this.highThreshold = highThreshold;
         this.thresholdLag = thresholdLag;
@@ -108,6 +109,8 @@ public class Sensor {
 
         /**
          * temperature in double
+         *//**
+         * temperature in double
          */
         TEMPERATURE,
         /**
@@ -117,7 +120,7 @@ public class Sensor {
         /**
          * on or off
          */
-        ON_OF,
+        ON_OFF,
         /**
          * voltage in double
          */

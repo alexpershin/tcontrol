@@ -1,5 +1,5 @@
 function renderSensorsOnLoad() {
-    loadStubDataOnLoad();
+    //  loadStubDataOnLoad();
     loadDataFromServer();
 }
 
@@ -39,12 +39,16 @@ function loadStubDataOnLoad() {
 
 function loadDataFromServer() {
     $.getJSON("/tcontrol-web/webresources/sensor/sensors", {format: "json"},
-    function(result)
+    function(sensorsJsonData)
     {
         console.log("sensors processing start");
-        $(result).each(function(key, value) {
-            console.log(value.id + "," + value.type + "," + value.name);
-        });
+//        $(result).each(function(key, value) {
+//            console.log(value.id + "," + value.type + "," + value.name);
+//        });
+        sensorMap = convertSensorsJsonToMap(sensorsJsonData);
+        console.log("sensors loaded: " + sensorMap.length);
+        layoutSensors(sensorsJsonData);
+        loadValuesFromServer();
     }).done(function() {
         console.log("sensors loaded");
     }).fail(function() {
@@ -54,16 +58,19 @@ function loadDataFromServer() {
     }).always(function() {
         console.log("sensors loading complete");
     });
+}
 
+function loadValuesFromServer() {
     $.getJSON("/tcontrol-web/webresources/sensor/sensor_values",
             {format: "json"},
-    function(result)
+    function(valuesJsonData)
     {
         console.log("sensor values processing start");
-        $(result).each(function(key, value) {
-            console.log(value.sensorId + "," + value.timestamp + ","
-                    + value.value + "," + value.state);
-        });
+//        $(result).each(function(key, value) {
+//            console.log(value.sensorId + "," + value.timestamp + ","
+//                    + value.value + "," + value.state);
+//        });
+        renderSensorValues(sensorMap, valuesJsonData);
     }).done(function() {
         console.log("sensor values loaded");
     }).fail(function() {
@@ -120,7 +127,7 @@ function temperatureSensorRenderer(sensorElementId, sensor, value) {
     var resValue = value.value + '\xB0'
     $(sensorElementId + ' .sensor_item_body .sensor_value').text(resValue);
     var sensorBody = $(sensorElementId + ' .sensor_item_body');
-    thresholdRenderer(sensorBody, sensor, value);
+    sensorBody.css('background', sensorBackgroundCalc(value));
 }
 
 var STATE_BACKGROUND = (function() {
@@ -138,36 +145,15 @@ var STATE_BACKGROUND = (function() {
     };
 })();
 
-function sensorBackgroundCalc( value) {
+function sensorBackgroundCalc(value) {
     return background = STATE_BACKGROUND.get(value.state);
-}
-
-function thresholdRenderer(sensorBody, sensor, value) {
-    var background = STATE_BACKGROUND.get('NORMAL');
-    //low thressHold
-    if (value.value <= sensor.lowThreshold) {
-        background = STATE_BACKGROUND.get('ALERT');
-    } else if (value.value <= sensor.lowThreshold + sensor.thresholdLag &&
-            value.value > sensor.lowThreshold) {
-        background = STATE_BACKGROUND.get('WARNING');
-    }
-
-    //high thressHold
-    if (value.value >= sensor.highThreshold) {
-        background = STATE_BACKGROUND.get('ALERT');
-    } else if (value.value > sensor.highThreshold - sensor.thresholdLag &&
-            value.value < sensor.highThreshold) {
-        background = STATE_BACKGROUND.get('WARNING');
-    }
-
-    sensorBody.css('background', background);
 }
 
 function voltageSensorRenderer(sensorElementId, sensor, value) {
     var resValue = value.value + ' V';
     $(sensorElementId + ' .sensor_item_body .sensor_value').text(resValue);
     sensorBody = $(sensorElementId + ' .sensor_item_body');
-    thresholdRenderer(sensorBody, sensor, value);
+    sensorBody.css('background', sensorBackgroundCalc(value));
 }
 
 function onOffSensorRenderer(sensorElementId, sensor, value) {

@@ -31,6 +31,13 @@ public class SensorValue {
         this.timestamp = timestamp;
         this.value = value;
     }
+    
+    public SensorValue(int sensorId, long time,
+            double value) {
+        this.sensorId = sensorId;
+        this.timestamp = new Timestamp(time);
+        this.value = value;
+    }
 
     public SensorValue(double value) {
         this.value = value;

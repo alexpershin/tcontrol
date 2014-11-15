@@ -40,8 +40,8 @@ public class Sensor {
         return thresholdLag;
     }
 
-    public void setThresholdLag(double thresholdDelta) {
-        this.thresholdLag = thresholdDelta;
+    public void setThresholdLag(double thresholdLag) {
+        this.thresholdLag = thresholdLag;
     }
 
     /**
@@ -60,6 +60,16 @@ public class Sensor {
         this.name = name;
         this.type = type;
         this.description = description;
+    }
+
+    public Sensor(int id, String name, SensorType type,
+            double lowThreshold, double highThreshold, double thresholdLag) {
+        this.id = id;
+        this.name = name;
+        this.type = type;
+        this.lowThreshold = lowThreshold;
+        this.highThreshold = highThreshold;
+        this.thresholdLag = thresholdLag;
     }
 
     public int getId() {

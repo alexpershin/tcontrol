@@ -54,15 +54,15 @@ function loadDataFromServer() {
     }).always(function() {
         console.log("sensors loading complete");
     });
-    
-    $.getJSON("/tcontrol-web/webresources/sensor/sensor_values", 
-        {format: "json"},
+
+    $.getJSON("/tcontrol-web/webresources/sensor/sensor_values",
+            {format: "json"},
     function(result)
     {
         console.log("sensor values processing start");
         $(result).each(function(key, value) {
-            console.log(value.sensorId + "," + value.timestamp + "," 
-                    + value.value +","+ value.state);
+            console.log(value.sensorId + "," + value.timestamp + ","
+                    + value.value + "," + value.state);
         });
     }).done(function() {
         console.log("sensor values loaded");
@@ -137,6 +137,11 @@ var STATE_BACKGROUND = (function() {
         }
     };
 })();
+
+function sensorBackgroundCalc( value) {
+    return background = STATE_BACKGROUND.get(value.state);
+}
+
 function thresholdRenderer(sensorBody, sensor, value) {
     var background = STATE_BACKGROUND.get('NORMAL');
     //low thressHold

@@ -1,36 +1,29 @@
 function renderSensorsOnLoad() {
-    //  loadStubDataOnLoad();
-    loadDataFromServer();
+  //loadStubDataOnLoad();
+  loadDataFromServer();
 }
 
 function loadStubDataOnLoad() {
 //Stub data and rendering test
     var sensorsJsonData = [
-        {name: 'Indoor', id: 1, type: 'TEMPERATURE',
-            lowThreshold: 10, highThreshold: 31, thresholdLag: 2},
-        {name: 'Outdoor', id: 2, type: 'TEMPERATURE',
-            lowThreshold: -20, highThreshold: 32, thresholdLag: 2},
-        {name: 'Cellar', id: 3, type: 'TEMPERATURE',
-            lowThreshold: 0, highThreshold: 20, thresholdLag: 3},
-        {name: 'Loft', id: 4, type: 'TEMPERATURE',
-            lowThreshold: -20, highThreshold: 40, thresholdLag: 2},
-        {name: 'Bath Room', id: 5, type: 'TEMPERATURE',
-            lowThreshold: 5, highThreshold: 34, thresholdLag: 2},
-        {name: 'Garage', id: 6, type: 'TEMPERATURE',
-            lowThreshold: -40, highThreshold: 60, thresholdLag: 6},
-        {name: 'Power', id: 8, type: 'VOLTAGE',
-            lowThreshold: 190, highThreshold: 250, thresholdLag: 10},
+        {name: 'Indoor', id: 1, type: 'TEMPERATURE'},
+        {name: 'Outdoor', id: 2, type: 'TEMPERATURE'},
+        {name: 'Cellar', id: 3, type: 'TEMPERATURE'},
+        {name: 'Loft', id: 4, type: 'TEMPERATURE'},
+        {name: 'Bath Room', id: 5, type: 'TEMPERATURE'},
+        {name: 'Garage', id: 6, type: 'TEMPERATURE'},
+        {name: 'Power', id: 8, type: 'VOLTAGE'},
         {name: 'Heating', id: 7, type: 'ON_OFF'},
     ];
     var valuesJsonData = [
-        {sensorId: 1, value: 25.5},
-        {sensorId: 2, value: -21.6},
-        {sensorId: 3, value: +2.1},
-        {sensorId: 4, value: -11.6},
-        {sensorId: 5, value: 23.8},
-        {sensorId: 6, value: -7.4},
-        {sensorId: 7, value: 1},
-        {sensorId: 8, value: 241},
+        {sensorId: 1, value: 25.5, state: 'NORMAL'},
+        {sensorId: 2, value: -21.6, state: 'ALERT'},
+        {sensorId: 3, value: +2.1, state: 'WARNING'},
+        {sensorId: 4, value: -11.6, state: 'NORMAL'},
+        {sensorId: 5, value: 23.8, state: 'NORMAL'},
+        {sensorId: 6, value: -7.4, state: 'ALERT'},
+        {sensorId: 7, value: 1, state: 'ON'},
+        {sensorId: 8, value: 241, state: 'WARNING'},
     ];
     sensorMap = convertSensorsJsonToMap(sensorsJsonData);
     layoutSensors(sensorsJsonData);
@@ -42,9 +35,6 @@ function loadDataFromServer() {
     function(sensorsJsonData)
     {
         console.log("sensors processing start");
-//        $(result).each(function(key, value) {
-//            console.log(value.id + "," + value.type + "," + value.name);
-//        });
         sensorMap = convertSensorsJsonToMap(sensorsJsonData);
         console.log("sensors loaded: " + sensorMap.length);
         layoutSensors(sensorsJsonData);
@@ -66,10 +56,6 @@ function loadValuesFromServer() {
     function(valuesJsonData)
     {
         console.log("sensor values processing start");
-//        $(result).each(function(key, value) {
-//            console.log(value.sensorId + "," + value.timestamp + ","
-//                    + value.value + "," + value.state);
-//        });
         renderSensorValues(sensorMap, valuesJsonData);
     }).done(function() {
         console.log("sensor values loaded");
@@ -83,9 +69,9 @@ function loadValuesFromServer() {
 }
 
 function convertSensorsJsonToMap(sensorsJsonData) {
-    result = new Map();
+    var result = {};//new Map; //Waiting release of Draft ECMA-262 6th Edition
     $(sensorsJsonData).each(function(key, value) {
-        result.set(value.id, value);
+        result[value.id]=value;
     });
     return result;
 }
@@ -105,8 +91,8 @@ function layoutSensors(sensorsJsonData) {
 
 function renderSensorValues(sensorsMap, valuesJsonData) {
     $(valuesJsonData).each(function(key, value) {
-        if (sensorsMap.has(value.sensorId)) {
-            sensor = sensorsMap.get(value.sensorId);
+        if (sensorsMap[value.sensorId]!=null) {
+            sensor = sensorsMap[value.sensorId];
             sensorElementId = '#sensor_element' + value.sensorId;
             renderSensor(sensorElementId, sensor, value);
         }

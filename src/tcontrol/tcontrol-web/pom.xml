@@ -23,7 +23,7 @@
             the target directory.
             http://www.hascode.com/2014/05/running-javascript-tests-with-maven-jasmine-and-phantomjs/
         -->
-        <phantomjs.outputDir>${java.io.tmpdir}/phantomjs</phantomjs.outputDir>
+        <phantomjs.outputDir>${project.basedir}/tmp/phantomjs</phantomjs.outputDir>
         
         <jasmine.test.resources.folder>${project.basedir}/src/test/resources/lib/jasmine</jasmine.test.resources.folder>
 

@@ -8,11 +8,13 @@
         <link rel="stylesheet" type="text/css" href="sensors.css" media="screen" />
         <script>
             $(function() {
-                $("#includedContent").load("sensors-body.html");
+                $("#includedContent").load("sensors-body.html",function() {
+                    renderSensorsOnLoad();
+                });
             });
         </script> 
     </head>
-    <body class="page_body" onload="renderSensorsOnLoad()">
+    <body class="page_body">
         <div id="includedContent"></div>
     </body>
 </html>

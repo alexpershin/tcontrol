@@ -100,29 +100,28 @@ public class MySqlJDBCDaoImpl implements DaoInterface {
 
     @Override
     public List<SensorValue> getCurrentValues(int userId) {
-        List<SensorValue> listOfSensorValuesToReturnForTheUser = new ArrayList<>();
+        List<SensorValue> listOfSensorValues = new ArrayList<>();
         //Statement statement = null; //We'll use a PreparedStatement
         ResultSet resultSet = null;
-        PreparedStatement preparedStatement;
+        PreparedStatement preparedStatement=null;
 
         try {
-
-            // String selectSQL = "SELECT value from dbtcontrol.sensor_values  where sensor_id in (select sensor_id from dbtcontrol.profiles where user_id = ?)";
-            String selectSQL = "select v.sensor_id, max(v.timestamp), v.value "
+            String selectSQL = "select v.sensor_id sensor_id"
+                    + ", max(v.timestamp) timestamp, v.value value"
                     + " from dbtcontrol.sensor_values v, dbtcontrol.profiles p "
-                    + " where v.sensor_id = p.sensor_id "
-                    + " and p.user_id = ? "
-                    + " group by v.sensor_id ";
+                    + " where v.sensor_id = p.sensor_id"
+                    + " and p.user_id = ?"
+                    + " group by v.sensor_id, v.value";
 
             preparedStatement = dbConnection.prepareStatement(selectSQL);
             preparedStatement.setInt(1, userId);
-            ResultSet rs = preparedStatement.executeQuery(selectSQL);
+            ResultSet rs = preparedStatement.executeQuery();
 
             //TODO remove schema
             while (rs.next()) {
 
-                double value = rs.getDouble("v.value");
-                Timestamp timeStamp = rs.getTimestamp("v.timestamp");
+                double value = rs.getDouble("value");
+                Timestamp timeStamp = rs.getTimestamp("timestamp");
                 int sensorId = rs.getInt("sensor_id");
 
                 //build sensorValue object
@@ -131,7 +130,7 @@ public class MySqlJDBCDaoImpl implements DaoInterface {
                 sensorsValue.setTimestamp(timeStamp);
                 sensorsValue.setSensorId(sensorId);
 
-                listOfSensorValuesToReturnForTheUser.add(sensorsValue);
+                listOfSensorValues.add(sensorsValue);
 
             }
         } catch (SQLException ex) {
@@ -147,20 +146,18 @@ public class MySqlJDBCDaoImpl implements DaoInterface {
                 resultSet = null;
             }
 
-//            try {
-//                if (preparedStatement != null) {
-//                    preparedStatement.close();
-//                }
-//            } catch (SQLException ex) {
-//                LOGGER.log(Level.SEVERE, null, ex);
-//            } finally {
-//                preparedStatement = null;
-//            }
+            try {
+                if (preparedStatement != null) {
+                    preparedStatement.close();
+                }
+            } catch (SQLException ex) {
+                LOGGER.log(Level.SEVERE, null, ex);
+            } finally {
+                preparedStatement = null;
+            }
         }
 
-        return listOfSensorValuesToReturnForTheUser;
-
-        //throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return listOfSensorValues;
     }
 
     @Override

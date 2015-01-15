@@ -15,28 +15,32 @@ import java.io.Reader;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.util.Calendar;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TimeZone;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.h2.tools.RunScript;
 import org.h2.tools.Server;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.is;
 import org.junit.After;
 import org.junit.AfterClass;
 import static org.junit.Assert.*;
 import org.junit.Before;
 import org.junit.BeforeClass;
-import org.junit.Ignore;
 import org.junit.Test;
 
 /**
  *
- * @author Anton Buslavskii
+ * @author alexey
  */
-public class MySqlJDBCDaoImplUnitAdditionalTest {
+public class MySqlJdbcDaoTest {
 
-    private static final Logger LOGGER = Logger.getLogger(MySqlJDBCDaoImplUnitTest.class.getName());
+    private static final Logger LOGGER = Logger.getLogger(MySqlJdbcDaoTest.class.getName());
     private static final String USER_PASSWORD = "";
     private static final String USER_LOGIN = "sa";
 
@@ -44,7 +48,7 @@ public class MySqlJDBCDaoImplUnitAdditionalTest {
     private static Server server;
     private static Connection connection;
 
-    public MySqlJDBCDaoImplUnitAdditionalTest() {
+    public MySqlJdbcDaoTest() {
     }
 
     @BeforeClass
@@ -67,7 +71,7 @@ public class MySqlJDBCDaoImplUnitAdditionalTest {
             h2Connection = DriverManager.getConnection("jdbc:h2:~/test", USER_LOGIN, USER_PASSWORD);
 
             //Create and fill H2 database for unit tests part
-            Reader reader = new FileReader("sql-scripts/create-test-h2-tcontrol-db_additional.sql");
+            Reader reader = new FileReader("sql-scripts/create-test-h2-tcontrol-db.sql");
             RunScript.execute(h2Connection, reader);
 
         } catch (SQLException ex) {
@@ -106,7 +110,7 @@ public class MySqlJDBCDaoImplUnitAdditionalTest {
                 try {
                     connection.close();
                 } catch (SQLException ex) {
-                    Logger.getLogger(MySqlJDBCDaoImplUnitTest.class.getName()).log(Level.SEVERE, null, ex);
+                    Logger.getLogger(MySqlJdbcDaoTest.class.getName()).log(Level.SEVERE, null, ex);
                 } finally {
                     connection = null;
                 }
@@ -123,7 +127,6 @@ public class MySqlJDBCDaoImplUnitAdditionalTest {
     public void tearDown() {
     }
 
-    @Ignore
     @Test
     public void getAllSensorsTest() {
         Map<Integer, Sensor> sensorByIdMap = dao.getAllSensors();
@@ -131,9 +134,6 @@ public class MySqlJDBCDaoImplUnitAdditionalTest {
         assertNotNull(sensorByIdMap);
 
         //check total count of sensors
-        assertThat(sensorByIdMap.size(), is(6));
-
-        //Check that sensors are unique
         assertThat(sensorByIdMap.size(), is(6));
 
         //get one sensor and check that all it's field loaded correctly
@@ -155,20 +155,29 @@ public class MySqlJDBCDaoImplUnitAdditionalTest {
 
         assertNotNull(sensorValues);
 
-        //check total count of sensors
-//        assertThat(sensorValues.size(), is(2));
-//       Map<Integer, SensorValue> sensorValueByIdMap = new HashMap<>();
-//       for (SensorValue sensorVl : sensorValues) {
-//            sensorValueByIdMap.put(sensorVl.getSensorId(), sensorVl);
-//        }
-        //Check that sensors are unique
-        //assertThat(sensorByIdMap.size(), is(3));
-        //get one sensor and check that all it's field loaded correctly
-//        SensorValue sensorVl1 = sensorValueByIdMap.get(2);
-//        assertNotNull(sensorVl1);
-//        assertEquals(sensorVl1.getSensorId(), 5);
-        //assertEquals(sensorVl1.getTimestamp().toString(), '2014-08-11 15:16:17');
-        //assertEquals(sensorVl1.getValue(), '230.4');
-    }
+        assertThat(sensorValues.size(), is(3));
+        Map<Integer, SensorValue> sensorValueByIdMap = new HashMap<>();
+        for (SensorValue sensorVl : sensorValues) {
+            sensorValueByIdMap.put(sensorVl.getSensorId(), sensorVl);
+        }
+        assertThat(sensorValueByIdMap.size(), is(2));
+        SensorValue sensorVl1 = sensorValueByIdMap.get(5);
+        assertNotNull(sensorVl1);
+        assertEquals(sensorVl1.getSensorId(), 5);
 
+        //2014-08-11 15:16:17
+        Calendar c = Calendar.getInstance();
+        c.set(Calendar.YEAR, 2014);
+        c.set(Calendar.MONTH, 7);
+        c.set(Calendar.DAY_OF_MONTH, 11);
+        c.set(Calendar.HOUR_OF_DAY, 15);
+        c.set(Calendar.MINUTE, 16);
+        c.set(Calendar.SECOND, 17);
+        c.setTimeZone(TimeZone.getDefault());
+        c.set(Calendar.MILLISECOND, 0);
+
+        assertEquals(sensorVl1.getTimestamp().getTime(), c.getTimeInMillis());
+
+        assertEquals(sensorVl1.getValue(), 230.4, 0.05);
+    }
 }

@@ -1,3 +1,5 @@
+*.log
+src/tcontrol/phantomjsdriver.log
 /console-tools/nbproject/private/
 /console-tools/build/
 /TestEnterpriseApplication/nbproject/private/

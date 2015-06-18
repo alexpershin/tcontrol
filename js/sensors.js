@@ -35,9 +35,10 @@ function loadDataFromServer() {
     function(sensorsJsonData)
     {
         console.log("sensors processing start");
-        sensorMap = convertSensorsJsonToMap(sensorsJsonData);
+        var sensors=sensorsJsonData.sensors;
+        sensorMap = convertSensorsJsonToMap(sensors);
         console.log("sensors loaded: " + sensorMap.length);
-        layoutSensors(sensorsJsonData);
+        layoutSensors(sensors);
         loadValuesFromServer();
     }).done(function() {
         console.log("sensors loaded");
@@ -55,8 +56,8 @@ function loadValuesFromServer() {
             {format: "json"},
     function(valuesJsonData)
     {
-        console.log("sensor values processing start");
-        renderSensorValues(sensorMap, valuesJsonData);
+        console.log('sensor values processing start');
+        renderSensorValues(sensorMap, valuesJsonData.values);
     }).done(function() {
         console.log("sensor values loaded");
     }).fail(function() {
@@ -144,18 +145,16 @@ function voltageSensorRenderer(sensorElementId, sensor, value) {
 
 function onOffSensorRenderer(sensorElementId, sensor, value) {
     var resValue;
-    if (value.value === 0) {
-        resValue = 'Off';
-    } else if (value.value === 1) {
-        resValue = 'On';
-    }
-    $(sensorElementId + ' .sensor_item_body .sensor_value').text(resValue);
     var background;
-    if (value.value === 0) {
+    if (value.value == 0) {
+        resValue = 'Off';
         background = STATE_BACKGROUND.get('OFF');
-    } else if (value.value === 1) {
+    } else if (value.value == 1) {
+        resValue = 'On';
         background = STATE_BACKGROUND.get('ON');
     }
+    $(sensorElementId + ' .sensor_item_body .sensor_value').text(resValue);
+    
     sensorBody = $(sensorElementId + ' .sensor_item_body');
     sensorBody.css('background', background);
     h = sensorBody.css('height');

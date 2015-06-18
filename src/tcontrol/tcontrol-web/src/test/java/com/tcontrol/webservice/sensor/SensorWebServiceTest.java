@@ -94,7 +94,7 @@ public class SensorWebServiceTest {
     }
 
     @Test
-    public void calculateSateTest() {
+    public void calculateStateTest() {
         assertThat(SensorsWebService.calculateSate(value, sensor), is(state));
     }
 }

@@ -42,10 +42,12 @@ public class SensorsWebService {
     @GET
     @Path("/sensor_values")
     @Produces(MediaType.APPLICATION_JSON)
-    public List<SensorValueWeb> getSensorValues() {
+    public SensorValuesResult getSensorValues() {
+        SensorValuesResult result=new SensorValuesResult();
         List<SensorValue> values = dao.getCurrentValues(0);
         List<SensorValueWeb> webValues = converSensorValuesToWeb(values);
-        return webValues;
+        result.setValues(webValues.toArray(new SensorValueWeb[]{}));
+        return result;
     }
 
     List<SensorValueWeb> converSensorValuesToWeb(List<SensorValue> values) {
@@ -72,10 +74,12 @@ public class SensorsWebService {
     @GET
     @Path("/sensors")
     @Produces(MediaType.APPLICATION_JSON)
-    public List<SensorWeb> getSensors() {
+    public SensorsResult getSensors() {
+        SensorsResult result=new SensorsResult();
         Collection<Sensor> sensors = dao.getAllSensors().values();
         List<SensorWeb> webSensors = convertSensorToWeb(sensors);
-        return webSensors;
+        result.setSensors(webSensors.toArray(new SensorWeb[]{}));
+        return result;
     }
 
     List<SensorWeb> convertSensorToWeb(Collection<Sensor> sensors) {

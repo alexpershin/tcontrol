@@ -55,3 +55,5 @@ src/tcontrol/phantomjsdriver.log
 /src/WebApplication1/build/
 /src/WebApplication1/dist/
 /src/mavenproject1/target/
+/src/prof/tomcat-web-service/target/
+/src/prof/tomee-project/target/

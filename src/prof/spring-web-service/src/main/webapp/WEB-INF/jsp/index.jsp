@@ -10,5 +10,6 @@
 
     <body>
         <p>${message}</p>
+        <a href="spring-web-service/sensors-tab" title="Go to Sensors page" >Sensors</a>
     </body>
 </html>

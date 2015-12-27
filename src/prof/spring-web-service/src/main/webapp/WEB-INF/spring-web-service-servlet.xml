@@ -19,4 +19,6 @@
           p:prefix="/WEB-INF/jsp/"
           p:suffix=".jsp" />
 
+    <mvc:default-servlet-handler/>
+    <mvc:resources mapping="/resources/" location="/resources/**" />
 </beans>

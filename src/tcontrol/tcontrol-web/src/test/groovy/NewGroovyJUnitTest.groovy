@@ -1,10 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-
-
 import org.junit.After
 import org.junit.AfterClass
 import org.junit.Before
@@ -20,10 +13,6 @@ import static com.tcontrol.webservice.sensor.SensorValueWeb.SensorValueState.ALE
 import static com.tcontrol.webservice.sensor.SensorValueWeb.SensorValueState.NORMAL
 import static com.tcontrol.webservice.sensor.SensorValueWeb.SensorValueState.WARNING
 
-/**
- *
- * @author alexey
- */
 class NewGroovyJUnitTest {
 
     public NewGroovyJUnitTest() {
@@ -44,9 +33,7 @@ class NewGroovyJUnitTest {
     @After
     public void tearDown() {
     }
-    // TODO add test methods here.
-    // The methods must be annotated with annotation @Test. For example:
-    //
+    
     @Test
     public void hello() {
         assert true

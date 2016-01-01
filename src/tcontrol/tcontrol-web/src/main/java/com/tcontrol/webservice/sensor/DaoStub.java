@@ -14,7 +14,7 @@ import java.util.Map;
 import javax.enterprise.context.ApplicationScoped;
 
 /**
- * DAO stub.
+ * DAO stub to use while real DAO has not been completetely implemented.
  */
 @ApplicationScoped
 public class DaoStub implements DaoInterface {

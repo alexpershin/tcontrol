@@ -5,8 +5,7 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
- *
- * @author alexey
+ * Sensor to be passed to web UI. 
  */
 @XmlRootElement
 public class SensorWeb {

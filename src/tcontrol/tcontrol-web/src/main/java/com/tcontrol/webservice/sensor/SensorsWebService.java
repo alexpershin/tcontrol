@@ -1,17 +1,24 @@
 package com.tcontrol.webservice.sensor;
 
+import com.tcontrol.dao.DaoException;
 import com.tcontrol.dao.DaoInterface;
 import com.tcontrol.dao.Sensor;
 import com.tcontrol.dao.SensorValue;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.ejb.EJB;
 import javax.ejb.Singleton;
-import javax.inject.Inject;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
+import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
 
 /**
  * REST Web Service.
@@ -20,8 +27,11 @@ import javax.ws.rs.core.MediaType;
 @Singleton
 public class SensorsWebService {
 
-    @Inject
-    DaoInterface dao;
+    //@EJB(beanName = "MySqlJDBCDaoImpl")
+    @EJB(beanName = "DaoStub")
+    private DaoInterface dao;
+
+    private int currentUserId = 1;
 
     /**
      * Creates a new instance of SensorsWebService
@@ -37,18 +47,23 @@ public class SensorsWebService {
     @GET
     @Path("/sensor_values")
     @Produces(MediaType.APPLICATION_JSON)
-    public SensorValuesResult getSensorValues() {
-        SensorValuesResult result=new SensorValuesResult();
-        List<SensorValue> values = dao.getCurrentValues(0);
+    public SensorValuesResult getSensorValues() throws DaoException {
+        SensorValuesResult result = new SensorValuesResult();
+        List<SensorValue> values = dao.getCurrentValues(currentUserId);
         List<SensorValueWeb> webValues = converSensorValuesToWeb(values);
         result.setValues(webValues.toArray(new SensorValueWeb[]{}));
         return result;
     }
 
-    List<SensorValueWeb> converSensorValuesToWeb(List<SensorValue> values) {
+    List<SensorValueWeb> converSensorValuesToWeb(List<SensorValue> values) throws DaoException {
+
         List<SensorValueWeb> webValues = new ArrayList<>();
+
+        final Map<Integer, Sensor> allSensors = dao.getAllSensors();
+
         for (SensorValue value : values) {
-            Sensor sensor = dao.getAllSensors().get(value.getSensorId());
+
+            Sensor sensor = allSensors.get(value.getSensorId());
 
             SensorValueWeb webValue = new SensorValueWeb(
                     value.getSensorId(),
@@ -56,6 +71,7 @@ public class SensorsWebService {
                     value.getValue(),
                     calculateSate(value, sensor)
             );
+
             webValues.add(webValue);
         }
         return webValues;
@@ -70,11 +86,26 @@ public class SensorsWebService {
     @Path("/sensors")
     @Produces(MediaType.APPLICATION_JSON)
     public SensorsResult getSensors() {
-        SensorsResult result=new SensorsResult();
-        Collection<Sensor> sensors = dao.getAllSensors().values();
+        SensorsResult result = new SensorsResult();
+        Collection<Sensor> sensors;
+        try {
+            sensors = dao.getUserSensors(currentUserId).values();
+        } catch (DaoException ex) {
+            throw buildWebApplicationException(ex);
+        }
         List<SensorWeb> webSensors = convertSensorToWeb(sensors);
         result.setSensors(webSensors.toArray(new SensorWeb[]{}));
         return result;
+    }
+
+    private WebApplicationException buildWebApplicationException(DaoException ex) {
+        Logger.getLogger(SensorsWebService.class.getName()).log(Level.SEVERE, null, ex);
+        throw new WebApplicationException(
+                Response.status(Status.INTERNAL_SERVER_ERROR).entity(
+                //JSON object can be returned here. The object must be XmElement
+                // new ExceptionInfo(Status.NOT_FOUND.getStatusCode(), "DAO erorr", "DAO error description")
+                ex.getMessage() + ":\n" + ex.getCause().getMessage()
+        ).type("application/json").build());
     }
 
     List<SensorWeb> convertSensorToWeb(Collection<Sensor> sensors) {

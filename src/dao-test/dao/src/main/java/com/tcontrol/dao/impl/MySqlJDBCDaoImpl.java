@@ -1,10 +1,6 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package com.tcontrol.dao.impl;
 
+import com.tcontrol.dao.DaoException;
 import com.tcontrol.dao.DaoInterface;
 import com.tcontrol.dao.Sensor;
 import com.tcontrol.dao.Sensor.SensorType;
@@ -22,75 +18,66 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.annotation.Resource;
+import javax.ejb.Stateless;
+import javax.sql.DataSource;
 import org.apache.commons.lang3.EnumUtils;
 
 /**
- *
- * @author Anton Buslavskii
+ * Implementation of real database DAO.
  */
+@Stateless
 public class MySqlJDBCDaoImpl implements DaoInterface {
 
     private static final Logger LOGGER = Logger.getLogger(MySqlJDBCDaoImpl.class.getName());
-    private Connection dbConnection;
+
+    /**
+     * Data source.
+     */
+    private DataSource dataSource;
 
     @Override
-    public Map<Integer, Sensor> getAllSensors() {
+    public Map<Integer, Sensor> getAllSensors() throws DaoException {
+
         Map<Integer, Sensor> listOfSensorsToReturn = new HashMap<>();
-        Statement statement = null;
-        ResultSet resultSet = null;
-        try {
-            //TODO remove schema
-            String selectSQL = "SELECT id, name, type, description, low_thresshold, "
-                    + "high_thresshold, threshold_delta from dbtcontrol.sensors";
+        //TODO remove schema
+        String selectSQL = "SELECT id, name, type, description, low_thresshold, "
+                + "high_thresshold, threshold_delta from dbtcontrol.sensors";
 
-            statement = getDbConnection().createStatement();
+        try (Connection connection = getDataSource().getConnection();
+                Statement statement = connection.createStatement();
+                ResultSet resultSet = statement.executeQuery(selectSQL);) {
 
-            resultSet = statement.executeQuery(selectSQL);
+            extractSensorFromResultSet(resultSet, listOfSensorsToReturn);
 
-            while (resultSet.next()) {
-                //extract sensor's fields
-                int id = resultSet.getInt("id");
-                String name = resultSet.getString("name");
-                String description = resultSet.getString("description");
-                SensorType type = EnumUtils.getEnum(SensorType.class, resultSet.getString("type"));
-                double lowThresshold = resultSet.getDouble("low_thresshold");
-                double highThresshold = resultSet.getDouble("high_thresshold");
-                double thressholdDelta = resultSet.getDouble("threshold_delta");
-
-                //build sensor object
-                Sensor sensor = new Sensor(id, name, type, description);
-                sensor.setLowThreshold(lowThresshold);
-                sensor.setHighThreshold(highThresshold);
-                sensor.setThresholdLag(thressholdDelta);
-
-                //add sensor to result list
-                listOfSensorsToReturn.put(sensor.getId(), sensor);
-            }
         } catch (SQLException ex) {
             LOGGER.log(Level.SEVERE, null, ex);
-        } finally {
-            try {
-                if (resultSet != null) {
-                    resultSet.close();
-                }
-            } catch (SQLException ex) {
-                LOGGER.log(Level.SEVERE, null, ex);
-            } finally {
-                resultSet = null;
-            }
-
-            try {
-                if (statement != null) {
-                    statement.close();
-                }
-            } catch (SQLException ex) {
-                LOGGER.log(Level.SEVERE, null, ex);
-            } finally {
-                statement = null;
-            }
+            throw new DaoException(ex);
         }
-
         return listOfSensorsToReturn;
+    }
+
+    private void extractSensorFromResultSet(final ResultSet resultSet, Map<Integer, Sensor> listOfSensorsToReturn) throws SQLException {
+        while (resultSet.next()) {
+            //extract sensor's fields
+            int id = resultSet.getInt("id");
+            String name = resultSet.getString("name");
+            String description = resultSet.getString("description");
+            final String typeString = resultSet.getString("type");
+            SensorType type = EnumUtils.getEnum(SensorType.class, typeString);
+            double lowThresshold = resultSet.getDouble("low_thresshold");
+            double highThresshold = resultSet.getDouble("high_thresshold");
+            double thressholdDelta = resultSet.getDouble("threshold_delta");
+
+            //build sensor object
+            Sensor sensor = new Sensor(id, name, type, description);
+            sensor.setLowThreshold(lowThresshold);
+            sensor.setHighThreshold(highThresshold);
+            sensor.setThresholdLag(thressholdDelta);
+
+            //add sensor to result list
+            listOfSensorsToReturn.put(sensor.getId(), sensor);
+        }
     }
 
     @Override
@@ -99,30 +86,19 @@ public class MySqlJDBCDaoImpl implements DaoInterface {
     }
 
     @Override
-    public List<SensorValue> getCurrentValues(int userId) {
-        List<SensorValue> listOfSensorValues = new ArrayList<>();
-        //Statement statement = null; //We'll use a PreparedStatement
-        ResultSet resultSet = null;
-        PreparedStatement preparedStatement=null;
+    public List<SensorValue> getCurrentValues(final int userId) {
+        final List<SensorValue> listOfSensorValues = new ArrayList<>();
 
-        try {
-            String selectSQL = "select v.sensor_id sensor_id"
-                    + ", max(v.timestamp) timestamp, v.value value"
-                    + " from dbtcontrol.sensor_values v, dbtcontrol.profiles p "
-                    + " where v.sensor_id = p.sensor_id"
-                    + " and p.user_id = ?"
-                    + " group by v.sensor_id, v.value";
+        try (Connection connection = getDataSource().getConnection();
+                PreparedStatement preparedStatement
+                = createPreparedStatementToGetCurrentValues(connection, userId);
+                ResultSet resultSet = preparedStatement.executeQuery();) {
 
-            preparedStatement = dbConnection.prepareStatement(selectSQL);
-            preparedStatement.setInt(1, userId);
-            ResultSet rs = preparedStatement.executeQuery();
+            while (resultSet.next()) {
 
-            //TODO remove schema
-            while (rs.next()) {
-
-                double value = rs.getDouble("value");
-                Timestamp timeStamp = rs.getTimestamp("timestamp");
-                int sensorId = rs.getInt("sensor_id");
+                double value = resultSet.getDouble("value");
+                Timestamp timeStamp = resultSet.getTimestamp("timestamp");
+                int sensorId = resultSet.getInt("sensor_id");
 
                 //build sensorValue object
                 SensorValue sensorsValue = new SensorValue(value);
@@ -131,33 +107,36 @@ public class MySqlJDBCDaoImpl implements DaoInterface {
                 sensorsValue.setSensorId(sensorId);
 
                 listOfSensorValues.add(sensorsValue);
-
             }
         } catch (SQLException ex) {
             LOGGER.log(Level.SEVERE, null, ex);
-        } finally {
-            try {
-                if (resultSet != null) {
-                    resultSet.close();
-                }
-            } catch (SQLException ex) {
-                LOGGER.log(Level.SEVERE, null, ex);
-            } finally {
-                resultSet = null;
-            }
-
-            try {
-                if (preparedStatement != null) {
-                    preparedStatement.close();
-                }
-            } catch (SQLException ex) {
-                LOGGER.log(Level.SEVERE, null, ex);
-            } finally {
-                preparedStatement = null;
-            }
         }
 
         return listOfSensorValues;
+    }
+
+    private PreparedStatement createPreparedStatementToGetCurrentValues(
+            Connection con,
+            int userId) throws SQLException {
+        //TODO remove schema
+        final String sql = "select "
+                + "v.sensor_id sensor_id,"
+                + "v.timestamp timestamp,"
+                + "v.value value"
+                + " from dbtcontrol.sensor_values v"
+                + " where v.id in ("
+                + "  select max(vl.id) id"
+                + "   from "
+                + "     dbtcontrol.sensor_values vl, "
+                + "     dbtcontrol.profiles p"
+                + "   where vl.sensor_id = p.sensor_id"
+                + "   and p.user_id = ?"
+                + "   group by vl.sensor_id"
+                + ")";
+
+        final PreparedStatement ps = con.prepareStatement(sql);
+        ps.setInt(1, userId);
+        return ps;
     }
 
     @Override
@@ -167,46 +146,49 @@ public class MySqlJDBCDaoImpl implements DaoInterface {
 
     @Override
     public Integer addSensor(String sensorType) {
-        int addedSensorId = 0;
-        ResultSet resultSet = null;
-        PreparedStatement preparedStatement;
-        double intermediateRandom = (Math.random() * 10000);
-        int randomFigureToAvoidDoublingOfSensors = (int) Math.round(intermediateRandom);
-
-        try {
-
-            int currentTimeInMillisWithRandom = (int) java.lang.System.currentTimeMillis() + randomFigureToAvoidDoublingOfSensors;
-            String selectSQL = "INSERT INTO dbtcontrol.sensors (name, type, description ) "
-                    + "VALUES ('newly added sensor', 'type example', ?);"
-                    + "SELECT id "
-                    + "from dbtcontrol.sensors "
-                    + "WHERE description = ?";
-
-            preparedStatement = dbConnection.prepareStatement(selectSQL);
-            preparedStatement.setInt(1, currentTimeInMillisWithRandom);
-            preparedStatement.setInt(2, currentTimeInMillisWithRandom);
-            ResultSet rs = preparedStatement.executeQuery(selectSQL);
-
-            int sensorIdToReturn = rs.getInt("id");
-
-            addedSensorId = sensorIdToReturn;
-
-        } catch (SQLException ex) {
-            LOGGER.log(Level.SEVERE, null, ex);
-        } finally {
-            try {
-                if (resultSet != null) {
-                    resultSet.close();
-                }
-            } catch (SQLException ex) {
-                LOGGER.log(Level.SEVERE, null, ex);
-            } finally {
-                resultSet = null;
-            }
-
-        }
-
-        return addedSensorId;
+        throw new UnsupportedOperationException("Not supported yet.");
+        //VERY STRANGE CODE and without UNIT tests, most probably it would work correctly.
+//        int addedSensorId = 0;
+//        ResultSet resultSet = null;
+//        PreparedStatement preparedStatement;
+//        double intermediateRandom = (Math.random() * 10000);
+//        int randomFigureToAvoidDoublingOfSensors = (int) Math.round(intermediateRandom);
+//
+//        try {
+//
+//            int currentTimeInMillisWithRandom = (int) java.lang.System.currentTimeMillis() + randomFigureToAvoidDoublingOfSensors;
+//            String selectSQL = "INSERT INTO dbtcontrol.sensors (name, type, description ) "
+//                    + "VALUES ('newly added sensor', 'type example', ?);"
+//                    + "SELECT id "
+//                    + "from dbtcontrol.sensors "
+//                    + "WHERE description = ?";
+//
+//            preparedStatement
+//                    = getDataSource().getConnection().prepareStatement(selectSQL);
+//            preparedStatement.setInt(1, currentTimeInMillisWithRandom);
+//            preparedStatement.setInt(2, currentTimeInMillisWithRandom);
+//            ResultSet rs = preparedStatement.executeQuery(selectSQL);
+//
+//            int sensorIdToReturn = rs.getInt("id");
+//
+//            addedSensorId = sensorIdToReturn;
+//
+//        } catch (SQLException ex) {
+//            LOGGER.log(Level.SEVERE, null, ex);
+//        } finally {
+//            try {
+//                if (resultSet != null) {
+//                    resultSet.close();
+//                }
+//            } catch (SQLException ex) {
+//                LOGGER.log(Level.SEVERE, null, ex);
+//            } finally {
+//                resultSet = null;
+//            }
+//
+//        }
+//
+//        return addedSensorId;
     }
 
     @Override
@@ -225,8 +207,40 @@ public class MySqlJDBCDaoImpl implements DaoInterface {
     }
 
     @Override
-    public List<Integer> getUserSensors(int userId) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public Map<Integer, Sensor> getUserSensors(int userId) throws DaoException {
+        Map<Integer, Sensor> listOfSensorsToReturn = new HashMap<>();
+
+        try (
+                Connection connection = getDataSource().getConnection();
+                PreparedStatement statement
+                = createPreparedStatementToGetUserSensors(connection, userId);
+                ResultSet resultSet
+                = statement.executeQuery();) {
+
+            extractSensorFromResultSet(resultSet, listOfSensorsToReturn);
+
+        } catch (SQLException ex) {
+            LOGGER.log(Level.SEVERE, null, ex);
+            throw new DaoException(ex);
+        }
+        return listOfSensorsToReturn;
+    }
+
+    private PreparedStatement createPreparedStatementToGetUserSensors(
+            Connection con,
+            int userId) throws SQLException {
+        //TODO remove schema
+        String sql
+                = "SELECT s.id id, s.name name, s.type type, "
+                + "s.description description, s.low_thresshold low_thresshold, "
+                + "s.high_thresshold high_thresshold, s.threshold_delta threshold_delta"
+                + " from dbtcontrol.sensors s, dbtcontrol.profiles p"
+                + " where s.id = p.sensor_id"
+                + "   and p.user_id = ?";
+
+        final PreparedStatement ps = con.prepareStatement(sql);
+        ps.setInt(1, userId);
+        return ps;
     }
 
     @Override
@@ -250,19 +264,17 @@ public class MySqlJDBCDaoImpl implements DaoInterface {
     }
 
     /**
-     * TODO use connection pool here instead of connection instance
-     *
-     * @return the dbConnection
+     * @return the dataSource;
      */
-    public Connection getDbConnection() {
-        return dbConnection;
+    public DataSource getDataSource() {
+        return dataSource;
     }
 
     /**
-     * @param dbConnection the dbConnection to set
+     * @param dataSource the dataSource to set;
      */
-    public void setDbConnection(Connection dbConnection) {
-        this.dbConnection = dbConnection;
+    @Resource(mappedName = "jdbc/tcontrol-db")
+    public void setDataSource(DataSource dataSource) {
+        this.dataSource = dataSource;
     }
-
 }

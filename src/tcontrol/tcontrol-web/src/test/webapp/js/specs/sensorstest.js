@@ -28,7 +28,7 @@ describe("sensors render test", function() {
         expect(clone.attr('id')).toBe('sensor_element');
     });
 
-    it("temperaturw renderer test", function() {
+    it("temperature renderer test", function() {
         var sensorsJsonData = [
             {name: 'Indoor', id: 1, type: 'TEMPERATURE',
                 lowThreshold: 10, highThreshold: 31, thresholdLag: 2},
@@ -51,7 +51,34 @@ describe("sensors render test", function() {
         expect(sensorValue.text()).toBe('25.5\xB0');
         
         sensorBody = $('#' + sensorElementId + ' .sensor_item_body');
-     //   expect(sensorBody.background()).toBe(STATE_BACKGROUND.get('NORMAL'));
+        //expect(sensorBody.css('background')).toBe(STATE_BACKGROUND.get('NORMAL'));
+
+    });
+    
+    it("alarm renderer test", function() {
+        var sensorsJsonData = [
+            {name: 'Alarm', id: 1, type: 'ALARM',
+                lowThreshold: 0, highThreshold: 1, thresholdLag: 1},
+        ];
+
+        var valuesJsonData = [
+            {sensorId: 1, value: 1.0, state: 'ALERT'},
+        ];
+
+        sensorMap = convertSensorsJsonToMap(sensorsJsonData);
+        layoutSensors(sensorsJsonData);
+        renderSensorValues(sensorMap, valuesJsonData);
+        
+        sensorElementId = 'sensor_element1';
+        sensorTitle = $('#' + sensorElementId + ' #sensor_title');
+        expect(sensorTitle.text()).toBe('Alarm');
+        
+        sensorValue = $('#' + sensorElementId + 
+                ' .sensor_item_body .sensor_value');
+        expect(sensorValue.text()).toBe('Alarm');
+        
+        sensorBody = $('#' + sensorElementId + ' .sensor_item_body');
+        //expect(sensorBody.css('background')).toBe(STATE_BACKGROUND.get('NORMAL'));
 
     });
 });

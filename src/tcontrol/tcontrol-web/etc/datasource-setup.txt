@@ -1,0 +1,34 @@
+    For Weblogic.
+Add h2.jar to domains/userdomain/lib/
+
+    During created data source.
+Datasource JNDI name: 
+    jndi/tcontrol-db
+
+URL: 
+    jdbc:h2:~/tcontrol-db;AUTO_SERVER=TRUE
+
+--AUTO_SERVER=TRUE to allow multiple connections
+ 
+Driver Class Name: 
+    org.h2.Driver
+
+Don't forget to create schema:
+    1) create connection after server start,
+    2) run create-test-h2-tcontrol-db.sql.
+
+    For Glassfish.
+Goto Domain Admin Console.
+1) Create connection pool
+    Pool Name: H2Pool
+    Resource Type: javax.sql.DataSource
+    Datasource Classname: org.h2.jdbcx.JdbcDataSource
+    Additional properties:
+        User: tcontrol
+        Password: tcontrol
+        Url:jdbc:h2:~/tcontrol-db
+
+2) Create JDBC resource
+    Name it 'jdbc/tcontrol-db' 
+    Choice H2Pool.
+

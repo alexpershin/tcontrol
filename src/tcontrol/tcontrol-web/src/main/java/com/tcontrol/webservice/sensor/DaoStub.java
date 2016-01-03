@@ -1,5 +1,6 @@
 package com.tcontrol.webservice.sensor;
 
+import com.tcontrol.dao.DaoException;
 import com.tcontrol.dao.DaoInterface;
 import com.tcontrol.dao.Sensor;
 import com.tcontrol.dao.SensorValue;
@@ -11,12 +12,12 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import javax.enterprise.context.ApplicationScoped;
+import javax.ejb.Stateless;
 
 /**
- * DAO stub to use while real DAO has not been completetely implemented.
+ * DAO stub to use while real DAO has not been completely implemented.
  */
-@ApplicationScoped
+@Stateless
 public class DaoStub implements DaoInterface {
 
     @Override
@@ -97,8 +98,9 @@ public class DaoStub implements DaoInterface {
     }
 
     @Override
-    public List<Integer> getUserSensors(int userId) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public Map<Integer, Sensor> getUserSensors(int userId) throws DaoException {
+        //throw new DaoException(new UnsupportedOperationException("Not supported yet."));
+        return getAllSensors();
     }
 
     @Override

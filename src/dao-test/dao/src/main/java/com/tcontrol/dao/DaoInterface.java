@@ -19,9 +19,10 @@ public interface DaoInterface {
     /**
      * Get all sensors in the system.
      *
-     * @return list of identifiers;
+     * @return map id->sensor;
+     * @throws com.tcontrol.dao.DaoException;
      */
-    Map<Integer, Sensor> getAllSensors();
+    Map<Integer, Sensor> getAllSensors() throws DaoException;
 
     /**
      * Get sensors by identifiers in Sensor objects.
@@ -82,10 +83,11 @@ public interface DaoInterface {
     /**
      * Returns all sensors linked to a user with a given user ID
      *
-     * @param userId
-     * @return Returns a list of sensors IDs when gets the user ID as integer
+     * @param userId user's identifier;
+     * @return map id->sensor;
+     * @throws com.tcontrol.dao.DaoException;
      */
-    List<Integer> getUserSensors(int userId);
+    Map<Integer, Sensor> getUserSensors(int userId) throws DaoException;
 
     /**
      * Adds a new user

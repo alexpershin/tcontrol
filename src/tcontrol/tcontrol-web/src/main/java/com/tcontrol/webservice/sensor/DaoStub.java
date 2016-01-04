@@ -47,7 +47,10 @@ public class DaoStub implements DaoInterface {
                         "Power voltage", 190, 250, 10),
                 new Sensor(8, "Heating",
                         Sensor.SensorType.ON_OFF,
-                        "Heating switcher"))) {
+                        "Heating switcher"),
+                new Sensor(9, "Doors&Windows",
+                        Sensor.SensorType.ALARM,
+                        "Doors and windows close circuit"))) {
             result.put(sensor.getId(), sensor);
         };
         return result;
@@ -69,7 +72,8 @@ public class DaoStub implements DaoInterface {
                 new SensorValue(5, timestamp, +23.7),
                 new SensorValue(6, timestamp, -7.4),
                 new SensorValue(7, timestamp, 241),
-                new SensorValue(8, timestamp, 1));
+                new SensorValue(8, timestamp, 0.0),
+                new SensorValue(9, timestamp, 1.0));
     }
 
     @Override

@@ -4,6 +4,9 @@ import com.tcontrol.dao.DaoException;
 import com.tcontrol.dao.DaoInterface;
 import com.tcontrol.dao.Sensor;
 import com.tcontrol.dao.SensorValue;
+import static com.tcontrol.webservice.sensor.SensorValueWeb.SensorValueState.ALERT;
+import static com.tcontrol.webservice.sensor.SensorValueWeb.SensorValueState.NORMAL;
+import static com.tcontrol.webservice.sensor.SensorValueWeb.SensorValueState.WARNING;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -109,7 +112,7 @@ public class SensorsWebService {
     }
 
     List<SensorWeb> convertSensorToWeb(Collection<Sensor> sensors) {
-        List<SensorWeb> webSensors = new ArrayList<SensorWeb>();
+        List<SensorWeb> webSensors = new ArrayList<>();
         for (Sensor sensor : sensors) {
             final SensorWeb sensorWeb = new SensorWeb(
                     sensor.getName(),
@@ -126,24 +129,27 @@ public class SensorsWebService {
     static SensorValueWeb.SensorValueState calculateSate(SensorValue value,
             Sensor sensor) {
 
-        SensorValueWeb.SensorValueState result
-                = SensorValueWeb.SensorValueState.NORMAL;
+        SensorValueWeb.SensorValueState result = NORMAL;
 
         double v = value.getValue();
+        if (Sensor.SensorType.ALARM == sensor.getType()
+                || Sensor.SensorType.ON_OFF == sensor.getType()) {
+            result = value.getValue() == 0 ? NORMAL : ALERT;
 
-        //low thressHold
-        if (value.getValue() <= sensor.getLowThreshold()) {
-            result = SensorValueWeb.SensorValueState.ALERT;
-        } else if (v <= sensor.getLowThreshold() + sensor.getThresholdLag()
-                && v > sensor.getLowThreshold()) {
-            result = SensorValueWeb.SensorValueState.WARNING;
-        } //high thressHold
-        else if (v >= sensor.getHighThreshold()) {
-            result = SensorValueWeb.SensorValueState.ALERT;
-        } else if (v >= sensor.getHighThreshold() - sensor.getThresholdLag()
-                && v < sensor.getHighThreshold()) {
-            result = SensorValueWeb.SensorValueState.WARNING;
-        }
+        } else //calculate state according to threshold
+         //low thressHold
+            if (value.getValue() <= sensor.getLowThreshold()) {
+                result = ALERT;
+            } else if (v <= sensor.getLowThreshold() + sensor.getThresholdLag()
+                    && v > sensor.getLowThreshold()) {
+                result = WARNING;
+            } //high thressHold
+            else if (v >= sensor.getHighThreshold()) {
+                result = ALERT;
+            } else if (v >= sensor.getHighThreshold() - sensor.getThresholdLag()
+                    && v < sensor.getHighThreshold()) {
+                result = WARNING;
+            }
         return result;
     }
 

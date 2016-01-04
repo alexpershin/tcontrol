@@ -107,17 +107,17 @@ function renderSensorValues(sensorsMap, valuesJsonData) {
 
 function renderSensor(sensorElementId, sensor, value) {
     if (sensor.type === 'TEMPERATURE') {
-        temperatureSensorRenderer(sensorElementId, sensor, value);
+        temperatureSensorRenderer(sensorElementId, value);
     } else if (sensor.type === 'VOLTAGE') {
-        voltageSensorRenderer(sensorElementId, sensor, value);
+        voltageSensorRenderer(sensorElementId, value);
     } else if (sensor.type === 'ON_OFF') {
-        onOffSensorRenderer(sensorElementId, sensor, value);
+        onOffSensorRenderer(sensorElementId, value);
     } else if (sensor.type === 'ALARM') {
-        alertSensorRenderer(sensorElementId, sensor, value);
+        alertSensorRenderer(sensorElementId, value);
     }
 }
 
-function temperatureSensorRenderer(sensorElementId, sensor, value) {
+function temperatureSensorRenderer(sensorElementId, value) {
     var resValue = value.value + '\xB0'
     $(sensorElementId + ' .sensor_item_body .sensor_value').text(resValue);
     var sensorBody = $(sensorElementId + ' .sensor_item_body');
@@ -132,7 +132,8 @@ var STATE_BACKGROUND = (function () {
         'OFF': 'linear-gradient(to bottom, white, lightgrey)',
         'ON': 'linear-gradient(to bottom, lightblue, lightskyblue )',
         'ALARM_ON': 'darkred',
-        'ALARM_OFF': 'olivedrab',
+        'ALARM_OFF': 'lightgreen',
+        'UNDEFINED': 'gray'
     };
     return {
         get: function (name) {
@@ -145,54 +146,86 @@ function sensorBackgroundCalc(value) {
     return background = STATE_BACKGROUND.get(value.state);
 }
 
-function voltageSensorRenderer(sensorElementId, sensor, value) {
+function voltageSensorRenderer(sensorElementId, value) {
     var resValue = value.value + ' V';
     $(sensorElementId + ' .sensor_item_body .sensor_value').text(resValue);
     sensorBody = $(sensorElementId + ' .sensor_item_body');
     sensorBody.css('background', sensorBackgroundCalc(value));
 }
 
-function onOffSensorRenderer(sensorElementId, sensor, value) {
-    var resValue;
-    var background;
-    if (value.value == 0) {
-        resValue = 'Off';
-        background = STATE_BACKGROUND.get('OFF');
-    } else if (value.value == 1) {
-        resValue = 'On';
-        background = STATE_BACKGROUND.get('ON');
-    }
-    $(sensorElementId + ' .sensor_item_body .sensor_value').text(resValue);
+function onOffSensorRenderer(sensorElementId, value) {
+    r = onOffSensorBacgroundCalc(value);
+
+    $(sensorElementId + ' .sensor_item_body .sensor_value').text(r.status);
 
     sensorBody = $(sensorElementId + ' .sensor_item_body');
-    sensorBody.css('background', background);
+    sensorBody.css('background', r.background);
     h = sensorBody.css('height');
     sensorBody.css('border-radius', 57.5);
 }
 
-function alertSensorRenderer(sensorElementId, sensor, value) {
-    var resValue;
-    var background;
-    if (value.state == 'NORMAL') {
-        resValue = 'Ok';
-        background = STATE_BACKGROUND.get('ALARM_OFF');
-    } else if (value.state == 'ALERT') {
-        resValue = 'Alarm';
-        background = STATE_BACKGROUND.get('ALARM_ON');
+function onOffSensorBacgroundCalc(value) {
+    var statusText;
+    var background = STATE_BACKGROUND.get('UNDEFINED');
+    if (Number(value.value) === 0.0) {
+        statusText = 'Off';
+        background = STATE_BACKGROUND.get('OFF');
+    } else if (Number(value.value) === 1.0) {
+        statusText = 'On';
+        background = STATE_BACKGROUND.get('ON');
     }
-    sensorValue = $(sensorElementId + ' .sensor_item_body .sensor_value');
-    sensorValue.text(resValue);
-    sensorValue.css('margin', '57px 0 0 -40px');
+    return {
+        status: statusText,
+        background: background
+    };
+}
 
+function alertSensorRenderer(sensorElementId, value) {
+    result = alertSensorStatusBacgroundCalc(value);
+
+    sensorValue = $(sensorElementId + ' .sensor_item_body .sensor_value');
+    sensorValue.text(result.status);
+    
+    sensorValue.css('top', '50px');
+    sensorValue.css('left', '-47px');
+    sensorValue.css('position', 'relative');
+    sensorValue.css('width', '93px');
+    sensorValue.css('height', '93px');
+    sensorValue.css('margin', '0px');
+    
     sensorBody = $(sensorElementId + ' .sensor_item_body');
-    //sensorBody.css('background', background);
     h = sensorBody.css('height');
     sensorBody.css('border-radius', 0);
 
     //See https://css-tricks.com/examples/ShapesOfCSS/
+    sensorBody.css('margin','0 auto 0px auto');
     sensorBody.css('width', 0);
     sensorBody.css('height', 0);
-    sensorBody.css('border-left', '63px solid transparent');
-    sensorBody.css('border-right', '63px solid transparent');
-    sensorBody.css('border-bottom', '115px solid ' + background);
+    sensorBody.css('line-height', 0);
+    sensorBody.css('border-style', 'inset');
+    sensorBody.css('border-width', '0 63px 115px 63px');
+    sensorBody.css('border-color', 'transparent transparent '+result.background+ ' transparent');
+    sensorBody.css('transform','rotate(360deg)');
+    sensorBody.css('-ms-transform','rotate(360deg)');
+    sensorBody.css('-moz-transform','rotate(360deg)');
+    sensorBody.css('-webkit-transform:','rotate(360deg)');
+    sensorBody.css('-o-transform','rotate(360deg)');
 }
+
+function alertSensorStatusBacgroundCalc(value) {
+    var statusText;
+    var background = STATE_BACKGROUND.get('UNDEFINED');
+    if (value.state === 'NORMAL') {
+        statusText = 'Ok';
+        background = STATE_BACKGROUND.get('ALARM_OFF');
+    } else if (value.state === 'ALERT') {
+        statusText = 'Alarm';
+        background = STATE_BACKGROUND.get('ALARM_ON');
+    }
+    return {
+        status: statusText,
+        background: background
+    };
+}
+
+

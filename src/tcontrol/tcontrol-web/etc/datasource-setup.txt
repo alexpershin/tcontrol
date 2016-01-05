@@ -1,23 +1,24 @@
-    For Weblogic.
+    For Weblogic 12.1.3.
 Add h2.jar to domains/userdomain/lib/
 
     During created data source.
-Datasource JNDI name: 
-    jndi/tcontrol-db
+Configuration/General/Datasource JNDI name: 
+    jdbc/tcontrol-db
 
-URL: 
-    jdbc:h2:~/tcontrol-db;AUTO_SERVER=TRUE
-
---AUTO_SERVER=TRUE to allow multiple connections
+Configuration/General/URL: 
+    jdbc:h2:~/tcontrol-db
  
-Driver Class Name: 
+Configuration/General/Driver Class Name: 
     org.h2.Driver
+
+Configuration/Connection Pool/Advanced/Test Table Name: 
+    dual
 
 Don't forget to create schema:
     1) create connection after server start,
     2) run create-test-h2-tcontrol-db.sql.
 
-    For Glassfish.
+    For Glassfish 4.1.0.
 Goto Domain Admin Console.
 1) Create connection pool
     Pool Name: H2Pool
@@ -32,3 +33,15 @@ Goto Domain Admin Console.
     Name it 'jdbc/tcontrol-db' 
     Choice H2Pool.
 
+
+Activate real data source:
+In code, SensorsWebService.java
+
+Change:
+    //@EJB(beanName = "MySqlJDBCDaoImpl")
+    @EJB(beanName = "DaoStub")
+    private DaoInterface dao;
+on
+    @EJB(beanName = "MySqlJDBCDaoImpl")
+    //@EJB(beanName = "DaoStub")
+    private DaoInterface dao;

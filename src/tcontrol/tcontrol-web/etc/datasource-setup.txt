@@ -6,17 +6,13 @@ Configuration/General/Datasource JNDI name:
     jdbc/tcontrol-db
 
 Configuration/General/URL: 
-    jdbc:h2:~/tcontrol-db
+    jdbc:h2:~/tcontrol-db;AUTO_SERVER=TRUE
  
 Configuration/General/Driver Class Name: 
     org.h2.Driver
 
 Configuration/Connection Pool/Advanced/Test Table Name: 
     dual
-
-Don't forget to create schema:
-    1) create connection after server start,
-    2) run create-test-h2-tcontrol-db.sql.
 
     For Glassfish 4.1.0.
 Goto Domain Admin Console.
@@ -27,12 +23,18 @@ Goto Domain Admin Console.
     Additional properties:
         User: tcontrol
         Password: tcontrol
-        Url:jdbc:h2:~/tcontrol-db
+        Url:jdbc:h2:~/tcontrol-db;AUTO_SERVER=TRUE
 
 2) Create JDBC resource
     Name it 'jdbc/tcontrol-db' 
     Choice H2Pool.
 
+Don't forget to create schema and load test data:
+    1) create connection after server start,
+    2) run create-schema-h2-tcontrol-db.sql,
+    3) run create-test-data-h2-tcontrol-db.sql.
+
+Use url 'jdbc:h2:~/tcontrol-db;AUTO_SERVER=TRUE' to connect to the database from other tools.
 
 Activate real data source:
 In code, SensorsWebService.java

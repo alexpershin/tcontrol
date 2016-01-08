@@ -46,20 +46,20 @@ public class ApplicaitonPropertyProducer {
         return scheduleExp;
     }
 
-    private ScheduleExpression buildScheduleExpression(String expression) {
-        ScheduleExpression scheduleExp = new ScheduleExpression();
-        StringTokenizer cronTokenizer = new StringTokenizer(expression);
-        if (cronTokenizer.countTokens() != 7) {
+    public static ScheduleExpression buildScheduleExpression(final String expression) {
+        final ScheduleExpression scheduleExp = new ScheduleExpression();
+        final StringTokenizer tokenizer = new StringTokenizer(expression);
+        if (tokenizer.countTokens() != 7) {
             throw new IllegalArgumentException(
                     "Invalid schedule expression '" + expression + "', must contain 7 parts.");
         }
-        scheduleExp.second(cronTokenizer.nextToken())
-                .minute(cronTokenizer.nextToken())
-                .hour(cronTokenizer.nextToken())
-                .dayOfMonth(cronTokenizer.nextToken())
-                .month(cronTokenizer.nextToken())
-                .dayOfWeek(cronTokenizer.nextToken())
-                .year(cronTokenizer.nextToken());
+        scheduleExp.second(tokenizer.nextToken())
+                .minute(tokenizer.nextToken())
+                .hour(tokenizer.nextToken())
+                .dayOfMonth(tokenizer.nextToken())
+                .month(tokenizer.nextToken())
+                .dayOfWeek(tokenizer.nextToken())
+                .year(tokenizer.nextToken());
         return scheduleExp;
     }
 

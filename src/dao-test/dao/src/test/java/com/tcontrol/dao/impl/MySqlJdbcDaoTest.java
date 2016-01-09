@@ -144,6 +144,7 @@ public class MySqlJdbcDaoTest {
         //get one sensor and check that all it's field loaded correctly
         Sensor sensor1 = sensorByIdMap.get(1);
         assertNotNull(sensor1);
+        assertThat(sensor1.getSerialNumber(), is("28-000000abc"));
         assertThat(sensor1.getName(), is("Indoor"));
         assertThat(sensor1.getDescription(), is("Indoor Temperature Sensor"));
         assertThat(sensor1.getLowThreshold(), is(10.0));
@@ -213,6 +214,7 @@ public class MySqlJdbcDaoTest {
             Sensor sensor1 = sensorByIdMap.get(5);
             assertNotNull(sensor1);
             assertThat(sensor1.getName(), is("Power Voltage"));
+            assertThat(sensor1.getSerialNumber(), is("28-000003abc"));
             assertThat(sensor1.getDescription(), is("Power Grid Voltage"));
             assertThat(sensor1.getLowThreshold(), is(205.0));
             assertThat(sensor1.getHighThreshold(), is(255.0));
@@ -223,7 +225,7 @@ public class MySqlJdbcDaoTest {
         {
             Sensor sensor1 = sensorByIdMap.get(6);
             assertNotNull(sensor1);
-            assertThat(sensor1.getName(), is("test_sensor"));
+            assertThat(sensor1.getName(), is("28-000006abc"));
             assertThat(sensor1.getDescription(), is("Indoor Temperature Sensor"));
             assertThat(sensor1.getLowThreshold(), is(10.0));
             assertThat(sensor1.getHighThreshold(), is(30.0));

@@ -41,7 +41,7 @@ public class MySqlJDBCDaoImpl implements DaoInterface {
 
         Map<Integer, Sensor> listOfSensorsToReturn = new HashMap<>();
         //TODO remove schema
-        String selectSQL = "SELECT id, name, type, description, low_thresshold, "
+        String selectSQL = "SELECT id, serial_number, name, type, description, low_thresshold, "
                 + "high_thresshold, threshold_delta from dbtcontrol.sensors";
 
         try (Connection connection = getDataSource().getConnection();
@@ -61,6 +61,7 @@ public class MySqlJDBCDaoImpl implements DaoInterface {
         while (resultSet.next()) {
             //extract sensor's fields
             int id = resultSet.getInt("id");
+            String serialNumber = resultSet.getString("serial_number");
             String name = resultSet.getString("name");
             String description = resultSet.getString("description");
             final String typeString = resultSet.getString("type");
@@ -74,6 +75,7 @@ public class MySqlJDBCDaoImpl implements DaoInterface {
             sensor.setLowThreshold(lowThresshold);
             sensor.setHighThreshold(highThresshold);
             sensor.setThresholdLag(thressholdDelta);
+            sensor.setSerialNumber(serialNumber);
 
             //add sensor to result list
             listOfSensorsToReturn.put(sensor.getId(), sensor);
@@ -231,7 +233,7 @@ public class MySqlJDBCDaoImpl implements DaoInterface {
             int userId) throws SQLException {
         //TODO remove schema
         String sql
-                = "SELECT s.id id, s.name name, s.type type, "
+                = "SELECT s.id id, s.serial_number serial_number, s.name name, s.type type, "
                 + "s.description description, s.low_thresshold low_thresshold, "
                 + "s.high_thresshold high_thresshold, s.threshold_delta threshold_delta"
                 + " from dbtcontrol.sensors s, dbtcontrol.profiles p"

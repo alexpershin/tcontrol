@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package com.tcontrol.dao;
 
 import java.util.ArrayList;
@@ -11,10 +6,8 @@ import java.util.Map;
 
 /**
  *
- * @author Anton Buslavskii
  */
 public interface DaoInterface {
-//    TODO: correlate all input parameters and all parameters being returned
 
     /**
      * Get all sensors in the system.

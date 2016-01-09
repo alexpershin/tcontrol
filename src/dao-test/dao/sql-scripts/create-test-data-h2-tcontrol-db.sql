@@ -1,16 +1,16 @@
-INSERT INTO dbtcontrol.sensors (id, name, type, low_thresshold, high_thresshold,
+INSERT INTO dbtcontrol.sensors (id, serial_number, name, type, low_thresshold, high_thresshold,
 								threshold_delta, description) VALUES
-	(1, 'Indoor', 'TEMPERATURE', 10, 30, 2, 'Indoor Temperature Sensor'),
-	(2, 'Outdoor', 'TEMPERATURE', -25, null, 5, 'Outdor Temperature Sensor'),
-        (5, 'Power Voltage', 'VOLTAGE', 205, 255, 5, 'Power Grid Voltage');
+	(1, '28-000000abc', 'Indoor', 'TEMPERATURE', 10, 30, 2, 'Indoor Temperature Sensor'),
+	(2, '28-000001abc', 'Outdoor', 'TEMPERATURE', -25, null, 5, 'Outdor Temperature Sensor'),
+        (5, '28-000003abc', 'Power Voltage', 'VOLTAGE', 205, 255, 5, 'Power Grid Voltage');
 
-INSERT INTO dbtcontrol.sensors (id, name, type,  description) VALUES
-	(3, 'Power', 'ON_OFF', 'Power On or Off Sensor'),
-        (4, 'Door Closed', 'ALARM','Door Closed Sensor');
+INSERT INTO dbtcontrol.sensors (id, serial_number, name, type,  description) VALUES
+	(3, '28-000004abc', 'Power', 'ON_OFF', 'Power On or Off Sensor'),
+        (4, '28-000005abc', 'Door Closed', 'ALARM','Door Closed Sensor');
 
-INSERT INTO dbtcontrol.sensors (name, type, low_thresshold, high_thresshold,
+INSERT INTO dbtcontrol.sensors (name, serial_number, type, low_thresshold, high_thresshold,
 								threshold_delta, description) VALUES
-	( 'test_sensor', 'TEMPERATURE', 10, 30, 2, 'Indoor Temperature Sensor');
+	( '28-000006abc', 'test_sensor', 'TEMPERATURE', 10, 30, 2, 'Indoor Temperature Sensor' );
 
 INSERT INTO dbtcontrol.user_roles (id, role) VALUES 
 	('1', 'User'),

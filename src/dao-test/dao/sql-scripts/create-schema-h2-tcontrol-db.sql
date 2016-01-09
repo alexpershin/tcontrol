@@ -9,7 +9,8 @@ CREATE TABLE dbtcontrol.sensors(
     description VARCHAR DEFAULT NULL,
     low_thresshold DOUBLE,
     high_thresshold DOUBLE,
-    threshold_delta DOUBLE
+    threshold_delta DOUBLE,
+    serial_number VARCHAR NOT NULL UNIQUE
 );
 
 CREATE TABLE dbtcontrol.sensor_values (

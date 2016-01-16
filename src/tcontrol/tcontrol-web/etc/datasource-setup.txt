@@ -34,6 +34,18 @@ Don't forget to create schema and load test data:
     2) run create-schema-h2-tcontrol-db.sql,
     3) run create-test-data-h2-tcontrol-db.sql.
 
+    For Tomee:
+    cfg/tomee.xml add:
+    <Resource id="HSQLDB Database" type="DataSource">
+        JdbcDriver org.h2.Driver
+        JdbcUrl jdbc:h2:/Users/alexey/tcontrol-db;AUTO_SERVER=TRUE
+        UserName tcontrol   
+        Password tcontrol
+    </Resource>
+
+    cfg/system.properties:
+    openejb.jaxrs.providers.auto = false
+
 Use url 'jdbc:h2:~/tcontrol-db;AUTO_SERVER=TRUE' to connect to the database from other tools.
 
 Activate real data source:

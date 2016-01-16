@@ -1,6 +1,8 @@
 package com.tcontrol.webservice.sensor;
 
 import com.tcontrol.dao.Sensor;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
@@ -8,6 +10,7 @@ import javax.xml.bind.annotation.XmlRootElement;
  * Sensor to be passed to web UI. 
  */
 @XmlRootElement
+@XmlAccessorType(XmlAccessType.FIELD)
 public class SensorWeb {
 
     @XmlElement(name = "id")

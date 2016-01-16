@@ -30,11 +30,12 @@ import javax.ws.rs.core.Response.Status;
 @Singleton
 public class SensorsWebService {
 
-    //@EJB(beanName = "MySqlJDBCDaoImpl")
-    @EJB(beanName = "DaoStub")
+    @EJB(beanName = "MySqlJDBCDaoImpl")
+    //@EJB(beanName = "DaoStub")
     private DaoInterface dao;
 
-    private int currentUserId = 1;
+    //Temp user
+    private final int currentUserId = 1;
 
     /**
      * Creates a new instance of SensorsWebService
@@ -46,6 +47,7 @@ public class SensorsWebService {
      * Current values.
      *
      * @return list of values;
+     * @throws com.tcontrol.dao.DaoException
      */
     @GET
     @Path("/sensor_values")

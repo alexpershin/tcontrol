@@ -1,8 +1,8 @@
 INSERT INTO dbtcontrol.sensors (id, serial_number, name, type, low_thresshold, high_thresshold,
 								threshold_delta, description) VALUES
 	(1, '28-000001abc', 'Дом', 'TEMPERATURE', 12, 28, 2, 'Дом'),
-        (2, '28-000003abc', 'Улица', 'TEMPERATURE', -15, null, 5, 'Улица'),
-        (3, '28-000001abc', 'Подвал', 'TEMPERATURE', 5, null, 2, 'Подвал'),
+        (2, '28-000002abc', 'Улица', 'TEMPERATURE', -15, null, 5, 'Улица'),
+        (3, '28-000003abc', 'Подвал', 'TEMPERATURE', 5, null, 2, 'Подвал'),
 	(4, '28-0000066c6a65', 'Бокс', 'TEMPERATURE', 12, 30, 2, 'Бокс сигнализации');
 
 
@@ -23,3 +23,6 @@ INSERT INTO dbtcontrol.profiles (user_id, sensor_id) VALUES
   	('2', '1'),        
   	('2', '2'),        
   	('2', '3'); 
+
+--INSERT INTO dbtcontrol.sensor_values (sensor_id, timestamp, value) VALUES
+  --	('4', '2016-01-01 00:01:02', '20.0');

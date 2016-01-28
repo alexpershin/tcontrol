@@ -11,8 +11,10 @@ import java.io.Reader;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -51,7 +53,7 @@ public class MySqlJdbcDaoTest {
     @BeforeClass
     public static void setUpClass() throws SQLException {
         dao = new MySqlJDBCDaoImpl();
-        
+
         DataSource dataSource = mock(DataSource.class);
         ((MySqlJDBCDaoImpl) dao).setDataSource(dataSource);
         assertNotNull(((MySqlJDBCDaoImpl) dao).getDataSource());
@@ -61,7 +63,7 @@ public class MySqlJdbcDaoTest {
         Connection h2Connection = null;
         //TODO: disable storage in file:MV_STORE=FALSE and ;TRACE_LEVEL_SYSTEM_OUT=0
         //Use memory mode - 'jdbc:h2:mem' 
-        h2Connection = DriverManager.getConnection("jdbc:h2:mem:/~test", USER_LOGIN, USER_PASSWORD);
+        h2Connection = DriverManager.getConnection("jdbc:h2:~/unittestdb", USER_LOGIN, USER_PASSWORD);
         return h2Connection;
     }
 
@@ -70,9 +72,9 @@ public class MySqlJdbcDaoTest {
             server = Server.createTcpServer(new String[]{}).start();
 
             Class.forName("org.h2.Driver");
-            
+
             Connection h2Connection = createH2Connection();
-            try  {
+            try {
 
                 //Create and H2 database for unit tests part
                 Reader reader = new FileReader("sql-scripts/create-schema-h2-tcontrol-db.sql");
@@ -120,10 +122,10 @@ public class MySqlJdbcDaoTest {
     @Before
     public void setUp() throws SQLException {
         DataSource dataSource = ((MySqlJDBCDaoImpl) dao).getDataSource();
-        
+
         final Connection connection = initDb();
         //connection = createMySqlConnection();
-        
+
         when(dataSource.getConnection()).thenReturn(connection);
 
     }
@@ -186,14 +188,24 @@ public class MySqlJdbcDaoTest {
             final double expectedValue)
             throws ParseException {
 
+        final SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        final Date date = format.parse(expectedTime);
+        checkValue(sensorVl1, expectedSensorId, date, expectedValue);
+    }
+
+    private void checkValue(
+            final SensorValue sensorVl1,
+            final long expectedSensorId,
+            final Date expectedTime,
+            final double expectedValue)
+            throws ParseException {
+
         //check sensor id
         assertNotNull(sensorVl1);
         assertEquals(sensorVl1.getSensorId(), expectedSensorId);
 
         //check value date
-        final SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        final Date date = format.parse(expectedTime);
-        assertEquals(sensorVl1.getTimestamp().getTime(), date.getTime());
+        assertEquals(sensorVl1.getTimestamp().getTime(), expectedTime.getTime());
 
         //check value
         final double delta = 0.05;
@@ -240,5 +252,78 @@ public class MySqlJdbcDaoTest {
             assertThat(sensor1.getDescription(), is("Power On or Off Sensor"));
             assertThat(sensor1.getType(), is(SensorType.ON_OFF));
         }
+    }
+
+    @Test
+    public void saveValueTest() throws ParseException, SQLException {
+
+        int userId = 1;
+        final long currentTimeMillis = System.currentTimeMillis();
+        dao.addValues(Arrays.asList(new SensorValue(
+                1,
+                new Timestamp(currentTimeMillis),
+                25.5
+        )));
+
+        reinitConnection();
+
+        List<SensorValue> sensorValues = dao.getCurrentValues(userId);
+
+        assertNotNull(sensorValues);
+
+        assertThat(sensorValues.size(), is(3));
+        //build map sensorId->value
+        Map<Integer, SensorValue> sensorValueByIdMap = new HashMap<>();
+        sensorValues.stream().forEach((sensorVl) -> {
+            sensorValueByIdMap.put(sensorVl.getSensorId(), sensorVl);
+        });
+
+        assertThat(sensorValueByIdMap.size(), is(3));
+
+        //check value 1
+        SensorValue sensorVl1 = sensorValueByIdMap.get(1);
+        checkValue(sensorVl1, 1L, new Timestamp(currentTimeMillis), 25.5);
+    }
+
+    @Test
+    public void saveValuesTest() throws ParseException, SQLException {
+
+        int userId = 1;
+        final long currentTimeMillis = System.currentTimeMillis();
+        dao.addValues(Arrays.asList(
+                new SensorValue(
+                        1,
+                        new Timestamp(currentTimeMillis),
+                        25.5
+                ),
+                new SensorValue(
+                        1,
+                        new Timestamp(currentTimeMillis+1000000L),
+                        26.5
+                )));
+
+        reinitConnection();
+
+        List<SensorValue> sensorValues = dao.getCurrentValues(userId);
+
+        assertNotNull(sensorValues);
+
+        assertThat(sensorValues.size(), is(3));
+        //build map sensorId->value
+        Map<Integer, SensorValue> sensorValueByIdMap = new HashMap<>();
+        sensorValues.stream().forEach((sensorVl) -> {
+            sensorValueByIdMap.put(sensorVl.getSensorId(), sensorVl);
+        });
+
+        assertThat(sensorValueByIdMap.size(), is(3));
+
+        //check value 2
+        SensorValue sensorVl1 = sensorValueByIdMap.get(1);
+        checkValue(sensorVl1, 1L, new Timestamp(currentTimeMillis+1000000L), 26.5);
+    }
+
+    private void reinitConnection() throws SQLException {
+        DataSource dataSource = ((MySqlJDBCDaoImpl) dao).getDataSource();
+        when(dataSource.getConnection()).thenReturn(createH2Connection());
     }
 }

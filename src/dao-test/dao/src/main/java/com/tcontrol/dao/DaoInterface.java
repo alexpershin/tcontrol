@@ -1,6 +1,5 @@
 package com.tcontrol.dao;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -35,12 +34,11 @@ public interface DaoInterface {
     List<SensorValue> getCurrentValues(int userId);
 
     /**
-     * Adds values to sensor with specified ID
+     * Adds values to sensor with specified ID.
      *
-     * @param sensorId
-     * @param values
+     * @param values values to be added;
      */
-    void addValues(int sensorId, ArrayList<SensorValue> values);
+    void addValues(List<SensorValue> values);
 
     /**
      * Adds a new sensor of specified type

@@ -142,8 +142,22 @@ public class MySqlJDBCDaoImpl implements DaoInterface {
     }
 
     @Override
-    public void addValues(int sensorId, ArrayList<SensorValue> values) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public void addValues(List<SensorValue> values) {
+        try (Connection connection = getDataSource().getConnection();) {
+            for (SensorValue value : values) {
+                try (
+                        PreparedStatement preparedStatement
+                        = createPreparedStatementToSaveValue(connection, value);) {
+                    preparedStatement.execute();
+
+                } catch (SQLException ex) {
+                    LOGGER.log(Level.SEVERE, null, ex);
+                }
+            }
+            LOGGER.log(Level.INFO, String.format("{0} values added.",values.size()));
+        } catch (SQLException ex) {
+            LOGGER.log(Level.SEVERE, null, ex);
+        }
     }
 
     @Override
@@ -278,5 +292,25 @@ public class MySqlJDBCDaoImpl implements DaoInterface {
     @Resource(mappedName = "jdbc/tcontrol-db")
     public void setDataSource(DataSource dataSource) {
         this.dataSource = dataSource;
+    }
+
+    /**
+     * Creates statement to save sensor value to the database.
+     * @param connection connection;
+     * @param value the value;
+     * @return prepared statement;
+     */
+    private PreparedStatement createPreparedStatementToSaveValue(
+            Connection connection,
+            SensorValue value) throws SQLException {
+        //TODO remove schema
+        String sql = "INSERT INTO dbtcontrol.sensor_values(sensor_id,timestamp,value)"
+                + "values(?,?,?)";
+
+        final PreparedStatement ps = connection.prepareStatement(sql);
+        ps.setInt(1, value.getSensorId());
+        ps.setTimestamp(2, value.getTimestamp());
+        ps.setDouble(3, value.getValue());
+        return ps;
     }
 }

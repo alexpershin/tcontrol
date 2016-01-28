@@ -6,7 +6,6 @@ import com.tcontrol.dao.Sensor;
 import com.tcontrol.dao.SensorValue;
 import com.tcontrol.dao.User;
 import java.sql.Timestamp;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
@@ -77,7 +76,7 @@ public class DaoStub implements DaoInterface {
     }
 
     @Override
-    public void addValues(int sensorId, ArrayList<SensorValue> values) {
+    public void addValues(List<SensorValue> values) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 

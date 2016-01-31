@@ -1,4 +1,4 @@
-package com.tcontrol.prof.sensormonitor;
+package com.tcontrol.dao;
 
 /**
  *
@@ -6,8 +6,17 @@ package com.tcontrol.prof.sensormonitor;
  */
 public class Sensor {
 
+    /**
+     * Sensor id.
+     */
     private int id;
+    /**
+     * Sensor name.
+     */
     private String name;
+    /**
+     * Sensor type.
+     */
     private SensorType type;
 
     /**
@@ -19,6 +28,11 @@ public class Sensor {
      * Hight threshold of value to change the sensor state.
      */
     private double highThreshold;
+    
+    /**
+     * Sensor's hardware serial number.
+     */
+    private String serialNumber;
 
     public double getLowThreshold() {
         return lowThreshold;
@@ -103,6 +117,20 @@ public class Sensor {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    /**
+     * @return the serialNumber
+     */
+    public String getSerialNumber() {
+        return serialNumber;
+    }
+
+    /**
+     * @param serialNumber the serialNumber to set
+     */
+    public void setSerialNumber(String serialNumber) {
+        this.serialNumber = serialNumber;
     }
 
     public static enum SensorType {

@@ -1,4 +1,4 @@
-package com.tcontrol.prof.sensormonitor;
+package com.tcontrol.dao;
 
 import java.sql.Timestamp;
 

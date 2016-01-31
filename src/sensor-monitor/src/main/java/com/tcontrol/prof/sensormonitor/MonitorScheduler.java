@@ -45,7 +45,7 @@ public class MonitorScheduler {
     
     @Timeout
     public void execute(Timer timer) {
-        temperatureMonitor.requestValue();
+        temperatureMonitor.loadTemperatureValue("someUid");
         LOGGER.log(Level.INFO, "Load temperature value, sensor id=1, uuid=#reyyr476");
     }
 

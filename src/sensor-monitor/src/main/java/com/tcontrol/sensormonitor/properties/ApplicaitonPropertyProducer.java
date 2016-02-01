@@ -1,4 +1,4 @@
-package com.tcontrol.prof.properties;
+package com.tcontrol.sensormonitor.properties;
 
 import java.util.StringTokenizer;
 import javax.ejb.ScheduleExpression;

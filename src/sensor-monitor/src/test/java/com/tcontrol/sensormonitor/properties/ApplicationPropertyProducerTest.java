@@ -1,5 +1,6 @@
-package com.tcontrol.prof.properties;
+package com.tcontrol.sensormonitor.properties;
 
+import com.tcontrol.sensormonitor.properties.ApplicaitonPropertyProducer;
 import javax.ejb.ScheduleExpression;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;

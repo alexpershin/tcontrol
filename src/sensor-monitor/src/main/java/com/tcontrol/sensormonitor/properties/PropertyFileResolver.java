@@ -1,4 +1,4 @@
-package com.tcontrol.prof.properties;
+package com.tcontrol.sensormonitor.properties;
 
 import java.io.File;
 import java.io.FileInputStream;

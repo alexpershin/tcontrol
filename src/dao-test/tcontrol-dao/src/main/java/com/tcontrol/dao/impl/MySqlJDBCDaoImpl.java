@@ -154,7 +154,7 @@ public class MySqlJDBCDaoImpl implements DaoInterface {
                     LOGGER.log(Level.SEVERE, null, ex);
                 }
             }
-            LOGGER.log(Level.INFO, String.format("{0} values added.",values.size()));
+            LOGGER.log(Level.INFO, String.format("%s values added.", values.size()));
         } catch (SQLException ex) {
             LOGGER.log(Level.SEVERE, null, ex);
         }
@@ -296,6 +296,7 @@ public class MySqlJDBCDaoImpl implements DaoInterface {
 
     /**
      * Creates statement to save sensor value to the database.
+     *
      * @param connection connection;
      * @param value the value;
      * @return prepared statement;

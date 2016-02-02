@@ -30,7 +30,7 @@ describe("sensors render test", function () {
         ];
 
         var valuesJsonData = [
-            {sensorId: 1, value: 25.5, state: 'NORMAL'},
+            {sensorId: 1, value: 25.532, state: 'NORMAL'},
         ];
 
         sensorMap = convertSensorsJsonToMap(sensorsJsonData);

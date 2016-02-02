@@ -19,13 +19,13 @@ public class TemperatureMonitorTest {
     public void before() {
         monitor = new TemperatureMonitor();
         rootPath = getClass().getResource("/").getFile();
-        monitor.setW1DevicesPath(rootPath + "/devices/");
+        monitor.setW1DevicesPath(rootPath + "devices");
     }
 
     @Test
     public void pathTest() {
         final Path fullPathToDevice = monitor.getFullPathToDevice("some_sensor");
-        final String expected = rootPath + "devices/some_sensor" + monitor.getW1SensorInfoFileName();
+        final String expected = rootPath + "devices/some_sensor/" + monitor.getW1SensorInfoFileName();
         assertThat(fullPathToDevice.toString(), is(expected));
     }
 

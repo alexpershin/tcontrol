@@ -23,8 +23,8 @@ public class TemperatureMonitor {
 
     private static final String TEMPERATURE_PREFIX = "t=";
 
-    private String w1DevicesPath = "/sys/bus/w1/devices/";
-    private String w1SensorInfoFileName = "/w1_slave";
+    private String w1DevicesPath = "/sys/bus/w1/devices";
+    private String w1SensorInfoFileName = "w1_slave";
 
     public SensorValue loadTemperatureValue(String sensorUID) {
         double t = readTemperatureFromFile(getFullPathToDevice(sensorUID));
@@ -32,7 +32,9 @@ public class TemperatureMonitor {
     }
 
     public Path getFullPathToDevice(String deviceFileName) {
-        return FileSystems.getDefault().getPath(getW1DevicesPath() + deviceFileName + getW1SensorInfoFileName());
+        return FileSystems.getDefault().getPath(
+                getW1DevicesPath() + "/" + deviceFileName 
+                        + "/" + getW1SensorInfoFileName());
     }
 
     public static double readTemperatureFromFile(Path pathDeviceFile) {

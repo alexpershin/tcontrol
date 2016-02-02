@@ -66,7 +66,7 @@ public class MonitorScheduler {
             dao.addValues(Arrays.asList(value));
             LOGGER.log(Level.INFO,
                     String.format(
-                            "Load temperature value, sensor id={0}, uuid={1}",
+                            "Load temperature value, sensor id = %s , uuid = %s ",
                             sensor.getId(),
                             sensor.getSerialNumber()));
 

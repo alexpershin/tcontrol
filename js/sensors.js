@@ -118,7 +118,7 @@ function renderSensor(sensorElementId, sensor, value) {
 }
 
 function temperatureSensorRenderer(sensorElementId, value) {
-    var resValue = value.value + '\xB0'
+    var resValue = value.value.toFixed(1) + '\xB0'
     $(sensorElementId + ' .sensor_item_body .sensor_value').text(resValue);
     var sensorBody = $(sensorElementId + ' .sensor_item_body');
     sensorBody.css('background', sensorBackgroundCalc(value));

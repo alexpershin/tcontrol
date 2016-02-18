@@ -11,14 +11,14 @@
 .sensor_item{
     display:none;
     float: left;
-    margin :0px 43px 70px 27px; 
+    margin :0px 43px 70px 10px; 
 }
 
 .sensor_items .sensor_item .sensor_item_body {
     width:115px; height:115px; 
     margin:0 auto 0px auto; 
     text-align:center; 
-    border-radius: 5px; 
+    border-radius: 20px; 
     border: 2px solid;
     border-color: darkgrey;
     line-height: 95px; /*height - 1.5gradient.height - 2 border*/

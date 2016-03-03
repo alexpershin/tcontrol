@@ -144,6 +144,7 @@ public class MySqlJDBCDaoImpl implements DaoInterface {
     @Override
     public void addValues(List<SensorValue> values) {
         try (Connection connection = getDataSource().getConnection();) {
+            
             for (SensorValue value : values) {
                 try (
                         PreparedStatement preparedStatement
@@ -154,6 +155,9 @@ public class MySqlJDBCDaoImpl implements DaoInterface {
                     LOGGER.log(Level.SEVERE, null, ex);
                 }
             }
+            
+            connection.commit();
+            
             LOGGER.log(Level.INFO, String.format("%s values added.", values.size()));
         } catch (SQLException ex) {
             LOGGER.log(Level.SEVERE, null, ex);

@@ -5,6 +5,7 @@ import com.tcontrol.dao.DaoInterface;
 import com.tcontrol.dao.Sensor;
 import com.tcontrol.dao.SensorValue;
 import com.tcontrol.sensormonitor.properties.ApplicationProperty;
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -30,7 +31,7 @@ public class MonitorScheduler {
     private static final Logger LOGGER = Logger.getLogger(MonitorScheduler.class.getName());
 
     @EJB
-    private TemperatureMonitor temperatureMonitor;
+    TemperatureMonitor temperatureMonitor;
 
     @Resource
     private TimerService timerService;
@@ -38,7 +39,7 @@ public class MonitorScheduler {
     @Inject
     @ApplicationProperty(name = "schedule.temperature")
     private ScheduleExpression scheduleExpression;
-    
+
     @Inject
     @ApplicationProperty(name = "w1.devices.path")
     private String w1DevicesPath;
@@ -49,27 +50,34 @@ public class MonitorScheduler {
         timerConfig.setInfo("TemperatureSensorShcheduletConfig");
 
         timerService.createCalendarTimer(scheduleExpression, timerConfig);
-        
+
         temperatureMonitor.setW1DevicesPath(w1DevicesPath);
     }
 
     @EJB(beanName = "MySqlJDBCDaoImpl")
-    private DaoInterface dao;
+    DaoInterface dao;
 
     @Timeout
     public void execute(Timer timer) throws DaoException {
         dao.getAllSensors().values().stream().filter(sensor -> {
             return sensor.getType() == Sensor.SensorType.TEMPERATURE;
         }).forEach(sensor -> {
-            SensorValue value = temperatureMonitor.loadTemperatureValue(sensor.getSerialNumber());
-            value.setSensorId(sensor.getId());
-            dao.addValues(Arrays.asList(value));
-            LOGGER.log(Level.INFO,
-                    String.format(
-                            "Load temperature value, sensor id = %s , uuid = %s ",
-                            sensor.getId(),
-                            sensor.getSerialNumber()));
-
+            try {
+                SensorValue value = temperatureMonitor.loadTemperatureValue(sensor.getSerialNumber());
+                value.setSensorId(sensor.getId());
+                dao.addValues(Arrays.asList(value));
+                LOGGER.log(Level.INFO,
+                        String.format(
+                                "Load temperature value, sensor id = %s , uuid = %s, t = %f ",
+                                sensor.getId(),
+                                sensor.getSerialNumber(),
+                                value.getValue()));
+            } catch (IOException e) {
+                LOGGER.log(Level.INFO,
+                        String.format(
+                                "Failed to load temperature value, sensor id = %s",
+                                sensor.getId()), e);
+            }
         });
     }
 

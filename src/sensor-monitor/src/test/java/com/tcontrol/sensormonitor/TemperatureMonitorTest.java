@@ -1,6 +1,7 @@
 package com.tcontrol.sensormonitor;
 
 import com.tcontrol.dao.SensorValue;
+import java.io.IOException;
 import java.nio.file.Path;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
@@ -30,7 +31,7 @@ public class TemperatureMonitorTest {
     }
 
     @Test
-    public void testSensorValues() {
+    public void testSensorValues() throws IOException {
         {
             SensorValue v = monitor.loadTemperatureValue("28-000002c7c3ee");
             assertThat(v.getValue(), is(15.687));

@@ -26,7 +26,7 @@ public class TemperatureMonitor {
     private String w1DevicesPath = "/sys/bus/w1/devices";
     private String w1SensorInfoFileName = "w1_slave";
 
-    public SensorValue loadTemperatureValue(String sensorUID) {
+    public SensorValue loadTemperatureValue(String sensorUID) throws IOException {
         double t = readTemperatureFromFile(getFullPathToDevice(sensorUID));
         return new SensorValue(-1, System.currentTimeMillis(), t);
     }
@@ -37,7 +37,7 @@ public class TemperatureMonitor {
                         + "/" + getW1SensorInfoFileName());
     }
 
-    public static double readTemperatureFromFile(Path pathDeviceFile) {
+    public static double readTemperatureFromFile(Path pathDeviceFile) throws IOException{
         int iniPos, endPos;
         String strTemp;
         double tvalue = 0;
@@ -53,7 +53,8 @@ public class TemperatureMonitor {
                 }
             }
         } catch (IOException ex) {
-            LOGGER.log(SEVERE, "Error while reading file " + pathDeviceFile, ex);
+            LOGGER.log(SEVERE, "Error while reading file " + pathDeviceFile);
+            throw ex;
         }
         return tvalue;
     }

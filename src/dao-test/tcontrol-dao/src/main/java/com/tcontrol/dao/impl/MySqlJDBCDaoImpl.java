@@ -155,9 +155,6 @@ public class MySqlJDBCDaoImpl implements DaoInterface {
                     LOGGER.log(Level.SEVERE, null, ex);
                 }
             }
-            
-            connection.commit();
-            
             LOGGER.log(Level.INFO, String.format("%s values added.", values.size()));
         } catch (SQLException ex) {
             LOGGER.log(Level.SEVERE, null, ex);

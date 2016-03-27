@@ -58,11 +58,20 @@ function loadValuesFromServer() {
                 renderSensorValues(sensorMap, valuesJsonData.values);
             }).done(function () {
         console.log("sensor values loaded");
+
+        showCurrentDateTimeInTitle();
     }).fail(function (jqXHR, textStatus) {
         showAlert("Sensor values loading failed!", jqXHR, textStatus);
     }).always(function () {
         console.log("sensor values loading complete");
     });
+}
+
+function showLoadedDateTimeInTitle() {
+    var now = new Date();
+    var dateOut = $.format.date(now, 'yyyy/MM/dd HH:mm:ss');
+    //show date time
+    $('.refreshed').text("Loaded: " + dateOut);
 }
 
 function showAlert(title, jqXHR, textStatus) {
@@ -185,31 +194,31 @@ function alertSensorRenderer(sensorElementId, value) {
 
     sensorValue = $(sensorElementId + ' .sensor_item_body .sensor_value');
     sensorValue.text(result.status);
-    
+
     sensorValue.css('top', '50px');
     sensorValue.css('left', '-47px');
     sensorValue.css('position', 'relative');
     sensorValue.css('width', '93px');
     sensorValue.css('height', '93px');
     sensorValue.css('margin', '0px');
-    
+
     sensorBody = $(sensorElementId + ' .sensor_item_body');
     h = sensorBody.css('height');
     sensorBody.css('border-radius', 0);
 
     //See https://css-tricks.com/examples/ShapesOfCSS/
-    sensorBody.css('margin','0 auto 0px auto');
+    sensorBody.css('margin', '0 auto 0px auto');
     sensorBody.css('width', 0);
     sensorBody.css('height', 0);
     sensorBody.css('line-height', 0);
     sensorBody.css('border-style', 'inset');
     sensorBody.css('border-width', '0 63px 115px 63px');
-    sensorBody.css('border-color', 'transparent transparent '+result.background+ ' transparent');
-    sensorBody.css('transform','rotate(360deg)');
-    sensorBody.css('-ms-transform','rotate(360deg)');
-    sensorBody.css('-moz-transform','rotate(360deg)');
-    sensorBody.css('-webkit-transform:','rotate(360deg)');
-    sensorBody.css('-o-transform','rotate(360deg)');
+    sensorBody.css('border-color', 'transparent transparent ' + result.background + ' transparent');
+    sensorBody.css('transform', 'rotate(360deg)');
+    sensorBody.css('-ms-transform', 'rotate(360deg)');
+    sensorBody.css('-moz-transform', 'rotate(360deg)');
+    sensorBody.css('-webkit-transform:', 'rotate(360deg)');
+    sensorBody.css('-o-transform', 'rotate(360deg)');
 }
 
 function alertSensorStatusBacgroundCalc(value) {

@@ -1,0 +1,27 @@
+
+#!/bin/sh -e
+#
+# rc.local
+#
+# This script is executed at the end of each multiuser runlevel.
+# Make sure that the script will "exit 0" on success or any other
+# value on error.
+#
+# In order to enable or disable this script just change the execution
+# bits.
+#
+# By default this script does nothing.
+
+# Print the IP address
+_IP=$(hostname -I) || true
+if [ "$_IP" ]; then
+  printf "My IP address is %s\n" "$_IP"
+fi
+
+/home/pi/3g/umtskeeper --sakisoperators "USBINTERFACE='0' OTHER='USBMODEM' USBMODEM='12d1:1001' APN='CUSTOM_APN' CUSTOM_APN='FixedIP.nw' SIM_PIN='' APN_USER='megafon' APN_PASS='megafon'" --sakisswitches "--sudo --console" --devicename 'Huawei' --log --silent --nat 'no' & 
+
+sleep 120 && java -cp /home/pi/apache-tomee-plus-1.7.1/lib/h2*.jar org.h2.tools.Server -webAllowOthers &
+
+cd /home/pi/apache-tomee-plus-1.7.1/bin && sleep 180 && /home/pi/apache-tomee-plus-1.7.1/bin/startup.sh & 
+
+exit 0

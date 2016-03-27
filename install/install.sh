@@ -1,49 +1,56 @@
-#!/bin/sh
+#!/bin/bash -e
 
-echo 'Copy system startup script...'
+echo -n 'Copy system startup script...'
 sudo cp etc/rc.local /etc/rc.local
-echo -n '[OK]'
+echo '[OK]'
 
-echo 'Copy database with empty scheme...'
+echo -n 'Copy database with empty scheme...'
 cp tcontrol-db.mv.db ~/tcontrol-db.mv.db
-echo -n '[OK]'
+echo  '[OK]'
 
-echo 'Copy 3g modem startup soft...'
+echo -n 'Copy 3g modem startup soft...'
 cp -r 3g ~/
-echo -n '[OK]'
+echo '[OK]'
 
-echo 'Unpac tomee...'
-tar -xzf apache-tomee-plus-1.7.1.tgz
-echo -n '[OK]'
+echo -n 'Unpac tomee...'
+mkdir apache-tomee-plus-1.7.1
+cd apache-tomee-plus-1.7.1
+tar -xzf ../apache-tomee-plus-1.7.1.tgz
+echo '[OK]'
 
-echo 'Move tomee to installation folder...'
+echo -n 'Move tomee to installation folder...'
+cd ..
 mv  apache-tomee-plus-1.7.1 ~/
-echo -n '[OK]'
+echo '[OK]'
 
-echo 'Copy .profile to set system variables as JAVA_HOME..'
+echo -n 'Install H2 database driver...'
+cp h2-1.4.190.jar ~/apache-tomee-plus-1.7.1/lib/
+echo '[OK]'
+
+echo -n 'Copy .profile to set system variables as JAVA_HOME..'
 cp  etc/.profile ~/
-echo -n '[OK]'
+echo '[OK]'
 
-echo 'Unpack java machime for Raspberry IP...'
+echo -n 'Unpack java machime for RaspberryPI...'
 tar -xzf jdk-8u65-arm.tar.gz
-echo -n '[OK]'
-echo 'Move unpacked java to installation folder...'
+echo '[OK]'
+echo -n 'Move unpacked java to installation folder...'
 mv jdk1.8.0_65 ~/
-echo -n '[OK]'
+echo '[OK]'
  
-echo 'Install pi config...' 
+echo -n 'Install pi config...' 
 sudo cp etc/config.txt /boot/
-echo -n '[OK]'
+echo '[OK]'
 
-echo 'Install system updates...'
-sudo dpkg -l apt/archives/*.deb
-echo -n '[OK]'
+echo -n 'Install system updates...'
+sudo dpkg -i apt/archives/*.deb
+echo '[OK]'
 
-echo 'Load kernel module w1-gpio...'
+echo -n 'Load kernel module w1-gpio...'
 sudo modprobe w1-gpio
-echo -n '[OK]'
+echo '[OK]'
 
-echo 'Load kernel module w1-therm...'
+echo -n 'Load kernel module w1-therm...'
 sudo modprobe w1-therm
-echo -n '[OK]'
+echo '[OK]'
 

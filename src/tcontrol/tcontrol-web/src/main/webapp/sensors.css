@@ -5,8 +5,16 @@
 
 .page_body {background-color:lightgray;  }
 
-.logo {height:32px;color: darkgrey; 
+.logo {height:32px;color: darkgrey; float: left; border-color: black;
             font:normal 16px/16px Verdana; text-align: center;}
+.refreshed{height:32px;color: darkgrey; float: right;
+            font:normal 10px/10px Verdana; text-align: right;}
+
+.sensor_pane{float: left}
+
+.sensor_items{
+    margin-top: 20px;
+}
 
 .sensor_item{
     display:none;
@@ -21,6 +29,7 @@
     border-radius: 20px; 
     border: 2px solid;
     border-color: darkgrey;
+    float: left;
     line-height: 95px; /*height - 1.5gradient.height - 2 border*/
 }
 

@@ -26,6 +26,12 @@ public class SensorValueWeb {
     @XmlElement(name = "value")
     private double value;
     
+    /**
+     * Delta for the last hour.
+     */
+    @XmlElement(name = "gradient")
+    private Double gradient;
+    
     @XmlElement(name = "state")
     private SensorValueState state;
 
@@ -43,13 +49,15 @@ public class SensorValueWeb {
      * @param timestamp time stamp when value was got;
      * @param value the value;
      * @param state the value state;
+     * @param gradient the gradient;
      */
     public SensorValueWeb(int sensorId, long timestamp, 
-            double value, SensorValueState state) {
+            double value, SensorValueState state, Double gradient) {
         this.sensorId = sensorId;
         this.timestamp = timestamp;
         this.value = value;
         this.state = state;
+        this.gradient = gradient;
     }
 
     /**
@@ -104,7 +112,22 @@ public class SensorValueWeb {
     /**
      * @param state the state to set
      */
-    public void setState(SensorValueState state) {
+    public void setState(final SensorValueState state) {
         this.state = state;
     }
+    
+    /**
+     * @return the gradient
+     */
+    public Double getGradient() {
+        return gradient;
+    }
+
+    /**
+     * @param gradient the gradient to set
+     */
+    public void setGradient(Double gradient) {
+        this.gradient = gradient;
+    }
+
 }

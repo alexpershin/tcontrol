@@ -30,7 +30,7 @@ describe("sensors render test", function () {
         ];
 
         var valuesJsonData = [
-            {sensorId: 1, value: 25.532, state: 'NORMAL'},
+            {sensorId: 1, value: 25.532, state: 'NORMAL', gradient: 0.34},
         ];
 
         sensorMap = convertSensorsJsonToMap(sensorsJsonData);
@@ -44,10 +44,35 @@ describe("sensors render test", function () {
         sensorValue = $('#' + sensorElementId +
                 ' .sensor_item_body .sensor_value');
         expect(sensorValue.text()).toBe('25.5\xB0');
+        
+        sensorGradient = $('#' + sensorElementId +
+                ' .sensor_item_body .sensor_gradient');
+        expect(sensorGradient.text()).toBe('0.3');
 
         sensorBody = $('#' + sensorElementId + ' .sensor_item_body');
         //expect(sensorBody.css('background')).toBe(STATE_BACKGROUND.get('NORMAL'));
 
+    });
+    
+    it("temperature renderer test empty gradient", function () {
+        var sensorsJsonData = [
+            {name: 'Indoor', id: 1, type: 'TEMPERATURE',
+                lowThreshold: 10, highThreshold: 31, thresholdLag: 2},
+        ];
+
+        var valuesJsonData = [
+            {sensorId: 1, value: 25.532, state: 'NORMAL'},
+        ];
+
+        sensorMap = convertSensorsJsonToMap(sensorsJsonData);
+        layoutSensors(sensorsJsonData);
+        renderSensorValues(sensorMap, valuesJsonData);
+
+        sensorElementId = 'sensor_element1';
+        
+        sensorGradient = $('#' + sensorElementId +
+                ' .sensor_item_body .sensor_gradient');
+        expect(sensorGradient.text()).toBe('...');
     });
 
     it("alarm renderer test", function () {

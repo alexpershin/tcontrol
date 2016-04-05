@@ -74,7 +74,8 @@ public class SensorsWebService {
                     value.getSensorId(),
                     value.getTimestamp().getTime(),
                     value.getValue(),
-                    calculateSate(value, sensor)
+                    calculateSate(value, sensor),
+                    null
             );
 
             webValues.add(webValue);

@@ -33,10 +33,13 @@
     line-height: 95px; /*height - 1.5gradient.height - 2 border*/
 }
 
+
 .sensor_item_body .sensor_gradient{
     text-align:right;
-    font:normal 12px/12px Arial; 
+    font:normal 10px/10px Arial; 
     color:red;
+    margin-right: 10px;
+    margin-top: 2px;
 }
 
 .sensor_item_body .sensor_value{

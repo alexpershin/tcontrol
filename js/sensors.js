@@ -32,19 +32,19 @@ function loadStubDataOnLoad() {
 
 function loadDataFromServer() {
     $.getJSON("/tcontrol-web/webresources/sensor/sensors", {format: "json"},
-            function (sensorsJsonData)
-            {
-                console.log("sensors processing start");
-                var sensors = sensorsJsonData.sensors;
-                sensorMap = convertSensorsJsonToMap(sensors);
-                console.log("sensors loaded: " + sensorMap.length);
-                layoutSensors(sensors);
-                loadValuesFromServer();
-            }).done(function () {
+    function(sensorsJsonData)
+    {
+        console.log("sensors processing start");
+        var sensors = sensorsJsonData.sensors;
+        sensorMap = convertSensorsJsonToMap(sensors);
+        console.log("sensors loaded: " + sensorMap.length);
+        layoutSensors(sensors);
+        loadValuesFromServer();
+    }).done(function() {
         console.log("sensors loaded");
-    }).fail(function (jqXHR, textStatus) {
+    }).fail(function(jqXHR, textStatus) {
         showAlert("Sensors loading failed!", jqXHR, textStatus);
-    }).always(function () {
+    }).always(function() {
         console.log("sensors loading complete");
     });
 }
@@ -52,17 +52,17 @@ function loadDataFromServer() {
 function loadValuesFromServer() {
     $.getJSON("/tcontrol-web/webresources/sensor/sensor_values",
             {format: "json"},
-            function (valuesJsonData)
-            {
-                console.log('sensor values processing start');
-                renderSensorValues(sensorMap, valuesJsonData.values);
-            }).done(function () {
+    function(valuesJsonData)
+    {
+        console.log('sensor values processing start');
+        renderSensorValues(sensorMap, valuesJsonData.values);
+    }).done(function() {
         console.log("sensor values loaded");
 
         showCurrentDateTimeInTitle();
-    }).fail(function (jqXHR, textStatus) {
+    }).fail(function(jqXHR, textStatus) {
         showAlert("Sensor values loading failed!", jqXHR, textStatus);
-    }).always(function () {
+    }).always(function() {
         console.log("sensor values loading complete");
     });
 }
@@ -84,14 +84,14 @@ function showAlert(title, jqXHR, textStatus) {
 
 function convertSensorsJsonToMap(sensorsJsonData) {
     var result = {};//new Map; //Waiting release of Draft ECMA-262 6th Edition
-    $(sensorsJsonData).each(function (key, value) {
+    $(sensorsJsonData).each(function(key, value) {
         result[value.id] = value;
     });
     return result;
 }
 
 function layoutSensors(sensorsJsonData) {
-    $(sensorsJsonData).each(function (key, value) {
+    $(sensorsJsonData).each(function(key, value) {
         clone = $('#sensor_element').clone();
         clone.appendTo('.sensor_items');
         sensorElementId = clone.attr('id') + value.id;
@@ -104,7 +104,7 @@ function layoutSensors(sensorsJsonData) {
 }
 
 function renderSensorValues(sensorsMap, valuesJsonData) {
-    $(valuesJsonData).each(function (key, value) {
+    $(valuesJsonData).each(function(key, value) {
         if (sensorsMap[value.sensorId] !== null) {
             sensor = sensorsMap[value.sensorId];
             sensorElementId = '#sensor_element' + value.sensorId;
@@ -131,9 +131,18 @@ function temperatureSensorRenderer(sensorElementId, value) {
     $(sensorElementId + ' .sensor_item_body .sensor_value').text(resValue);
     var sensorBody = $(sensorElementId + ' .sensor_item_body');
     sensorBody.css('background', sensorBackgroundCalc(value));
+
+    var gradient = $(sensorElementId + ' .sensor_item_body .sensor_gradient');
+    if (value.gradient) {//gradient is set
+        gradient.text(value.gradient.toFixed(1));
+        gradient.css('color', value.gradient > 0 ? 'red' : 'blue');
+    } else {//if not defined
+        gradient.text('...');//estimated
+        gradient.css('color','blue');
+    }
 }
 
-var STATE_BACKGROUND = (function () {
+var STATE_BACKGROUND = (function() {
     var private = {
         'NORMAL': 'linear-gradient(to bottom, lightgreen, greenyellow)',
         'ALERT': 'linear-gradient(to bottom, orange, red)',
@@ -145,7 +154,7 @@ var STATE_BACKGROUND = (function () {
         'UNDEFINED': 'gray'
     };
     return {
-        get: function (name) {
+        get: function(name) {
             return private[name];
         }
     };

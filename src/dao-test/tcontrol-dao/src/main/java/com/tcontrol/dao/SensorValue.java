@@ -8,10 +8,11 @@ import java.sql.Timestamp;
  */
 public class SensorValue {
 
-    private int sensorValueId = 0;
-    private int sensorId = 0;
+    private int sensorValueId;
+    private int sensorId;
     private Timestamp timestamp;
     private double value;
+    private Double gradient;
     /**
      * State of the sensor. Are not stored in the database. It should be
      * calculated in accordance with the sensor value and the low and hight
@@ -81,6 +82,20 @@ public class SensorValue {
 
     public void setState(SensorState state) {
         this.state = state;
+    }
+
+    /**
+     * @return the gradient
+     */
+    public Double getGradient() {
+        return gradient;
+    }
+
+    /**
+     * @param gradient the gradient to set
+     */
+    public void setGradient(Double gradient) {
+        this.gradient = gradient;
     }
 
     public static enum SensorState {

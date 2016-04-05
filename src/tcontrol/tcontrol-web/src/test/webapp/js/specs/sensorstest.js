@@ -44,16 +44,16 @@ describe("sensors render test", function () {
         sensorValue = $('#' + sensorElementId +
                 ' .sensor_item_body .sensor_value');
         expect(sensorValue.text()).toBe('25.5\xB0');
-        
+
         sensorGradient = $('#' + sensorElementId +
                 ' .sensor_item_body .sensor_gradient');
-        expect(sensorGradient.text()).toBe('0.3');
+        expect(sensorGradient.text()).toBe('+0.3');
 
         sensorBody = $('#' + sensorElementId + ' .sensor_item_body');
         //expect(sensorBody.css('background')).toBe(STATE_BACKGROUND.get('NORMAL'));
 
     });
-    
+
     it("temperature renderer test empty gradient", function () {
         var sensorsJsonData = [
             {name: 'Indoor', id: 1, type: 'TEMPERATURE',
@@ -69,10 +69,81 @@ describe("sensors render test", function () {
         renderSensorValues(sensorMap, valuesJsonData);
 
         sensorElementId = 'sensor_element1';
-        
+
         sensorGradient = $('#' + sensorElementId +
                 ' .sensor_item_body .sensor_gradient');
         expect(sensorGradient.text()).toBe('...');
+    });
+
+    it("temperature renderer test negative gradient", function () {
+        var sensorsJsonData = [
+            {name: 'Indoor', id: 1, type: 'TEMPERATURE',
+                lowThreshold: 10, highThreshold: 31, thresholdLag: 2},
+        ];
+
+        var valuesJsonData = [
+            {sensorId: 1, value: 25.532, state: 'NORMAL', gradient: -0.2},
+        ];
+
+        sensorMap = convertSensorsJsonToMap(sensorsJsonData);
+        layoutSensors(sensorsJsonData);
+        renderSensorValues(sensorMap, valuesJsonData);
+
+        sensorElementId = 'sensor_element1';
+
+        sensorGradient = $('#' + sensorElementId +
+                ' .sensor_item_body .sensor_gradient');
+        expect(sensorGradient.text()).toBe('-0.2');
+    });
+    
+    it("temperature renderer test zero gradient", function () {
+        var sensorsJsonData = [
+            {name: 'Indoor', id: 1, type: 'TEMPERATURE',
+                lowThreshold: 10, highThreshold: 31, thresholdLag: 2},
+        ];
+
+        var valuesJsonData = [
+            {sensorId: 1, value: 25.532, state: 'NORMAL', gradient: 0.0},
+        ];
+
+        sensorMap = convertSensorsJsonToMap(sensorsJsonData);
+        layoutSensors(sensorsJsonData);
+        renderSensorValues(sensorMap, valuesJsonData);
+
+        sensorElementId = 'sensor_element1';
+
+        sensorGradient = $('#' + sensorElementId +
+                ' .sensor_item_body .sensor_gradient');
+        expect(sensorGradient.text()).toBe('0.0');
+    });
+    
+    it("temperature renderer test positive gradient", function () {
+        var sensorsJsonData = [
+            {name: 'Indoor', id: 1, type: 'TEMPERATURE',
+                lowThreshold: 10, highThreshold: 31, thresholdLag: 2},
+        ];
+
+        var valuesJsonData = [
+            {sensorId: 1, value: 25.532, state: 'NORMAL', gradient: 0.1},
+        ];
+
+        sensorMap = convertSensorsJsonToMap(sensorsJsonData);
+        layoutSensors(sensorsJsonData);
+        renderSensorValues(sensorMap, valuesJsonData);
+
+        sensorElementId = 'sensor_element1';
+
+        sensorGradient = $('#' + sensorElementId +
+                ' .sensor_item_body .sensor_gradient');
+        expect(sensorGradient.text()).toBe('+0.1');
+    });
+    
+    it("gradient color test", function () {
+        expect(calcGradientValueAndColor(0).color).toBe('blue');
+        expect(calcGradientValueAndColor(-0.1).color).toBe('blue');
+        expect(calcGradientValueAndColor(0.1).color).toBe('red');
+        expect(calcGradientValueAndColor(null).color).toBe('blue');
+        expect(calcGradientValueAndColor(null).text).toBe('...');
     });
 
     it("alarm renderer test", function () {
@@ -109,7 +180,7 @@ describe("sensors render test", function () {
     pAlertSensorStatusBacgroundTest({sensorId: 1, value: 0.0, state: null}, undefined, STATE_BACKGROUND.get('UNDEFINED'));
     pAlertSensorStatusBacgroundTest({sensorId: 1, value: 0.0}, undefined, STATE_BACKGROUND.get('UNDEFINED'));
 
-it("on_off renderer test", function () {
+    it("on_off renderer test", function () {
         var sensorsJsonData = [
             {name: 'Heating', id: 1, type: 'ON_OFF'},
         ];
@@ -130,15 +201,15 @@ it("on_off renderer test", function () {
                 ' .sensor_item_body .sensor_value');
         expect(sensorValue.text()).toBe('On');
     });
-    
-     onOffSensorBacgroundTest = function (sensorValue, expectedStatus, expectedBackground) {
+
+    onOffSensorBacgroundTest = function (sensorValue, expectedStatus, expectedBackground) {
         it("on/off renderer test background", function () {
             result = onOffSensorBacgroundCalc(sensorValue);
             expect(result.status).toBe(expectedStatus);
             expect(result.background).toBe(expectedBackground);
         });
     }
-    
+
     onOffSensorBacgroundTest({sensorId: 1, value: 1.0, state: 'ALERT'}, 'On', STATE_BACKGROUND.get('ON'));
     onOffSensorBacgroundTest({sensorId: 1, value: 0.0, state: 'NORMAL'}, 'Off', STATE_BACKGROUND.get('OFF'));
     onOffSensorBacgroundTest({sensorId: 1, value: 1, state: 'ALERT'}, 'On', STATE_BACKGROUND.get('ON'));

@@ -67,7 +67,7 @@ function loadValuesFromServer() {
     });
 }
 
-function showLoadedDateTimeInTitle() {
+function showCurrentDateTimeInTitle() {
     var now = new Date();
     var dateOut = $.format.date(now, 'yyyy/MM/dd HH:mm:ss');
     //show date time

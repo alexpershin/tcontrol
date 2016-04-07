@@ -61,6 +61,11 @@ public class DaoStub implements DaoInterface {
     }
 
     @Override
+    public List<SensorValue> getCurrentValues(int userId, java.sql.Date date) {
+        return getCurrentValues(userId);
+    }
+    
+    @Override
     public List<SensorValue> getCurrentValues(int userId) {
         Timestamp timestamp = new Timestamp(new Date().getTime());
         return Arrays.asList(

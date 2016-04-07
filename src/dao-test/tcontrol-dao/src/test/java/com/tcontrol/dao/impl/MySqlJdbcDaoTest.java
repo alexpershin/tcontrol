@@ -25,6 +25,7 @@ import javax.sql.DataSource;
 import org.h2.tools.RunScript;
 import org.h2.tools.Server;
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.Matchers.closeTo;
 import org.junit.After;
 import org.junit.AfterClass;
 import static org.junit.Assert.*;
@@ -38,6 +39,8 @@ import static org.mockito.Mockito.when;
  *
  */
 public class MySqlJdbcDaoTest {
+
+    private static final String YYYY_M_MDD_H_HMMSS = "yyyy-MM-dd HH:mm:ss";
 
     private static final Logger LOGGER = Logger.getLogger(MySqlJdbcDaoTest.class.getName());
     private static final String USER_PASSWORD = "";
@@ -156,7 +159,7 @@ public class MySqlJdbcDaoTest {
     }
 
     @Test
-    public void getCurrentValuesTest() throws ParseException {
+    public void getCurrentValuesTestUser1() throws ParseException {
 
         int userId = 2;
         List<SensorValue> sensorValues = dao.getCurrentValues(userId);
@@ -181,6 +184,39 @@ public class MySqlJdbcDaoTest {
         checkValue(sensorVl2, 3L, "2014-08-11 16:01:17", 1.0);
     }
 
+    @Test
+    public void getCurrentValuesTestUser2() throws ParseException {
+
+        int userId = 1;
+        final SimpleDateFormat format = new SimpleDateFormat(YYYY_M_MDD_H_HMMSS);
+        final Date date = format.parse("2014-08-12 12:00:00");
+        List<SensorValue> sensorValues = dao.getCurrentValues(userId, new java.sql.Date(date.getTime()));
+
+        assertNotNull(sensorValues);
+
+        assertThat(sensorValues.size(), is(3));
+        Map<Integer, SensorValue> sensorValueByIdMap = new HashMap<>();
+        sensorValues.stream().forEach((sensorVl) -> {
+            sensorValueByIdMap.put(sensorVl.getSensorId(), sensorVl);
+        });
+
+        assertThat(sensorValueByIdMap.size(), is(3));
+
+        //check value 1
+        SensorValue sensorVl1 = sensorValueByIdMap.get(1);
+        checkValue(sensorVl1, 1L, "2014-08-12 12:00:00", 21.5);
+        
+        //gradient could be calculated
+        assertThat(sensorVl1.getGradient(), closeTo(0.3, 0.001));
+
+        //check value 2
+        SensorValue sensorVl2 = sensorValueByIdMap.get(2);
+        checkValue(sensorVl2, 2L, "2014-08-12 12:00:00", 8.56);
+        
+        //no gradien for the period
+        assertNull(sensorVl2.getGradient());
+    }
+
     private void checkValue(
             final SensorValue sensorVl1,
             final long expectedSensorId,
@@ -188,7 +224,7 @@ public class MySqlJdbcDaoTest {
             final double expectedValue)
             throws ParseException {
 
-        final SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        final SimpleDateFormat format = new SimpleDateFormat(YYYY_M_MDD_H_HMMSS);
         final Date date = format.parse(expectedTime);
         checkValue(sensorVl1, expectedSensorId, date, expectedValue);
     }
@@ -298,7 +334,7 @@ public class MySqlJdbcDaoTest {
                 ),
                 new SensorValue(
                         1,
-                        new Timestamp(currentTimeMillis+1000000L),
+                        new Timestamp(currentTimeMillis + 1000000L),
                         26.5
                 )));
 
@@ -319,7 +355,7 @@ public class MySqlJdbcDaoTest {
 
         //check value 2
         SensorValue sensorVl1 = sensorValueByIdMap.get(1);
-        checkValue(sensorVl1, 1L, new Timestamp(currentTimeMillis+1000000L), 26.5);
+        checkValue(sensorVl1, 1L, new Timestamp(currentTimeMillis + 1000000L), 26.5);
     }
 
     private void reinitConnection() throws SQLException {

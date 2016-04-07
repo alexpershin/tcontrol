@@ -7,6 +7,7 @@ import com.tcontrol.dao.Sensor.SensorType;
 import com.tcontrol.dao.SensorValue;
 import com.tcontrol.dao.User;
 import java.sql.Connection;
+import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -22,6 +23,7 @@ import javax.annotation.Resource;
 import javax.ejb.Stateless;
 import javax.sql.DataSource;
 import org.apache.commons.lang3.EnumUtils;
+import org.apache.commons.lang3.tuple.MutablePair;
 
 /**
  * Implementation of real database DAO.
@@ -30,6 +32,9 @@ import org.apache.commons.lang3.EnumUtils;
 public class MySqlJDBCDaoImpl implements DaoInterface {
 
     private static final Logger LOGGER = Logger.getLogger(MySqlJDBCDaoImpl.class.getName());
+    
+    private static final int GRADIENT_HIGH_TIME_INTERVAL = 70;
+    private static final int GRADIENT_LOW_TIME_INTERVAL = 50;
 
     /**
      * Data source.
@@ -89,13 +94,22 @@ public class MySqlJDBCDaoImpl implements DaoInterface {
 
     @Override
     public List<SensorValue> getCurrentValues(final int userId) {
+        return getCurrentValues(userId, new Date(System.currentTimeMillis()));
+    }
+
+    @Override
+    public List<SensorValue> getCurrentValues(final int userId, Date date) {
         final List<SensorValue> listOfSensorValues = new ArrayList<>();
 
         try (Connection connection = getDataSource().getConnection();
                 PreparedStatement preparedStatement
                 = createPreparedStatementToGetCurrentValues(connection, userId);
-                ResultSet resultSet = preparedStatement.executeQuery();) {
+                ResultSet resultSet = preparedStatement.executeQuery();
+                PreparedStatement gradientStatement
+                = createPreparedStatementToGetLastHourGradientValues(connection, userId, date);
+                ResultSet gradientSet = gradientStatement.executeQuery();) {
 
+            Map<Integer, SensorValue> valuesMap = new HashMap<>();
             while (resultSet.next()) {
 
                 double value = resultSet.getDouble("value");
@@ -109,7 +123,46 @@ public class MySqlJDBCDaoImpl implements DaoInterface {
                 sensorsValue.setSensorId(sensorId);
 
                 listOfSensorValues.add(sensorsValue);
+                valuesMap.put(sensorId, sensorsValue);
             }
+
+            Map<Integer, MutablePair<SensorValue, SensorValue>> gradMap = new HashMap<>();
+            while (gradientSet.next()) {
+                double value = gradientSet.getDouble("value");
+                Timestamp timeStamp = gradientSet.getTimestamp("timestamp");
+                int sensorId = gradientSet.getInt("sensor_id");
+
+                MutablePair<SensorValue, SensorValue> pair = gradMap.get(sensorId);
+
+                SensorValue sValue = new SensorValue(value);
+                sValue.setTimestamp(timeStamp);
+
+                if (pair == null) {
+                    pair = new MutablePair<>(sValue, null);
+                    gradMap.put(sensorId, pair);
+                } else {
+                    pair.setRight(sValue);
+                }
+            }
+
+            gradMap.entrySet().forEach(e -> {
+                int sensorId = e.getKey();
+                MutablePair<SensorValue, SensorValue> pair = gradMap.get(sensorId);
+                if (pair != null) {
+                    SensorValue firstValue = pair.getLeft();
+                    SensorValue lastValue = pair.getValue();
+
+                    if (firstValue != null && lastValue != null) {
+                        double diff = lastValue.getTimestamp().getTime() - firstValue.getTimestamp().getTime();
+                        if (diff > GRADIENT_LOW_TIME_INTERVAL * 60 * 1000 && diff
+                                < GRADIENT_HIGH_TIME_INTERVAL * 60 * 1000) {
+                            Double gradientValue = lastValue.getValue() - firstValue.getValue();
+                            SensorValue sensorValue = valuesMap.get(sensorId);
+                            sensorValue.setGradient(gradientValue);
+                        }
+                    }
+                }
+            });
         } catch (SQLException ex) {
             LOGGER.log(Level.SEVERE, null, ex);
         }
@@ -141,10 +194,39 @@ public class MySqlJDBCDaoImpl implements DaoInterface {
         return ps;
     }
 
+    private PreparedStatement createPreparedStatementToGetLastHourGradientValues(
+            Connection con,
+            int userId,
+            Date date) throws SQLException {
+        //TODO remove schema
+        final String sql = "select "
+                + "v.sensor_id sensor_id,"
+                + "v.timestamp timestamp,"
+                + "v.value value"
+                + " from dbtcontrol.sensor_values v"
+                + " where v.id in ("
+                + "  select vl.id"
+                + "   from "
+                + "     dbtcontrol.sensor_values vl, "
+                + "     dbtcontrol.profiles p"
+                + "   where vl.sensor_id = p.sensor_id"
+                + "   and p.user_id = ?"
+                + "   and vl.timestamp >= ?"
+                + ")"
+                + "order by sensor_id, timestamp";
+
+        final PreparedStatement ps = con.prepareStatement(sql);
+        ps.setInt(1, userId);
+        final Date startDate = 
+                new Date(date.getTime() - GRADIENT_HIGH_TIME_INTERVAL * 60 * 1000);
+        ps.setDate(2, startDate);
+        return ps;
+    }
+
     @Override
     public void addValues(List<SensorValue> values) {
         try (Connection connection = getDataSource().getConnection();) {
-            
+
             for (SensorValue value : values) {
                 try (
                         PreparedStatement preparedStatement

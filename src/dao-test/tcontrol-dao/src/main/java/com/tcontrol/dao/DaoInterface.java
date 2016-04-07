@@ -1,5 +1,6 @@
 package com.tcontrol.dao;
 
+import java.sql.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -109,5 +110,7 @@ public interface DaoInterface {
      * @return next unique number;
      */
     int nextId();
+
+    List<SensorValue> getCurrentValues(final int userId, Date date);
 
 }

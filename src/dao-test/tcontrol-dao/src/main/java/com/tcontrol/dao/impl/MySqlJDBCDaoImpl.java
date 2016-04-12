@@ -33,8 +33,8 @@ public class MySqlJDBCDaoImpl implements DaoInterface {
 
     private static final Logger LOGGER = Logger.getLogger(MySqlJDBCDaoImpl.class.getName());
     
-    private static final int GRADIENT_HIGH_TIME_INTERVAL = 70;
-    private static final int GRADIENT_LOW_TIME_INTERVAL = 50;
+    private static final int GRADIENT_HIGH_TIME_INTERVAL = 75;
+    private static final int GRADIENT_LOW_TIME_INTERVAL = 45;
 
     /**
      * Data source.
@@ -154,9 +154,9 @@ public class MySqlJDBCDaoImpl implements DaoInterface {
 
                     if (firstValue != null && lastValue != null) {
                         double diff = lastValue.getTimestamp().getTime() - firstValue.getTimestamp().getTime();
-                        if (diff > GRADIENT_LOW_TIME_INTERVAL * 60 * 1000 && diff
-                                < GRADIENT_HIGH_TIME_INTERVAL * 60 * 1000) {
-                            Double gradientValue = lastValue.getValue() - firstValue.getValue();
+                        if (diff > GRADIENT_LOW_TIME_INTERVAL * 60 * 1000 
+                            && diff < GRADIENT_HIGH_TIME_INTERVAL * 60 * 1000) {
+                            Double gradientValue = (lastValue.getValue() - firstValue.getValue())*diff/3600000.0;
                             SensorValue sensorValue = valuesMap.get(sensorId);
                             sensorValue.setGradient(gradientValue);
                         }
@@ -217,9 +217,9 @@ public class MySqlJDBCDaoImpl implements DaoInterface {
 
         final PreparedStatement ps = con.prepareStatement(sql);
         ps.setInt(1, userId);
-        final Date startDate = 
-                new Date(date.getTime() - GRADIENT_HIGH_TIME_INTERVAL * 60 * 1000);
-        ps.setDate(2, startDate);
+        final Timestamp startDate = 
+                new Timestamp(date.getTime() - GRADIENT_HIGH_TIME_INTERVAL * 60 * 1000);
+        ps.setTimestamp(2, startDate);
         return ps;
     }
 

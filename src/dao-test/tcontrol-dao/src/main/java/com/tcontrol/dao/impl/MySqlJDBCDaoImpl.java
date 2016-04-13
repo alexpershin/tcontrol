@@ -156,7 +156,7 @@ public class MySqlJDBCDaoImpl implements DaoInterface {
                         double diff = lastValue.getTimestamp().getTime() - firstValue.getTimestamp().getTime();
                         if (diff > GRADIENT_LOW_TIME_INTERVAL * 60 * 1000 
                             && diff < GRADIENT_HIGH_TIME_INTERVAL * 60 * 1000) {
-                            Double gradientValue = (lastValue.getValue() - firstValue.getValue())*diff/3600000.0;
+                            Double gradientValue = (lastValue.getValue() - firstValue.getValue())*3600000.0/diff;
                             SensorValue sensorValue = valuesMap.get(sensorId);
                             sensorValue.setGradient(gradientValue);
                         }

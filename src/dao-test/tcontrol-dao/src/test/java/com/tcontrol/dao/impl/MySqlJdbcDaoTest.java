@@ -207,7 +207,7 @@ public class MySqlJdbcDaoTest {
         checkValue(sensorVl1, 1L, "2014-08-12 12:00:00", 21.5);
         
         //gradient could be calculated
-        assertThat(sensorVl1.getGradient(), closeTo(0.3, 0.001));
+        assertThat(sensorVl1.getGradient(), closeTo(0.3157, 0.001));
 
         //check value 2
         SensorValue sensorVl2 = sensorValueByIdMap.get(2);

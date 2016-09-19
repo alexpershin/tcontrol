@@ -26,9 +26,9 @@
         <phantomjs.outputDir>${project.basedir}/tmp/phantomjs</phantomjs.outputDir>
         
         <jasmine.test.resources.folder>${project.basedir}/src/test/resources/lib/jasmine</jasmine.test.resources.folder>
-
+        <shiro.version>1.1.0</shiro.version>
     </properties>
-   
+ 
     <dependencies>
         <dependency>
             <groupId>junit</groupId>
@@ -73,8 +73,16 @@
             <artifactId>commons-lang3</artifactId>
             <version>3.0</version>
         </dependency>
-
-
+        <dependency>
+            <groupId>org.apache.shiro</groupId>
+            <artifactId>shiro-core</artifactId>
+            <version>${shiro.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.shiro</groupId>
+            <artifactId>shiro-web</artifactId>
+            <version>${shiro.version}</version>
+        </dependency>
     </dependencies>
 
     <build>

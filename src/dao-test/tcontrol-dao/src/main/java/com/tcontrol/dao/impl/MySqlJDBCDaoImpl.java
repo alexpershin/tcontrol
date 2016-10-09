@@ -128,30 +128,13 @@ public class MySqlJDBCDaoImpl implements DaoInterface {
                     indexes[i] = maxIndex - i;
                 }
                 try (
-                       // PreparedStatement preparedStatement
-                       // = createPreparedStatementToGetCurrentValues(connection, userId);
-                       // ResultSet resultSet = preparedStatement.executeQuery();
                         PreparedStatement gradientStatement
                         = createPreparedStatementToGetLastHourGradientValues(connection, userId, indexes, date);
                         ResultSet gradientSet = gradientStatement.executeQuery();) {
 
                     Map<Integer, SensorValue> valuesMap = new HashMap<>();
-//                    while (resultSet.next()) {
-//
-//                        double value = resultSet.getDouble("value");
-//                        Timestamp timeStamp = resultSet.getTimestamp("timestamp");
-//                        int sensorId = resultSet.getInt("sensor_id");
-//
-//                        //build sensorValue object
-//                        SensorValue sensorsValue = new SensorValue(value);
-//                        sensorsValue.setTimestamp(timeStamp);
-//                        sensorsValue.setSensorId(sensorId);
-//
-//                        listOfSensorValues.add(sensorsValue);
-//                        valuesMap.put(sensorId, sensorsValue);
-//                    }
                     final Timestamp startGradientLoadDate
-                            = new Timestamp(date.getTime() - GRADIENT_HIGH_TIME_INTERVAL  * 60 * 1000);
+                            = new Timestamp(date.getTime() - GRADIENT_HIGH_TIME_INTERVAL * 60 * 1000);
                     final Map<Integer, MutablePair<SensorValue, SensorValue>> gradMap = new HashMap<>();
                     while (gradientSet.next()) {
                         double value = gradientSet.getDouble("value");
@@ -178,9 +161,9 @@ public class MySqlJDBCDaoImpl implements DaoInterface {
                             valuesMap.put(sensorId, sValue);
                         }
                     }
-                    
-                    valuesMap.entrySet().forEach(e->listOfSensorValues.add(e.getValue()));
-                    
+
+                    valuesMap.entrySet().forEach(e -> listOfSensorValues.add(e.getValue()));
+
                     gradMap.entrySet().forEach(e -> {
                         int sensorId = e.getKey();
                         MutablePair<SensorValue, SensorValue> pair = gradMap.get(sensorId);
@@ -211,30 +194,6 @@ public class MySqlJDBCDaoImpl implements DaoInterface {
         return listOfSensorValues;
     }
 
-    private PreparedStatement createPreparedStatementToGetCurrentValues(
-            Connection con,
-            int userId) throws SQLException {
-        //TODO remove schema
-        final String sql = "select "
-                + "v.sensor_id sensor_id,"
-                + "v.timestamp timestamp,"
-                + "v.value value"
-                + " from dbtcontrol.sensor_values v"
-                + " where v.id in ("
-                + "  select max(vl.id) id"
-                + "   from "
-                + "     dbtcontrol.sensor_values vl, "
-                + "     dbtcontrol.profiles p"
-                + "   where vl.sensor_id = p.sensor_id"
-                + "   and p.user_id = ?"
-                + "   group by vl.sensor_id"
-                + ")";
-
-        final PreparedStatement ps = con.prepareStatement(sql);
-        ps.setInt(1, userId);
-        return ps;
-    }
-
     private PreparedStatement createPreparedStatementToGetMaxId(
             Connection con) throws SQLException {
 
@@ -258,7 +217,7 @@ public class MySqlJDBCDaoImpl implements DaoInterface {
             int userId,
             Integer[] ids,
             Date date) throws SQLException {
-        //TODO remove schema
+//query before optimization
 //        final String sql = "select "
 //                + "v.sensor_id sensor_id,"
 //                + "v.timestamp timestamp,"
@@ -282,10 +241,13 @@ public class MySqlJDBCDaoImpl implements DaoInterface {
                 + " from dbtcontrol.sensor_values where sensor_id in("
                 + " select sensor_id from dbtcontrol.profiles where user_id=?)"
                 + " and id in (%s) and timestamp >= ? order by sensor_id, timestamp";
-        String array = Arrays.stream(ids).map(i -> i.toString()).collect(Collectors.joining(","));
+        
+        //Doesn't support by hd2db
         //Array array = ps.getConnection().createArrayOf("BIGINT", ids);
         //ps.setArray(2, array);
         //ps.setString(2, array);
+
+        String array = Arrays.stream(ids).map(i -> i.toString()).collect(Collectors.joining(","));
         sql = String.format(sql, array);
 
         final PreparedStatement ps = con.prepareStatement(sql);
@@ -322,48 +284,6 @@ public class MySqlJDBCDaoImpl implements DaoInterface {
     @Override
     public Integer addSensor(String sensorType) {
         throw new UnsupportedOperationException("Not supported yet.");
-        //VERY STRANGE CODE and without UNIT tests, most probably it would work correctly.
-//        int addedSensorId = 0;
-//        ResultSet resultSet = null;
-//        PreparedStatement maxIDresultSetPrepStatement;
-//        double intermediateRandom = (Math.random() * 10000);
-//        int randomFigureToAvoidDoublingOfSensors = (int) Math.round(intermediateRandom);
-//
-//        try {
-//
-//            int currentTimeInMillisWithRandom = (int) java.lang.System.currentTimeMillis() + randomFigureToAvoidDoublingOfSensors;
-//            String selectSQL = "INSERT INTO dbtcontrol.sensors (name, type, description ) "
-//                    + "VALUES ('newly added sensor', 'type example', ?);"
-//                    + "SELECT id "
-//                    + "from dbtcontrol.sensors "
-//                    + "WHERE description = ?";
-//
-//            maxIDresultSetPrepStatement
-//                    = getDataSource().getConnection().prepareStatement(selectSQL);
-//            maxIDresultSetPrepStatement.setInt(1, currentTimeInMillisWithRandom);
-//            maxIDresultSetPrepStatement.setInt(2, currentTimeInMillisWithRandom);
-//            ResultSet rs = maxIDresultSetPrepStatement.executeQuery(selectSQL);
-//
-//            int sensorIdToReturn = rs.getInt("id");
-//
-//            addedSensorId = sensorIdToReturn;
-//
-//        } catch (SQLException ex) {
-//            LOGGER.log(Level.SEVERE, null, ex);
-//        } finally {
-//            try {
-//                if (resultSet != null) {
-//                    resultSet.close();
-//                }
-//            } catch (SQLException ex) {
-//                LOGGER.log(Level.SEVERE, null, ex);
-//            } finally {
-//                resultSet = null;
-//            }
-//
-//        }
-//
-//        return addedSensorId;
     }
 
     @Override

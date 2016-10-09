@@ -159,15 +159,43 @@ public class MySqlJdbcDaoTest {
     }
 
     @Test
-    public void getCurrentValuesTestUser1() throws ParseException {
+    public void getCurrentValuesTestUser2() throws ParseException {
+        final SimpleDateFormat format = new SimpleDateFormat(YYYY_M_MDD_H_HMMSS);
+        final Date date = format.parse("2014-10-09 11:01:00");
 
         int userId = 2;
-        List<SensorValue> sensorValues = dao.getCurrentValues(userId);
+        List<SensorValue> sensorValues = dao.getCurrentValues(userId, new java.sql.Date(date.getTime()));
+
+        assertNotNull(sensorValues);
+
+        assertThat(sensorValues.size(), is(1));
+        //build map sensorId->value
+        Map<Integer, SensorValue> sensorValueByIdMap = new HashMap<>();
+        sensorValues.stream().forEach((sensorVl) -> {
+            sensorValueByIdMap.put(sensorVl.getSensorId(), sensorVl);
+        });
+
+        assertThat(sensorValueByIdMap.size(), is(1));
+
+        //check value 1
+//        SensorValue sensorVl1 = sensorValueByIdMap.get(5);
+//        checkValue(sensorVl1, 5L, "2014-08-11 15:16:17", 230.6);
+        //check value 2
+        SensorValue sensorVl2 = sensorValueByIdMap.get(3);
+        checkValue(sensorVl2, 3L, "2014-10-09 11:01:17", 1.0);
+    }
+
+    @Test
+    public void getCurrentValuesTestUser1() throws ParseException {
+
+        final int userId = 1;
+        final SimpleDateFormat format = new SimpleDateFormat(YYYY_M_MDD_H_HMMSS);
+        final Date date = format.parse("2014-08-12 12:00:00");
+        List<SensorValue> sensorValues = dao.getCurrentValues(userId, new java.sql.Date(date.getTime()));
 
         assertNotNull(sensorValues);
 
         assertThat(sensorValues.size(), is(2));
-        //build map sensorId->value
         Map<Integer, SensorValue> sensorValueByIdMap = new HashMap<>();
         sensorValues.stream().forEach((sensorVl) -> {
             sensorValueByIdMap.put(sensorVl.getSensorId(), sensorVl);
@@ -176,43 +204,16 @@ public class MySqlJdbcDaoTest {
         assertThat(sensorValueByIdMap.size(), is(2));
 
         //check value 1
-        SensorValue sensorVl1 = sensorValueByIdMap.get(5);
-        checkValue(sensorVl1, 5L, "2014-08-11 15:16:17", 230.6);
-
-        //check value 2
-        SensorValue sensorVl2 = sensorValueByIdMap.get(3);
-        checkValue(sensorVl2, 3L, "2014-08-11 16:01:17", 1.0);
-    }
-
-    @Test
-    public void getCurrentValuesTestUser2() throws ParseException {
-
-        int userId = 1;
-        final SimpleDateFormat format = new SimpleDateFormat(YYYY_M_MDD_H_HMMSS);
-        final Date date = format.parse("2014-08-12 12:00:00");
-        List<SensorValue> sensorValues = dao.getCurrentValues(userId, new java.sql.Date(date.getTime()));
-
-        assertNotNull(sensorValues);
-
-        assertThat(sensorValues.size(), is(3));
-        Map<Integer, SensorValue> sensorValueByIdMap = new HashMap<>();
-        sensorValues.stream().forEach((sensorVl) -> {
-            sensorValueByIdMap.put(sensorVl.getSensorId(), sensorVl);
-        });
-
-        assertThat(sensorValueByIdMap.size(), is(3));
-
-        //check value 1
         SensorValue sensorVl1 = sensorValueByIdMap.get(1);
         checkValue(sensorVl1, 1L, "2014-08-12 12:00:00", 21.5);
-        
+
         //gradient could be calculated
         assertThat(sensorVl1.getGradient(), closeTo(0.3157, 0.001));
 
         //check value 2
         SensorValue sensorVl2 = sensorValueByIdMap.get(2);
         checkValue(sensorVl2, 2L, "2014-08-12 12:00:00", 8.56);
-        
+
         //no gradien for the period
         assertNull(sensorVl2.getGradient());
     }
@@ -281,13 +282,13 @@ public class MySqlJdbcDaoTest {
             assertThat(sensor1.getType(), is(SensorType.TEMPERATURE));
         }
         //(3, 'Power', 'ON_OF', 'Power On or Off Sensor')
-        {
-            Sensor sensor1 = sensorByIdMap.get(3);
-            assertNotNull(sensor1);
-            assertThat(sensor1.getName(), is("Power"));
-            assertThat(sensor1.getDescription(), is("Power On or Off Sensor"));
-            assertThat(sensor1.getType(), is(SensorType.ON_OFF));
-        }
+//        {
+//            Sensor sensor1 = sensorByIdMap.get(3);
+//            assertNotNull(sensor1);
+//            assertThat(sensor1.getName(), is("Power"));
+//            assertThat(sensor1.getDescription(), is("Power On or Off Sensor"));
+//            assertThat(sensor1.getType(), is(SensorType.ON_OFF));
+//        }
     }
 
     @Test
@@ -307,14 +308,14 @@ public class MySqlJdbcDaoTest {
 
         assertNotNull(sensorValues);
 
-        assertThat(sensorValues.size(), is(3));
+        assertThat(sensorValues.size(), is(1));
         //build map sensorId->value
         Map<Integer, SensorValue> sensorValueByIdMap = new HashMap<>();
         sensorValues.stream().forEach((sensorVl) -> {
             sensorValueByIdMap.put(sensorVl.getSensorId(), sensorVl);
         });
 
-        assertThat(sensorValueByIdMap.size(), is(3));
+        assertThat(sensorValueByIdMap.size(), is(1));
 
         //check value 1
         SensorValue sensorVl1 = sensorValueByIdMap.get(1);
@@ -344,14 +345,14 @@ public class MySqlJdbcDaoTest {
 
         assertNotNull(sensorValues);
 
-        assertThat(sensorValues.size(), is(3));
+        assertThat(sensorValues.size(), is(1));
         //build map sensorId->value
         Map<Integer, SensorValue> sensorValueByIdMap = new HashMap<>();
         sensorValues.stream().forEach((sensorVl) -> {
             sensorValueByIdMap.put(sensorVl.getSensorId(), sensorVl);
         });
 
-        assertThat(sensorValueByIdMap.size(), is(3));
+        assertThat(sensorValueByIdMap.size(), is(1));
 
         //check value 2
         SensorValue sensorVl1 = sensorValueByIdMap.get(1);

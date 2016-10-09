@@ -35,6 +35,7 @@ public class MySqlJDBCDaoImpl implements DaoInterface {
 
     private static final Logger LOGGER = Logger.getLogger(MySqlJDBCDaoImpl.class.getName());
 
+    private static final int DATA_LOAD_TIME_INTERVAL = 135;
     private static final int GRADIENT_HIGH_TIME_INTERVAL = 75;
     private static final int GRADIENT_LOW_TIME_INTERVAL = 45;
 
@@ -127,31 +128,31 @@ public class MySqlJDBCDaoImpl implements DaoInterface {
                     indexes[i] = maxIndex - i;
                 }
                 try (
-                        PreparedStatement preparedStatement
-                        = createPreparedStatementToGetCurrentValues(connection, userId);
-                        ResultSet resultSet = preparedStatement.executeQuery();
+                       // PreparedStatement preparedStatement
+                       // = createPreparedStatementToGetCurrentValues(connection, userId);
+                       // ResultSet resultSet = preparedStatement.executeQuery();
                         PreparedStatement gradientStatement
                         = createPreparedStatementToGetLastHourGradientValues(connection, userId, indexes, date);
                         ResultSet gradientSet = gradientStatement.executeQuery();) {
 
                     Map<Integer, SensorValue> valuesMap = new HashMap<>();
-                    while (resultSet.next()) {
-
-                        double value = resultSet.getDouble("value");
-                        Timestamp timeStamp = resultSet.getTimestamp("timestamp");
-                        int sensorId = resultSet.getInt("sensor_id");
-
-                        //build sensorValue object
-                        SensorValue sensorsValue = new SensorValue(value);
-                        sensorsValue.setValue(value);
-                        sensorsValue.setTimestamp(timeStamp);
-                        sensorsValue.setSensorId(sensorId);
-
-                        listOfSensorValues.add(sensorsValue);
-                        valuesMap.put(sensorId, sensorsValue);
-                    }
-
-                    Map<Integer, MutablePair<SensorValue, SensorValue>> gradMap = new HashMap<>();
+//                    while (resultSet.next()) {
+//
+//                        double value = resultSet.getDouble("value");
+//                        Timestamp timeStamp = resultSet.getTimestamp("timestamp");
+//                        int sensorId = resultSet.getInt("sensor_id");
+//
+//                        //build sensorValue object
+//                        SensorValue sensorsValue = new SensorValue(value);
+//                        sensorsValue.setTimestamp(timeStamp);
+//                        sensorsValue.setSensorId(sensorId);
+//
+//                        listOfSensorValues.add(sensorsValue);
+//                        valuesMap.put(sensorId, sensorsValue);
+//                    }
+                    final Timestamp startGradientLoadDate
+                            = new Timestamp(date.getTime() - GRADIENT_HIGH_TIME_INTERVAL  * 60 * 1000);
+                    final Map<Integer, MutablePair<SensorValue, SensorValue>> gradMap = new HashMap<>();
                     while (gradientSet.next()) {
                         double value = gradientSet.getDouble("value");
                         Timestamp timeStamp = gradientSet.getTimestamp("timestamp");
@@ -161,15 +162,25 @@ public class MySqlJDBCDaoImpl implements DaoInterface {
 
                         SensorValue sValue = new SensorValue(value);
                         sValue.setTimestamp(timeStamp);
+                        sValue.setSensorId(sensorId);
 
-                        if (pair == null) {
-                            pair = new MutablePair<>(sValue, null);
-                            gradMap.put(sensorId, pair);
-                        } else {
-                            pair.setRight(sValue);
+                        if (timeStamp.compareTo(startGradientLoadDate) >= 0) {
+                            if (pair == null) {
+                                pair = new MutablePair<>(sValue, null);
+                                gradMap.put(sensorId, pair);
+                            } else {
+                                pair.setRight(sValue);
+                            }
+                        }
+
+                        if (!valuesMap.containsKey(sensorId)
+                                || valuesMap.get(sensorId).getTimestamp().compareTo(timeStamp) < 0) {
+                            valuesMap.put(sensorId, sValue);
                         }
                     }
-
+                    
+                    valuesMap.entrySet().forEach(e->listOfSensorValues.add(e.getValue()));
+                    
                     gradMap.entrySet().forEach(e -> {
                         int sensorId = e.getKey();
                         MutablePair<SensorValue, SensorValue> pair = gradMap.get(sensorId);
@@ -282,7 +293,7 @@ public class MySqlJDBCDaoImpl implements DaoInterface {
         ps.setInt(1, userId);
 
         final Timestamp startDate
-                = new Timestamp(date.getTime() - GRADIENT_HIGH_TIME_INTERVAL * 60 * 1000);
+                = new Timestamp(date.getTime() - DATA_LOAD_TIME_INTERVAL * 60 * 1000);
         ps.setTimestamp(2, startDate);
 
         return ps;

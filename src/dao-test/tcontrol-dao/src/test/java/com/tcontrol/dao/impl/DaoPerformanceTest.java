@@ -23,10 +23,12 @@ import org.junit.AfterClass;
 import static org.junit.Assert.*;
 import org.junit.Before;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+@Ignore
 public class DaoPerformanceTest {
 
     private static final Logger LOGGER = Logger.getLogger(DaoPerformanceTest.class.getName());
@@ -45,9 +47,9 @@ public class DaoPerformanceTest {
         LOGGER.log(Level.INFO, "Remove database...");
         FileUtils.delete("~/unittestdb.mv.db");
         FileUtils.delete("~/unittestdb.trace.db");
-        
+
         initDb();
-        
+
         DataSource dataSource = mock(DataSource.class);
         ((MySqlJDBCDaoImpl) dao).setDataSource(dataSource);
         assertNotNull(((MySqlJDBCDaoImpl) dao).getDataSource());
@@ -73,7 +75,7 @@ public class DaoPerformanceTest {
                 Reader reader = new FileReader("sql-scripts/tcontrol-db.h2-2016-09-30.sql");
                 RunScript.execute(h2Connection, reader);
                 LOGGER.log(Level.INFO, "Creating database complete.");
-
+                h2Connection.commit();
                 return h2Connection;
             } catch (SQLException | FileNotFoundException ex) {
                 LOGGER.log(Level.INFO, null, ex);
@@ -97,7 +99,7 @@ public class DaoPerformanceTest {
     public void setUp() throws SQLException {
         reinitConnection();
     }
-    
+
     private void reinitConnection() throws SQLException {
         DataSource dataSource = ((MySqlJDBCDaoImpl) dao).getDataSource();
         when(dataSource.getConnection()).thenReturn(createH2Connection());
@@ -109,7 +111,7 @@ public class DaoPerformanceTest {
         Map<Integer, Sensor> sensorByIdMap = dao.getUserSensors(1);
         assertThat(sensorByIdMap.size(), is(4));
         long t2 = System.currentTimeMillis();
-        LOGGER.log(Level.INFO, "getUserSensors: " + (t2 - t1) +"msec");
+        LOGGER.log(Level.INFO, "getUserSensors: " + (t2 - t1) + "msec");
     }
 
     @Test
@@ -117,7 +119,7 @@ public class DaoPerformanceTest {
         long t1 = System.currentTimeMillis();
         List<SensorValue> values = dao.getCurrentValues(1);
         long t2 = System.currentTimeMillis();
-        LOGGER.log(Level.INFO, "getCurrentValues: " + (t2 - t1) +"msec");
+        LOGGER.log(Level.INFO, "getCurrentValues: " + (t2 - t1) + "msec");
         assertThat(values.size(), is(4));
     }
 

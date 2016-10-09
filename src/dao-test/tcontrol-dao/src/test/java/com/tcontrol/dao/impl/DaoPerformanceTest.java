@@ -19,17 +19,15 @@ import org.h2.store.fs.FileUtils;
 import org.h2.tools.RunScript;
 import org.h2.tools.Server;
 import static org.hamcrest.CoreMatchers.is;
-import org.junit.After;
 import org.junit.AfterClass;
 import static org.junit.Assert.*;
 import org.junit.Before;
 import org.junit.BeforeClass;
+import org.junit.Test;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 public class DaoPerformanceTest {
-
-    private static final String YYYY_M_MDD_H_HMMSS = "yyyy-MM-dd HH:mm:ss";
 
     private static final Logger LOGGER = Logger.getLogger(DaoPerformanceTest.class.getName());
     private static final String USER_PASSWORD = "";
@@ -57,8 +55,6 @@ public class DaoPerformanceTest {
 
     private static Connection createH2Connection() throws SQLException {
         Connection h2Connection = null;
-        //TODO: disable storage in file:MV_STORE=FALSE and ;TRACE_LEVEL_SYSTEM_OUT=0
-        //Use memory mode - 'jdbc:h2:mem' 
         h2Connection = DriverManager.getConnection("jdbc:h2:~/unittestdb", USER_LOGIN, USER_PASSWORD);
         return h2Connection;
     }
@@ -73,18 +69,18 @@ public class DaoPerformanceTest {
             try {
 
                 //Create and H2 database for unit tests part
-                LOGGER.log(Level.SEVERE, "Creating database start...");
+                LOGGER.log(Level.INFO, "Creating database start...");
                 Reader reader = new FileReader("sql-scripts/tcontrol-db.h2-2016-09-30.sql");
                 RunScript.execute(h2Connection, reader);
-                LOGGER.log(Level.SEVERE, "Creating database complete.");
+                LOGGER.log(Level.INFO, "Creating database complete.");
 
                 return h2Connection;
             } catch (SQLException | FileNotFoundException ex) {
-                LOGGER.log(Level.SEVERE, null, ex);
+                LOGGER.log(Level.INFO, null, ex);
 
             }
         } catch (SQLException | ClassNotFoundException ex) {
-            LOGGER.log(Level.SEVERE, null, ex);
+            LOGGER.log(Level.INFO, null, ex);
         }
         return null;
     }
@@ -101,17 +97,13 @@ public class DaoPerformanceTest {
     public void setUp() throws SQLException {
         reinitConnection();
     }
-
-    @After
-    public void tearDown() {
-    }
     
     private void reinitConnection() throws SQLException {
         DataSource dataSource = ((MySqlJDBCDaoImpl) dao).getDataSource();
         when(dataSource.getConnection()).thenReturn(createH2Connection());
     }
 
-    //@Test
+    @Test
     public void getUserSensorsTest() throws DaoException {
         long t1 = System.currentTimeMillis();
         Map<Integer, Sensor> sensorByIdMap = dao.getUserSensors(1);
@@ -120,7 +112,7 @@ public class DaoPerformanceTest {
         LOGGER.log(Level.INFO, "getUserSensors: " + (t2 - t1) +"msec");
     }
 
-    //@Test
+    @Test
     public void getCurrentValuesTest() throws DaoException {
         long t1 = System.currentTimeMillis();
         List<SensorValue> values = dao.getCurrentValues(1);
@@ -128,4 +120,5 @@ public class DaoPerformanceTest {
         LOGGER.log(Level.INFO, "getCurrentValues: " + (t2 - t1) +"msec");
         assertThat(values.size(), is(4));
     }
+
 }

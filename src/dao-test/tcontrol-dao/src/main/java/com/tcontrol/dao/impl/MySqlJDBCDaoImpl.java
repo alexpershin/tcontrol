@@ -14,11 +14,13 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 import javax.annotation.Resource;
 import javax.ejb.Stateless;
 import javax.sql.DataSource;
@@ -32,7 +34,7 @@ import org.apache.commons.lang3.tuple.MutablePair;
 public class MySqlJDBCDaoImpl implements DaoInterface {
 
     private static final Logger LOGGER = Logger.getLogger(MySqlJDBCDaoImpl.class.getName());
-    
+
     private static final int GRADIENT_HIGH_TIME_INTERVAL = 75;
     private static final int GRADIENT_LOW_TIME_INTERVAL = 45;
 
@@ -100,69 +102,97 @@ public class MySqlJDBCDaoImpl implements DaoInterface {
     @Override
     public List<SensorValue> getCurrentValues(final int userId, Date date) {
         final List<SensorValue> listOfSensorValues = new ArrayList<>();
-
         try (Connection connection = getDataSource().getConnection();
-                PreparedStatement preparedStatement
-                = createPreparedStatementToGetCurrentValues(connection, userId);
-                ResultSet resultSet = preparedStatement.executeQuery();
-                PreparedStatement gradientStatement
-                = createPreparedStatementToGetLastHourGradientValues(connection, userId, date);
-                ResultSet gradientSet = gradientStatement.executeQuery();) {
-
-            Map<Integer, SensorValue> valuesMap = new HashMap<>();
-            while (resultSet.next()) {
-
-                double value = resultSet.getDouble("value");
-                Timestamp timeStamp = resultSet.getTimestamp("timestamp");
-                int sensorId = resultSet.getInt("sensor_id");
-
-                //build sensorValue object
-                SensorValue sensorsValue = new SensorValue(value);
-                sensorsValue.setValue(value);
-                sensorsValue.setTimestamp(timeStamp);
-                sensorsValue.setSensorId(sensorId);
-
-                listOfSensorValues.add(sensorsValue);
-                valuesMap.put(sensorId, sensorsValue);
+                PreparedStatement maxIDresultSetPrepStatement
+                = createPreparedStatementToGetMaxId(connection);
+                ResultSet maxIDresultSet = maxIDresultSetPrepStatement.executeQuery();
+                PreparedStatement numOfSensorsPrepStatement
+                = createPreparedStatementToGetNumberOfSensors(connection);
+                ResultSet sensorsNumresultSet = numOfSensorsPrepStatement.executeQuery();) {
+            Integer maxIndex = null;
+            Integer numOfSensors = null;
+            if (maxIDresultSet.next()) {
+                maxIndex = maxIDresultSet.getInt(1);
             }
-
-            Map<Integer, MutablePair<SensorValue, SensorValue>> gradMap = new HashMap<>();
-            while (gradientSet.next()) {
-                double value = gradientSet.getDouble("value");
-                Timestamp timeStamp = gradientSet.getTimestamp("timestamp");
-                int sensorId = gradientSet.getInt("sensor_id");
-
-                MutablePair<SensorValue, SensorValue> pair = gradMap.get(sensorId);
-
-                SensorValue sValue = new SensorValue(value);
-                sValue.setTimestamp(timeStamp);
-
-                if (pair == null) {
-                    pair = new MutablePair<>(sValue, null);
-                    gradMap.put(sensorId, pair);
-                } else {
-                    pair.setRight(sValue);
+            if (sensorsNumresultSet.next()) {
+                numOfSensors = sensorsNumresultSet.getInt(1);
+            }
+            if (maxIndex != null && numOfSensors != null) {
+                double gradientPeriod = 1.0;//1hour
+                double rate = 0.25;//15мин
+                double numOfValues = (gradientPeriod / rate + 1) * numOfSensors;
+                numOfValues = maxIndex >= numOfValues ? numOfValues : maxIndex;
+                Integer[] indexes = new Integer[(new Double(Math.floor(numOfValues))).intValue()];
+                for (int i = 0; i < indexes.length; i++) {
+                    indexes[i] = maxIndex - i;
                 }
-            }
+                try (
+                        PreparedStatement preparedStatement
+                        = createPreparedStatementToGetCurrentValues(connection, userId);
+                        ResultSet resultSet = preparedStatement.executeQuery();
+                        PreparedStatement gradientStatement
+                        = createPreparedStatementToGetLastHourGradientValues(connection, userId, indexes, date);
+                        ResultSet gradientSet = gradientStatement.executeQuery();) {
 
-            gradMap.entrySet().forEach(e -> {
-                int sensorId = e.getKey();
-                MutablePair<SensorValue, SensorValue> pair = gradMap.get(sensorId);
-                if (pair != null) {
-                    SensorValue firstValue = pair.getLeft();
-                    SensorValue lastValue = pair.getValue();
+                    Map<Integer, SensorValue> valuesMap = new HashMap<>();
+                    while (resultSet.next()) {
 
-                    if (firstValue != null && lastValue != null) {
-                        double diff = lastValue.getTimestamp().getTime() - firstValue.getTimestamp().getTime();
-                        if (diff > GRADIENT_LOW_TIME_INTERVAL * 60 * 1000 
-                            && diff < GRADIENT_HIGH_TIME_INTERVAL * 60 * 1000) {
-                            Double gradientValue = (lastValue.getValue() - firstValue.getValue())*3600000.0/diff;
-                            SensorValue sensorValue = valuesMap.get(sensorId);
-                            sensorValue.setGradient(gradientValue);
+                        double value = resultSet.getDouble("value");
+                        Timestamp timeStamp = resultSet.getTimestamp("timestamp");
+                        int sensorId = resultSet.getInt("sensor_id");
+
+                        //build sensorValue object
+                        SensorValue sensorsValue = new SensorValue(value);
+                        sensorsValue.setValue(value);
+                        sensorsValue.setTimestamp(timeStamp);
+                        sensorsValue.setSensorId(sensorId);
+
+                        listOfSensorValues.add(sensorsValue);
+                        valuesMap.put(sensorId, sensorsValue);
+                    }
+
+                    Map<Integer, MutablePair<SensorValue, SensorValue>> gradMap = new HashMap<>();
+                    while (gradientSet.next()) {
+                        double value = gradientSet.getDouble("value");
+                        Timestamp timeStamp = gradientSet.getTimestamp("timestamp");
+                        int sensorId = gradientSet.getInt("sensor_id");
+
+                        MutablePair<SensorValue, SensorValue> pair = gradMap.get(sensorId);
+
+                        SensorValue sValue = new SensorValue(value);
+                        sValue.setTimestamp(timeStamp);
+
+                        if (pair == null) {
+                            pair = new MutablePair<>(sValue, null);
+                            gradMap.put(sensorId, pair);
+                        } else {
+                            pair.setRight(sValue);
                         }
                     }
+
+                    gradMap.entrySet().forEach(e -> {
+                        int sensorId = e.getKey();
+                        MutablePair<SensorValue, SensorValue> pair = gradMap.get(sensorId);
+                        if (pair != null) {
+                            SensorValue firstValue = pair.getLeft();
+                            SensorValue lastValue = pair.getValue();
+
+                            if (firstValue != null && lastValue != null) {
+                                double diff = lastValue.getTimestamp().getTime() - firstValue.getTimestamp().getTime();
+                                if (diff > GRADIENT_LOW_TIME_INTERVAL * 60 * 1000
+                                        && diff < GRADIENT_HIGH_TIME_INTERVAL * 60 * 1000) {
+                                    Double gradientValue = (lastValue.getValue() - firstValue.getValue()) * 3600000.0 / diff;
+                                    SensorValue sensorValue = valuesMap.get(sensorId);
+                                    sensorValue.setGradient(gradientValue);
+                                }
+                            }
+                        }
+                    });
+
+                } catch (SQLException ex) {
+                    LOGGER.log(Level.SEVERE, null, ex);
                 }
-            });
+            }
         } catch (SQLException ex) {
             LOGGER.log(Level.SEVERE, null, ex);
         }
@@ -194,32 +224,67 @@ public class MySqlJDBCDaoImpl implements DaoInterface {
         return ps;
     }
 
+    private PreparedStatement createPreparedStatementToGetMaxId(
+            Connection con) throws SQLException {
+
+        final String sql = "select max(id) from dbtcontrol.sensor_values";
+
+        final PreparedStatement ps = con.prepareStatement(sql);
+        return ps;
+    }
+
+    private PreparedStatement createPreparedStatementToGetNumberOfSensors(
+            Connection con) throws SQLException {
+
+        final String sql = "select count(*) from dbtcontrol.sensors";
+
+        final PreparedStatement ps = con.prepareStatement(sql);
+        return ps;
+    }
+
     private PreparedStatement createPreparedStatementToGetLastHourGradientValues(
             Connection con,
             int userId,
+            Integer[] ids,
             Date date) throws SQLException {
         //TODO remove schema
-        final String sql = "select "
-                + "v.sensor_id sensor_id,"
-                + "v.timestamp timestamp,"
-                + "v.value value"
-                + " from dbtcontrol.sensor_values v"
-                + " where v.id in ("
-                + "  select vl.id"
-                + "   from "
-                + "     dbtcontrol.sensor_values vl, "
-                + "     dbtcontrol.profiles p"
-                + "   where vl.sensor_id = p.sensor_id"
-                + "   and p.user_id = ?"
-                + "   and vl.timestamp >= ?"
-                + ")"
-                + "order by sensor_id, timestamp";
+//        final String sql = "select "
+//                + "v.sensor_id sensor_id,"
+//                + "v.timestamp timestamp,"
+//                + "v.value value"
+//                + " from dbtcontrol.sensor_values v"
+//                + " where v.id in ("
+//                + "  select vl.id"
+//                + "   from "
+//                + "     dbtcontrol.sensor_values vl, "
+//                + "     dbtcontrol.profiles p"
+//                + "   where vl.sensor_id = p.sensor_id"
+//                + "   and p.user_id = ?"
+//                + "   and vl.timestamp >= ?"
+//                + ")"
+//                + "order by sensor_id, timestamp";
+        String sql = "select"
+                + " id"
+                + ",sensor_id"
+                + ",timestamp"
+                + ",value"
+                + " from dbtcontrol.sensor_values where sensor_id in("
+                + " select sensor_id from dbtcontrol.profiles where user_id=?)"
+                + " and id in (%s) and timestamp >= ? order by sensor_id, timestamp";
+        String array = Arrays.stream(ids).map(i -> i.toString()).collect(Collectors.joining(","));
+        //Array array = ps.getConnection().createArrayOf("BIGINT", ids);
+        //ps.setArray(2, array);
+        //ps.setString(2, array);
+        sql = String.format(sql, array);
 
         final PreparedStatement ps = con.prepareStatement(sql);
+
         ps.setInt(1, userId);
-        final Timestamp startDate = 
-                new Timestamp(date.getTime() - GRADIENT_HIGH_TIME_INTERVAL * 60 * 1000);
+
+        final Timestamp startDate
+                = new Timestamp(date.getTime() - GRADIENT_HIGH_TIME_INTERVAL * 60 * 1000);
         ps.setTimestamp(2, startDate);
+
         return ps;
     }
 
@@ -249,7 +314,7 @@ public class MySqlJDBCDaoImpl implements DaoInterface {
         //VERY STRANGE CODE and without UNIT tests, most probably it would work correctly.
 //        int addedSensorId = 0;
 //        ResultSet resultSet = null;
-//        PreparedStatement preparedStatement;
+//        PreparedStatement maxIDresultSetPrepStatement;
 //        double intermediateRandom = (Math.random() * 10000);
 //        int randomFigureToAvoidDoublingOfSensors = (int) Math.round(intermediateRandom);
 //
@@ -262,11 +327,11 @@ public class MySqlJDBCDaoImpl implements DaoInterface {
 //                    + "from dbtcontrol.sensors "
 //                    + "WHERE description = ?";
 //
-//            preparedStatement
+//            maxIDresultSetPrepStatement
 //                    = getDataSource().getConnection().prepareStatement(selectSQL);
-//            preparedStatement.setInt(1, currentTimeInMillisWithRandom);
-//            preparedStatement.setInt(2, currentTimeInMillisWithRandom);
-//            ResultSet rs = preparedStatement.executeQuery(selectSQL);
+//            maxIDresultSetPrepStatement.setInt(1, currentTimeInMillisWithRandom);
+//            maxIDresultSetPrepStatement.setInt(2, currentTimeInMillisWithRandom);
+//            ResultSet rs = maxIDresultSetPrepStatement.executeQuery(selectSQL);
 //
 //            int sensorIdToReturn = rs.getInt("id");
 //

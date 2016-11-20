@@ -11,7 +11,7 @@ import javax.ejb.Timer;
 import org.junit.Before;
 import org.junit.Test;
 import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyString;
+import static org.mockito.Matchers.anyObject;
 import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -42,7 +42,7 @@ public class MonitorSchedulerTest {
     @Test
     public void testLoadTemperatureValueException() throws IOException, DaoException {
         final TemperatureMonitor tMonitor = mock(TemperatureMonitor.class);
-        when(tMonitor.loadTemperatureValue(anyString())).thenThrow(new IOException());
+        when(tMonitor.loadValue(anyObject())).thenThrow(new IOException());
 
         monitorScheduler.temperatureMonitor = tMonitor;
         monitorScheduler.dao = dao;
@@ -54,7 +54,7 @@ public class MonitorSchedulerTest {
     @Test
     public void testLoadTemperatureValue() throws IOException, DaoException {
         final TemperatureMonitor tMonitor = mock(TemperatureMonitor.class);
-        when(tMonitor.loadTemperatureValue(anyString())).thenReturn(mock(SensorValue.class));
+        when(tMonitor.loadValue(anyObject())).thenReturn(mock(SensorValue.class));
 
         monitorScheduler.temperatureMonitor = tMonitor;
         monitorScheduler.dao = dao;

@@ -12,12 +12,13 @@ import java.util.logging.Logger;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 
+
 /**
  *
  */
 @Stateless
 @LocalBean
-public class TemperatureMonitor {
+public class TemperatureMonitor implements MonitorInterface {
 
     private static final Logger LOGGER = Logger.getLogger(TemperatureMonitor.class.getName());
 
@@ -26,8 +27,9 @@ public class TemperatureMonitor {
     private String w1DevicesPath = "/sys/bus/w1/devices";
     private String w1SensorInfoFileName = "w1_slave";
 
-    public SensorValue loadTemperatureValue(String sensorUID) throws IOException {
-        double t = readTemperatureFromFile(getFullPathToDevice(sensorUID));
+    @Override
+    public SensorValue loadValue(String sensorUUID) throws IOException {
+        double t = readTemperatureFromFile(getFullPathToDevice(sensorUUID));
         return new SensorValue(-1, System.currentTimeMillis(), t);
     }
 

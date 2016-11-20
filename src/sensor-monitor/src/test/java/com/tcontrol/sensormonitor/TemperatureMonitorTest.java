@@ -7,6 +7,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import org.junit.Before;
 import org.junit.Test;
+import static org.hamcrest.CoreMatchers.is;
 
 public class TemperatureMonitorTest {
 
@@ -33,19 +34,19 @@ public class TemperatureMonitorTest {
     @Test
     public void testSensorValues() throws IOException {
         {
-            SensorValue v = monitor.loadTemperatureValue("28-000002c7c3ee");
+            SensorValue v = monitor.loadValue("28-000002c7c3ee");
             assertThat(v.getValue(), is(15.687));
         }
         {
-            SensorValue v = monitor.loadTemperatureValue("28-000002c7d1b5");
+            SensorValue v = monitor.loadValue("28-000002c7d1b5");
             assertThat(v.getValue(), is(-1.000));
         }
         {
-            SensorValue v = monitor.loadTemperatureValue("28-000002c7eed3");
+            SensorValue v = monitor.loadValue("28-000002c7eed3");
             assertThat(v.getValue(), is(9.500));
         }
         {
-            SensorValue v = monitor.loadTemperatureValue("28-0000066c6a65");
+            SensorValue v = monitor.loadValue("28-0000066c6a65");
             assertThat(v.getValue(), is(21.562));
         }
     }

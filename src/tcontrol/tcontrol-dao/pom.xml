@@ -3,10 +3,10 @@
     <modelVersion>4.0.0</modelVersion>
         <parent>
         <artifactId>tcontrol</artifactId>
-        <groupId>com.tcontrol.prof</groupId>
+        <groupId>com.tcontrol</groupId>
         <version>1.0-SNAPSHOT</version>
     </parent>
-    <groupId>com.tcontrol.dao</groupId>
+    <groupId>com.tcontrol</groupId>
     <artifactId>tcontrol-dao</artifactId>
     <version>1.0-SNAPSHOT</version>
     <packaging>jar</packaging>

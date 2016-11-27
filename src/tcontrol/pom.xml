@@ -10,5 +10,7 @@
     <module>tcontrol-ear</module>
     <module>tcontrol-web</module>
     <module>tcontrol-ejb</module>
+    <module>sensor-monitor</module>
+    <module>tcontrol-dao</module>
   </modules>
 </project>

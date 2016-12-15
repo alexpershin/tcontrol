@@ -11,12 +11,10 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import javax.ejb.Stateless;
 
 /**
  * DAO stub to use while real DAO has not been completely implemented.
  */
-@Stateless
 public class DaoStub implements DaoInterface {
 
     @Override

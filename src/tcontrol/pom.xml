@@ -15,10 +15,13 @@
       <junit-version>4.10</junit-version>
       <pi4j-version>1.1</pi4j-version>
       <groovy-all-version>2.4.3</groovy-all-version>
+      <openejb-core-version>4.7.1</openejb-core-version>
   </properties>
   <modules>
     <module>tcontrol-web</module>
     <module>tcontrol-dao</module>
     <module>tcontrol-sensor-monitor</module>
+    <module>tc-sensor-monitor-web</module>
+    <module>tc-dao-ear</module>
   </modules>
 </project>

@@ -30,7 +30,7 @@ import javax.ws.rs.core.Response.Status;
 @Singleton
 public class SensorsWebService {
 
-    @EJB(beanName = "MySqlJDBCDaoImpl")
+    @EJB(lookup="java:global/tc-dao-ear-ear/tc-dao-ear-ejb/MySqlJDBCDaoImpl")
     //@EJB(beanName = "DaoStub")
     private DaoInterface dao;
 
@@ -140,7 +140,8 @@ public class SensorsWebService {
             result = value.getValue() == 0 ? NORMAL : ALERT;
 
         } else //calculate state according to threshold
-         //low thressHold
+        //low thressHold
+        {
             if (value.getValue() <= sensor.getLowThreshold()) {
                 result = ALERT;
             } else if (v <= sensor.getLowThreshold() + sensor.getThresholdLag()
@@ -153,6 +154,7 @@ public class SensorsWebService {
                     && v < sensor.getHighThreshold()) {
                 result = WARNING;
             }
+        }
         return result;
     }
 

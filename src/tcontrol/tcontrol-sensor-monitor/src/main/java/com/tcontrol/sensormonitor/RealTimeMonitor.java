@@ -24,7 +24,7 @@ public class RealTimeMonitor {
     @EJB
     AlarmMonitor alarmMonitor;
 
-    @EJB(beanName = "MySqlJDBCDaoImpl")
+    @EJB(lookup="java:global/tc-dao-ear-web/MySqlJDBCDaoImpl")
     DaoInterface dao;
 
     @PostConstruct

@@ -30,7 +30,8 @@ import javax.ws.rs.core.Response.Status;
 @Singleton
 public class SensorsWebService {
 
-    @EJB(lookup="java:global/tc-dao-ear-ear/tc-dao-ear-ejb/MySqlJDBCDaoImpl")
+//        @EJB(lookup="java:global/tc-dao-ear-ear/tc-dao-ear-ejb/MySqlJDBCDaoImpl")
+@EJB(lookup="java:global/tc-dao-ear-web/MySqlJDBCDaoImpl")
     //@EJB(beanName = "DaoStub")
     private DaoInterface dao;
 

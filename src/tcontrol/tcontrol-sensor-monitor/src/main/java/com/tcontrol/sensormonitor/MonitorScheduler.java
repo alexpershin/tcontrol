@@ -59,9 +59,9 @@ public class MonitorScheduler {
         temperatureMonitor.setW1DevicesPath(w1DevicesPath);
     }
 
-    @EJB(beanName = "MySqlJDBCDaoImpl")
+    @EJB(lookup="java:global/tc-dao-ear-web/MySqlJDBCDaoImpl")
     DaoInterface dao;
-
+    
     @Timeout
     public void execute(Timer timer) throws DaoException {
         final Collection<Sensor> sensors = dao.getAllSensors().values();

@@ -19,7 +19,6 @@
   </properties>
   <modules>
     <module>tcontrol-web</module>
-    <module>tcontrol-dao</module>
     <module>tcontrol-sensor-monitor</module>
     <module>tc-sensor-monitor-web</module>
     <module>tc-dao-ear</module>

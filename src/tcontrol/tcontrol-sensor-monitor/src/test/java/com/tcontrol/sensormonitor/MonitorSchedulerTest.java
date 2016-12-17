@@ -1,12 +1,12 @@
 package com.tcontrol.sensormonitor;
 
-import com.google.common.collect.Maps;
 import com.tcontrol.dao.DaoException;
 import com.tcontrol.dao.DaoInterface;
 import com.tcontrol.dao.Sensor;
 import com.tcontrol.dao.SensorValue;
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.Map;
 import javax.ejb.Timer;
 import org.junit.Before;
 import org.junit.Test;
@@ -30,12 +30,12 @@ public class MonitorSchedulerTest {
     public void before() throws DaoException {
         monitorScheduler = new MonitorScheduler();
         dao = mock(DaoInterface.class);
-        
-        final HashMap<Integer, Sensor> sensors = Maps.newHashMap();
+
+        final Map<Integer, Sensor> sensors = new HashMap<>();
         final Sensor sensor = mock(Sensor.class);
         when(sensor.getType()).thenReturn(Sensor.SensorType.TEMPERATURE);
         sensors.put(1, sensor);
-        
+
         when(dao.getAllSensors()).thenReturn(sensors);
     }
 

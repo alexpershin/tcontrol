@@ -3,7 +3,6 @@ package com.tcontrol.sensormonitor;
 import com.tcontrol.dao.DaoException;
 import com.tcontrol.dao.DaoInterface;
 import com.tcontrol.dao.Sensor;
-import com.tcontrol.dao.SensorValue.SensorState;
 import java.util.Arrays;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -37,12 +36,12 @@ public class RealTimeMonitor {
                             // display pin state on console
                             System.out.println(" --> GPIO PIN STATE CHANGE: " + v.getSensorId()
                                     + " = " + v.getValue());
-                            //If alarm, save value. NORMAL sate is not saved to 
-                            //avoid switch state when noise. 
-                            if (v.getState() == SensorState.ALARM) {
+                            ////If alarm, save value. NORMAL sate is not saved to 
+                            ////avoid switch state when noise. 
+                            ////if (v.getState() == SensorState.ALARM) {
                                 v.setSensorId(sensor.getId());
                                 dao.addValues(Arrays.asList(v));
-                            }
+                            //}
                         });
 
                     });

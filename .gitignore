@@ -75,3 +75,16 @@ src/tcontrol/phantomjsdriver.log
 /src/prof/ejb-scheduling/nbproject/
 /src/dao-test/tcontrol-dao/target/
 /src/tcontrol/tcontrol-web/nbproject/
+/src/tcontrol/tc-sensor-monitor-web/target/
+/src/tcontrol/tc-dao-web/target/
+/src/tcontrol/tc-ear/tc-ear-ear/target/
+/src/tcontrol/tc-ear/tc-web/target/
+/src/tcontrol/tc-dao-ear/tc-dao-ear-ear/target/
+/src/tcontrol/tc-dao-ear/tc-dao-ear-ejb/target/
+/src/tcontrol/tc-dao-ear/tc-dao-ear-web/target/
+/src/tcontrol/tc-dao-ear/tc-dao-ear-ejb/nbproject/
+/src/tcontrol/tc-dao-ear/tc-idao/target/
+/src/tcontrol/tc-dao-ear/target/
+/src/tcontrol/target/
+**/.DS_Store
+**/target/**

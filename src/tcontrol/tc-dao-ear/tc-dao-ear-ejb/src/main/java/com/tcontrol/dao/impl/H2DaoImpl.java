@@ -31,9 +31,9 @@ import org.apache.commons.lang3.tuple.MutablePair;
  * Implementation of real database DAO.
  */
 @Stateless
-public class MySqlJDBCDaoImpl implements DaoInterface {
+public class H2DaoImpl implements DaoInterface {
 
-    private static final Logger LOGGER = Logger.getLogger(MySqlJDBCDaoImpl.class.getName());
+    private static final Logger LOGGER = Logger.getLogger(H2DaoImpl.class.getName());
 
     private static final int DATA_LOAD_TIME_INTERVAL = 135;
     private static final int GRADIENT_HIGH_TIME_INTERVAL = 75;

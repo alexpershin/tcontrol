@@ -4,12 +4,12 @@
 
   <!-- activate next line to be able to deploy applications in apps -->
   <!-- <Deployments dir="apps" /> -->
-<Resource jndi="jdbc/tcontrol-db" id="tcontrol-db">
+<!--Resource jndi="jdbc/tcontrol-db" id="tcontrol-db">
     JdbcDriver org.h2.Driver
     JdbcUrl jdbc:h2:tcp://localhost//home/pi/tcontrol-db
     UserName tcontrol	
     Password tcontrol
-</Resource>
+</Resource-->
 <Service id="jsonProvider" class-name="org.apache.cxf.jaxrs.provider.json.JSONProvider">
         dropRootElement = true
         supportUnwrapped = true

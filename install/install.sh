@@ -4,9 +4,9 @@ echo -n 'Copy system startup script...'
 sudo cp etc/rc.local /etc/rc.local
 echo '[OK]'
 
-echo -n 'Copy database with empty scheme...'
-cp tcontrol-db.mv.db ~/tcontrol-db.mv.db
-echo  '[OK]'
+#echo -n 'Copy database with empty scheme...'
+#cp tcontrol-db.mv.db ~/tcontrol-db.mv.db
+#echo  '[OK]'
 
 echo -n 'Copy 3g modem startup soft...'
 cp -r 3g ~/
@@ -23,9 +23,9 @@ cd ..
 mv  apache-tomee-plus-1.7.1 ~/
 echo '[OK]'
 
-echo -n 'Install H2 database driver...'
-cp h2-1.4.190.jar ~/apache-tomee-plus-1.7.1/lib/
-echo '[OK]'
+#echo -n 'Install H2 database driver...'
+#cp h2-1.4.190.jar ~/apache-tomee-plus-1.7.1/lib/
+#echo '[OK]'
 
 echo -n 'Copy .profile to set system variables as JAVA_HOME..'
 cp  etc/.profile ~/

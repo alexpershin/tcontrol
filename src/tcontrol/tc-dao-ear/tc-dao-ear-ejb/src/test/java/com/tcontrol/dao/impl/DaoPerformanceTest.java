@@ -27,6 +27,8 @@ import org.junit.Ignore;
 import org.junit.Test;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+import static org.hamcrest.CoreMatchers.is;
+import static org.mockito.Mockito.mock;
 
 @Ignore
 public class DaoPerformanceTest {
@@ -43,7 +45,7 @@ public class DaoPerformanceTest {
 
     @BeforeClass
     public static void setUpClass() throws SQLException {
-        dao = new MySqlJDBCDaoImpl();
+        dao = new H2DaoImpl();
         LOGGER.log(Level.INFO, "Remove database...");
         FileUtils.delete("~/unittestdb.mv.db");
         FileUtils.delete("~/unittestdb.trace.db");
@@ -51,8 +53,8 @@ public class DaoPerformanceTest {
         initDb();
 
         DataSource dataSource = mock(DataSource.class);
-        ((MySqlJDBCDaoImpl) dao).setDataSource(dataSource);
-        assertNotNull(((MySqlJDBCDaoImpl) dao).getDataSource());
+        ((H2DaoImpl) dao).setDataSource(dataSource);
+        assertNotNull(((H2DaoImpl) dao).getDataSource());
     }
 
     private static Connection createH2Connection() throws SQLException {
@@ -101,7 +103,7 @@ public class DaoPerformanceTest {
     }
 
     private void reinitConnection() throws SQLException {
-        DataSource dataSource = ((MySqlJDBCDaoImpl) dao).getDataSource();
+        DataSource dataSource = ((H2DaoImpl) dao).getDataSource();
         when(dataSource.getConnection()).thenReturn(createH2Connection());
     }
 

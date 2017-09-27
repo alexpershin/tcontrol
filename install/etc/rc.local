@@ -20,8 +20,8 @@ fi
 
 /home/pi/3g/umtskeeper --sakisoperators "USBINTERFACE='0' OTHER='USBMODEM' USBMODEM='12d1:1001' APN='CUSTOM_APN' CUSTOM_APN='FixedIP.nw' SIM_PIN='' APN_USER='megafon' APN_PASS='megafon'" --sakisswitches "--sudo --console" --devicename 'Huawei' --log --silent --nat 'no' & 
 
-sleep 120 && java -cp /home/pi/apache-tomee-plus-1.7.1/lib/h2*.jar org.h2.tools.Server -webAllowOthers &
+#sleep 120 && java -cp /home/pi/apache-tomee-plus-1.7.1/lib/h2*.jar org.h2.tools.Server -webAllowOthers &
 
-cd /home/pi/apache-tomee-plus-1.7.1/bin && sleep 180 && /home/pi/apache-tomee-plus-1.7.1/bin/startup.sh & 
+#cd /home/pi/apache-tomee-plus-1.7.1/bin && sleep 180 && /home/pi/apache-tomee-plus-1.7.1/bin/startup.sh & 
 
 exit 0

@@ -6,13 +6,13 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import org.apache.logging.log4j.core.async.AsyncLoggerContextSelector;
+//import org.apache.logging.log4j.LogManager;
+//import org.apache.logging.log4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * REST Web Service.
@@ -20,7 +20,9 @@ import org.slf4j.LoggerFactory;
 @RestController
 public class SensorController {
 
-    private final static Logger LOG = LoggerFactory.getLogger(SensorController.class);
+  //  private final static Logger LOG = LogManager.getLogger(SensorController.class);
+    private static final org.slf4j.Logger LOG = LoggerFactory.getLogger(SensorController.class);
+
     private AtomicInteger total;
     /**
      * Creates a new instance of GenericResource.

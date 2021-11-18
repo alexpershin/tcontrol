@@ -29,12 +29,8 @@
     <logger name="com.tcontrol">
         <level value="debug" />
         <appender-ref ref="SERVER"/>
-<!--        <appender-ref ref="CONSOLE"/>-->
+        <!--        <appender-ref ref="CONSOLE"/>-->
     </logger>
-
-<!--    <category name="com.tcontrol">-->
-<!--        <priority value="DEBUG"/>-->
-<!--    </category>-->
 
     <root>
         <priority value="DEBUG"/>

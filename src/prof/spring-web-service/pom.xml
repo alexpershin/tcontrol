@@ -82,6 +82,7 @@
             <version>${disruptor.version}</version>
         </dependency>
 
+        <!--можно включить, но не обязательно-->
 <!--        <dependency>-->
 <!--            <groupId>org.apache.logging.log4j</groupId>-->
 <!--            <artifactId>log4j-jcl</artifactId>-->

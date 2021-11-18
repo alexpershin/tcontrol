@@ -6,13 +6,10 @@
                 <Pattern>[%d] [%p] [%t] [%c{1.}] %m%n</Pattern>
             </PatternLayout>
         </File>
-        <Async name="Async">
-            <AppenderRef ref="MyFile"/>
-        </Async>
     </Appenders>
     <Loggers>
         <Root level="DEBUG">
-            <AppenderRef ref="Async"/>
+            <AppenderRef ref="MyFile"/>
         </Root>
     </Loggers>
 </Configuration>

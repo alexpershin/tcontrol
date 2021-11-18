@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="warn" name="MyApp" packages="">
+    <Appenders>
+        <File name="MyFile" fileName="c:/work/async.log">
+            <PatternLayout>
+                <Pattern>[%d] [%p] [%t] [%c{1.}] %m%n</Pattern>
+            </PatternLayout>
+        </File>
+        <Async name="Async">
+            <AppenderRef ref="MyFile"/>
+        </Async>
+    </Appenders>
+    <Loggers>
+        <Root level="DEBUG">
+            <AppenderRef ref="Async"/>
+        </Root>
+    </Loggers>
+</Configuration>

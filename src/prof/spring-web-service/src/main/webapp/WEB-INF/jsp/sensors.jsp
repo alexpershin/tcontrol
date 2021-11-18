@@ -10,10 +10,7 @@
         <div id="sensorsDivHeader"> 
             <script  type="text/javascript">
                 function onBodyLoad() {
-                    $.getJSON("/spring-web-service/sensors",
-                            {
-                                format: "json"
-                            },
+                    $.post("/spring-web-service/sensors",
                     function(result)
                     {
                         $.each(result, function(i, item) {

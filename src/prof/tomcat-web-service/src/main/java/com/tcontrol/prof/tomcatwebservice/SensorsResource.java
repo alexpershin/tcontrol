@@ -6,6 +6,9 @@
 
 package com.tcontrol.prof.tomcatwebservice;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.util.Arrays;
 import java.util.List;
 import javax.enterprise.context.RequestScoped;
@@ -25,6 +28,8 @@ import javax.ws.rs.core.UriInfo;
 @RequestScoped
 public class SensorsResource {
 
+    private final static Logger LOG = LoggerFactory.getLogger(SensorsResource.class);
+
     @Context
     private UriInfo context;
 
@@ -32,6 +37,8 @@ public class SensorsResource {
      * Creates a new instance of GenericResource
      */
     public SensorsResource() {
+        LOG.debug("Initialisation");
+        System.out.println("init");
     }
     
     @GET

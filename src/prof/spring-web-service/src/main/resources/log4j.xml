@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE log4j:configuration SYSTEM "log4j.dtd">
+
+<log4j:configuration xmlns:log4j="http://jakarta.apache.org/log4j/" debug="false">
+
+
+    <appender name="CONSOLE" class="org.apache.log4j.ConsoleAppender">
+        <param name="Target" value="System.out"/>
+        <layout class="org.apache.log4j.PatternLayout">
+            <param name="ConversionPattern" value="%-5p %t %c - %m%n"/>
+        </layout>
+    </appender>
+
+    <appender name="SERVER"
+              class="org.apache.log4j.RollingFileAppender">
+        <param name="File" value="c:/work/server.log" />
+        <param name="MaxFileSize" value="10MB" />
+        <param name="MaxBackupIndex" value="3" />
+        <param name="Threshold" value="DEBUG" />
+        <param name="Append" value="true" />
+        <layout class="org.apache.log4j.PatternLayout">
+            <!-- The debug pattern: Date Priority [Thread] [LoggerName] Message -->
+            <param name="ConversionPattern"
+                   value="[%d{yyyy-MM-dd HH:mm:ss,SSS}] [%-5p] [%t] [%c] %m%n" />
+        </layout>
+    </appender>
+
+
+    <logger name="com.tcontrol">
+        <level value="debug" />
+        <appender-ref ref="SERVER"/>
+<!--        <appender-ref ref="CONSOLE"/>-->
+    </logger>
+
+<!--    <category name="com.tcontrol">-->
+<!--        <priority value="DEBUG"/>-->
+<!--    </category>-->
+
+    <root>
+        <priority value="DEBUG"/>
+        <appender-ref ref="CONSOLE"/>
+    </root>
+
+</log4j:configuration>

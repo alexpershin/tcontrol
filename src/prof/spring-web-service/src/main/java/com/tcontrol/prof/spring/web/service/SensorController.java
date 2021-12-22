@@ -9,6 +9,12 @@ import java.util.concurrent.atomic.AtomicInteger;
 //import org.apache.logging.log4j.LogManager;
 //import org.apache.logging.log4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.PropertySource;
+import org.springframework.scheduling.annotation.EnableScheduling;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -18,12 +24,27 @@ import org.springframework.web.bind.annotation.RestController;
  * REST Web Service.
  */
 @RestController
+@EnableScheduling
+@PropertySource("classpath:/application.yaml")
 public class SensorController {
 
   //  private final static Logger LOG = LogManager.getLogger(SensorController.class);
     private static final org.slf4j.Logger LOG = LoggerFactory.getLogger(SensorController.class);
 
     private AtomicInteger total;
+
+    @Value("${scheduler.cron:}")
+    String cron;
+
+    @Autowired
+    public String cronExecExpr;
+
+    @Autowired
+    public String getCron;
+
+    @Autowired
+    ScheduleConfig scheduleConfig;
+
     /**
      * Creates a new instance of GenericResource.
      */
@@ -62,4 +83,14 @@ public class SensorController {
         long t2 = System.currentTimeMillis();
         return "TIME: " + (t2 - t1) + " ATTEMPTS: " + loops +" total: " + total;
     }
+
+//    @Value("#{scheduleConfig.cron}")
+//    String value;
+//
+//    @Scheduled(cron  = "#{${scheduler.cron}}")
+//    private void someTask() {
+//        LOG.debug("schedule someTask");
+//    }
+
+
 }

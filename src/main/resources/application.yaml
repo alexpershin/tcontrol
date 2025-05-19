@@ -1,0 +1,12 @@
+  spring:
+    application:
+      name: tcontrol-boot
+
+  springdoc:
+    api-docs:
+      enabled: true
+      path: /api-docs
+    swagger-ui:
+      enabled: true
+      path: /swagger
+    enable-data-rest: true

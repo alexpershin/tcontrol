@@ -6,8 +6,6 @@ import com.tcontrol.dao.DaoException;
 import com.tcontrol.dao.DaoInterface;
 import com.tcontrol.dao.Sensor;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -15,7 +13,6 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
@@ -37,7 +34,7 @@ public class SensorController {
     private final DaoInterface dao;
 
     //Temp user
-    private final int currentUserId = 1;
+    private final int CURRENT_USER_ID = 1;
 
     @PostConstruct
     public void AfterBegin(){
@@ -66,7 +63,7 @@ public class SensorController {
         SensorsResult result = new SensorsResult();
         Collection<Sensor> sensors;
         try {
-            sensors = dao.getUserSensors(currentUserId).values();
+            sensors = dao.getUserSensors(CURRENT_USER_ID).values();
         } catch (DaoException ex) {
             throw buildWebApplicationException(ex);
         }

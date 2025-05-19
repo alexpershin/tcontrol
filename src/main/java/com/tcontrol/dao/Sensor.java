@@ -1,9 +1,14 @@
 package com.tcontrol.dao;
 
+import lombok.Getter;
+import lombok.Setter;
+
 /**
  *
  * @author Anton Buslavskii
  */
+@Getter
+@Setter
 public class Sensor {
 
     /**
@@ -34,30 +39,6 @@ public class Sensor {
      */
     private String serialNumber;
 
-    public double getLowThreshold() {
-        return lowThreshold;
-    }
-
-    public void setLowThreshold(double lowThreshold) {
-        this.lowThreshold = lowThreshold;
-    }
-
-    public double getHighThreshold() {
-        return highThreshold;
-    }
-
-    public void setHighThreshold(double highThreshold) {
-        this.highThreshold = highThreshold;
-    }
-
-    public double getThresholdLag() {
-        return thresholdLag;
-    }
-
-    public void setThresholdLag(double thresholdLag) {
-        this.thresholdLag = thresholdLag;
-    }
-
     /**
      * TODO Rename SD - Switching differential Threshold delta. When value is
      * getting closer to a threshold the state can be set to pre alarm.
@@ -85,52 +66,6 @@ public class Sensor {
         this.lowThreshold = lowThreshold;
         this.highThreshold = highThreshold;
         this.thresholdLag = thresholdLag;
-    }
-
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public SensorType getType() {
-        return type;
-    }
-
-    public void setType(SensorType type) {
-        this.type = type;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    /**
-     * @return the serialNumber
-     */
-    public String getSerialNumber() {
-        return serialNumber;
-    }
-
-    /**
-     * @param serialNumber the serialNumber to set
-     */
-    public void setSerialNumber(String serialNumber) {
-        this.serialNumber = serialNumber;
     }
 
     public static enum SensorType {

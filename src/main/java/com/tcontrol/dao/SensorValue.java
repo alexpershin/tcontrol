@@ -1,11 +1,16 @@
 package com.tcontrol.dao;
 
+import lombok.Getter;
+import lombok.Setter;
+
 import java.sql.Timestamp;
 
 /**
  *
  * @author Anton Buslavskii
  */
+@Getter
+@Setter
 public class SensorValue {
 
     private int sensorValueId;
@@ -42,60 +47,6 @@ public class SensorValue {
 
     public SensorValue(double value) {
         this.value = value;
-    }
-
-    public int getSensorValueId() {
-        return sensorValueId;
-    }
-
-    public void setSensorValueId(int sensorValueId) {
-        this.sensorValueId = sensorValueId;
-    }
-
-    public int getSensorId() {
-        return sensorId;
-    }
-
-    public void setSensorId(int sensorId) {
-        this.sensorId = sensorId;
-    }
-
-    public Timestamp getTimestamp() {
-        return timestamp;
-    }
-
-    public void setTimestamp(Timestamp timestamp) {
-        this.timestamp = timestamp;
-    }
-
-    public double getValue() {
-        return value;
-    }
-
-    public void setValue(double value) {
-        this.value = value;
-    }
-
-    public SensorState getState() {
-        return state;
-    }
-
-    public void setState(SensorState state) {
-        this.state = state;
-    }
-
-    /**
-     * @return the gradient
-     */
-    public Double getGradient() {
-        return gradient;
-    }
-
-    /**
-     * @param gradient the gradient to set
-     */
-    public void setGradient(Double gradient) {
-        this.gradient = gradient;
     }
 
     public static enum SensorState {

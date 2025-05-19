@@ -20,8 +20,8 @@ public interface DaoInterface {
     /**
      * Get sensors by identifiers in Sensor objects.
      *
-     * @param ids
-     * @return list of sensors with all available parameters;
+     * @param ids identifiers;
+     * @return map of sensors with all available parameters;
      */
     Map<Integer, Sensor> getSensors(List<Integer> ids);
 
@@ -52,15 +52,15 @@ public interface DaoInterface {
     /**
      * Saves sensor data to storage;
      *
-     * @param sensor
+     * @param sensor a sensor to be saved;
      */
     void saveSensor(Sensor sensor);
 
     /**
      * Adds the specified sensor to specified user
      *
-     * @param sensorId
-     * @param userId
+     * @param sensorId sensor id;
+     * @param userId user id;
      */
     void addSensorToUser(int sensorId, int userId);
 

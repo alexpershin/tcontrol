@@ -67,8 +67,8 @@ public interface DaoInterface {
     /**
      * Removes the sensor with specified ID from user with specified ID
      *
-     * @param userId
-     * @param sensorId
+     * @param userId user's identifier;
+     * @param sensorId sensor's identifiers;
      */
     void removeSensorFromUser(int userId, int sensorId);
 
@@ -99,7 +99,7 @@ public interface DaoInterface {
      * Removes the specified user with given ID. All sensors were related with
      * this user become unlinked.
      *
-     * @param userId
+     * @param userId user's identifier;
      */
     void removeUser(int userId);
 

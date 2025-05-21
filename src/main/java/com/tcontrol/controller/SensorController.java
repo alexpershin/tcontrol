@@ -34,7 +34,7 @@ public class SensorController {
     private final DaoInterface dao;
 
     //Temp user
-    private final int CURRENT_USER_ID = 1;
+    private static final int CURRENT_USER_ID = 1;
 
     @PostConstruct
     public void AfterBegin(){

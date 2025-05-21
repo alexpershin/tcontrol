@@ -1,6 +1,7 @@
 package com.tcontrol.dao;
 
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.sql.Timestamp;
@@ -11,6 +12,7 @@ import java.sql.Timestamp;
  */
 @Getter
 @Setter
+@NoArgsConstructor
 public class SensorValue {
 
     private int sensorValueId;
@@ -27,9 +29,6 @@ public class SensorValue {
      * is between low and high thresholds the state is NORMAL.
      */
     private SensorState state;
-
-    public SensorValue() {
-    }
 
     public SensorValue(int sensorId, Timestamp timestamp,
             double value) {
@@ -49,7 +48,7 @@ public class SensorValue {
         this.value = value;
     }
 
-    public static enum SensorState {
+    public enum SensorState {
 
         /**
          * alarm on the sensor.
@@ -75,7 +74,7 @@ public class SensorValue {
         /**
          * sensor is in ON state.
          */
-        OFF;
+        OFF
 
     }
 }

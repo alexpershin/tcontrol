@@ -1,6 +1,5 @@
 package com.tcontrol.dao.impl;
 
-import com.tcontrol.dao.DaoException;
 import com.tcontrol.dao.DaoInterface;
 import com.tcontrol.dao.Sensor;
 import com.tcontrol.dao.SensorValue;
@@ -22,7 +21,7 @@ public class DaoStub implements DaoInterface {
 
     @Override
     public Map<Integer, Sensor> getAllSensors() {
-        Map<Integer, Sensor> result = new HashMap<Integer, Sensor>();
+        Map<Integer, Sensor> result = new HashMap<>();
         for (Sensor sensor : Arrays.asList(
                 new Sensor(1, "Indoor",
                         Sensor.SensorType.TEMPERATURE,
@@ -52,7 +51,7 @@ public class DaoStub implements DaoInterface {
                         Sensor.SensorType.ALARM,
                         "Doors and windows close circuit"))) {
             result.put(sensor.getId(), sensor);
-        };
+        }
         return result;
     }
 
@@ -107,7 +106,7 @@ public class DaoStub implements DaoInterface {
     }
 
     @Override
-    public Map<Integer, Sensor> getUserSensors(int userId) throws DaoException {
+    public Map<Integer, Sensor> getUserSensors(int userId) {
         //throw new DaoException(new UnsupportedOperationException("Not supported yet."));
         return getAllSensors();
     }

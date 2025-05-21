@@ -15,6 +15,7 @@ import com.tcontrol.dao.Sensor;
 @Builder
 @ToString
 @AllArgsConstructor
+@NoArgsConstructor
 @Schema(description = "Объект с информацией о сенсоре")
 public class SensorWeb {
 
@@ -26,12 +27,6 @@ public class SensorWeb {
     private String name;
     
     private String description;
-
-    /**
-     * Constructs the sensors.
-     */
-    public SensorWeb() {
-    }
 
     /**
      * Constructs the sensor.

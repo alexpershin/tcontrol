@@ -68,11 +68,9 @@ public class Sensor {
         this.thresholdLag = thresholdLag;
     }
 
-    public static enum SensorType {
+    public enum SensorType {
 
         /**
-         * temperature in double
-         *//**
          * temperature in double
          */
         TEMPERATURE,

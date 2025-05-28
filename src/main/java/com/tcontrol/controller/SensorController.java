@@ -16,7 +16,9 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -42,8 +44,8 @@ public class SensorController {
     private static final int CURRENT_USER_ID = 1;
 
     @PostConstruct
-    public void AfterBegin(){
-        LOGGER.log(Level.INFO,"after begin");
+    public void AfterBegin() {
+        LOGGER.log(Level.INFO, "after begin");
     }
 
     /**
@@ -51,20 +53,21 @@ public class SensorController {
      *
      * @return sensors list;
      */
-    @GetMapping("/sensors")
+    @PostMapping("/sensors")
+    @CrossOrigin(origins = "http://localhost:8090")
     @Operation(summary = "Получение списка сенсоров",
             description = "Получение списка сенсоров",
-            responses = {@ApiResponse(responseCode = ""+HTTP_OK,
+            responses = {@ApiResponse(responseCode = "" + HTTP_OK,
                     description = "Список сенсоров",
                     content = @Content(
                             mediaType = "application/json",
                             array = @ArraySchema(schema = @Schema(implementation = SensorsResult.class))
                     )),
-                    @ApiResponse(responseCode = ""+HTTP_BAD_REQUEST,
+                    @ApiResponse(responseCode = "" + HTTP_BAD_REQUEST,
                             content = @Content(mediaType = "application/json"))})
 
     public SensorsResult getSensors() {
-        LOGGER.log(Level.INFO,"get sensors");
+        LOGGER.log(Level.INFO, "get sensors");
         SensorsResult result = new SensorsResult();
         Collection<Sensor> sensors;
         try {
@@ -81,9 +84,20 @@ public class SensorController {
      * Current values.
      *
      * @return list of values;
-     * @throws com.tcontrol.dao.DaoException
+     * @throws com.tcontrol.dao.DaoException if some exeption;
      */
-    @GetMapping("/sensor_values")
+    @PostMapping("/sensor_values")
+    @CrossOrigin(origins = "http://localhost:8090")
+    @Operation(summary = "Получение значений сенсоров",
+            description = "Получение значений сенсоров",
+            responses = {@ApiResponse(responseCode = "" + HTTP_OK,
+                    description = "Список значений сенсоров",
+                    content = @Content(
+                            mediaType = "application/json",
+                            array = @ArraySchema(schema = @Schema(implementation = SensorValuesResult.class))
+                    )),
+                    @ApiResponse(responseCode = "" + HTTP_BAD_REQUEST,
+                            content = @Content(mediaType = "application/json"))})
     public SensorValuesResult getSensorValues() throws DaoException {
         SensorValuesResult result = new SensorValuesResult();
         List<SensorValue> values = dao.getCurrentValues(CURRENT_USER_ID);
@@ -139,7 +153,7 @@ public class SensorController {
     }
 
     public static SensorValueWeb.SensorValueState calculateSate(SensorValue value,
-                                                         Sensor sensor) {
+                                                                Sensor sensor) {
 
         SensorValueWeb.SensorValueState result = NORMAL;
 

@@ -31,7 +31,7 @@ function loadStubDataOnLoad() {
 }
 
 function loadDataFromServer() {
-    $.getJSON("/tcontrol-web/webresources/sensor/sensors", {format: "json"},
+    $.post("http://localhost:8080/sensors",
             function (sensorsJsonData)
             {
                 console.log("sensors processing start");
@@ -40,7 +40,7 @@ function loadDataFromServer() {
                 console.log("sensors loaded: " + sensorMap.length);
                 layoutSensors(sensors);
                 loadValuesFromServer();
-            }).done(function () {
+            }, 'json').done(function () {
         console.log("sensors loaded");
     }).fail(function (jqXHR, textStatus) {
         showAlert("Sensors loading failed!", jqXHR, textStatus);
@@ -50,13 +50,13 @@ function loadDataFromServer() {
 }
 
 function loadValuesFromServer() {
-    $.getJSON("/tcontrol-web/webresources/sensor/sensor_values",
-            {format: "json"},
+    $.post("http://localhost:8080/sensor_values",
             function (valuesJsonData)
             {
                 console.log('sensor values processing start');
                 renderSensorValues(sensorMap, valuesJsonData.values);
-            }).done(function () {
+            },
+            'json').done(function () {
         console.log("sensor values loaded");
 
         showCurrentDateTimeInTitle();

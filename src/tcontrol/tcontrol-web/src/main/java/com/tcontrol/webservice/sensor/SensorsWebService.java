@@ -15,6 +15,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.ejb.EJB;
 import javax.ejb.Singleton;
+import javax.ejb.AfterBegin;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
@@ -30,8 +31,11 @@ import javax.ws.rs.core.Response.Status;
 @Singleton
 public class SensorsWebService {
 
-    @EJB(beanName = "MySqlJDBCDaoImpl")
-    //@EJB(beanName = "DaoStub")
+    private final static Logger LOGGER = Logger.getLogger(SensorsWebService.class.getName());
+
+
+    //@EJB(beanName = "MySqlJDBCDaoImpl")
+    @EJB(beanName = "DaoStub")
     private DaoInterface dao;
 
     //Temp user
@@ -41,6 +45,11 @@ public class SensorsWebService {
      * Creates a new instance of SensorsWebService
      */
     public SensorsWebService() {
+    }
+
+    @AfterBegin
+    public void AfterBegin(){
+        LOGGER.log(Level.INFO,"after begin");
     }
 
     /**

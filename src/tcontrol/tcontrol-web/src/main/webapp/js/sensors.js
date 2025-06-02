@@ -181,9 +181,32 @@ function voltageSensorRenderer(sensorElementId, value) {
 }
 
 function onOffSensorRenderer(sensorElementId, value) {
-    r = onOffSensorBacgroundCalc(value);
+    r = onOffSensorBackgroundCalc(value);
 
     $(sensorElementId + ' .sensor_item_body .sensor_value').text(r.status);
+    $(sensorElementId + ' .sensor_item_body .sensor_value').click(function (ev){
+        console.log('on start');
+        $.ajax({
+            type: 'POST',
+            url: 'http://localhost:8080/start_process',
+            beforeSend: function () {
+                $('body').append('<div id="requestOverlay" class="request-overlay"></div>'); /*Create overlay on demand*/
+                $("#requestOverlay").show();/*Show overlay*/
+                $("#loader").show();
+            },
+            success: function (data) {
+                /*actions on success*/
+            },
+            error: function (jqXhr, textStatus, errorThrown) {
+                /*actions on error*/
+            },
+            complete: function () {
+                $("#requestOverlay").remove();/*Remove overlay*/
+                $("#loader").hide();
+            }
+        });
+    })
+
 
     sensorBody = $(sensorElementId + ' .sensor_item_body');
     sensorBody.css('background', r.background);
@@ -191,7 +214,7 @@ function onOffSensorRenderer(sensorElementId, value) {
     sensorBody.css('border-radius', 57.5);
 }
 
-function onOffSensorBacgroundCalc(value) {
+function onOffSensorBackgroundCalc(value) {
     var statusText;
     var background = STATE_BACKGROUND.get('UNDEFINED');
     if (Number(value.value) === 0.0) {
@@ -208,7 +231,7 @@ function onOffSensorBacgroundCalc(value) {
 }
 
 function alertSensorRenderer(sensorElementId, value) {
-    result = alertSensorStatusBacgroundCalc(value);
+    result = alertSensorStatusBackgroundCalc(value);
 
     sensorValue = $(sensorElementId + ' .sensor_item_body .sensor_value');
     sensorValue.text(result.status);
@@ -239,7 +262,7 @@ function alertSensorRenderer(sensorElementId, value) {
     sensorBody.css('-o-transform', 'rotate(360deg)');
 }
 
-function alertSensorStatusBacgroundCalc(value) {
+function alertSensorStatusBackgroundCalc(value) {
     var statusText;
     var background = STATE_BACKGROUND.get('UNDEFINED');
     if (value.state === 'NORMAL') {

@@ -170,7 +170,7 @@ describe("sensors render test", function () {
 
     pAlertSensorStatusBacgroundTest = function (sensorValue, expectedStatus, expectedBackground) {
         it("alarm renderer test background", function () {
-            result = alertSensorStatusBacgroundCalc(sensorValue);
+            result = alertSensorStatusBackgroundCalc(sensorValue);
             expect(result.status).toBe(expectedStatus);
             expect(result.background).toBe(expectedBackground);
         });
@@ -204,7 +204,7 @@ describe("sensors render test", function () {
 
     onOffSensorBacgroundTest = function (sensorValue, expectedStatus, expectedBackground) {
         it("on/off renderer test background", function () {
-            result = onOffSensorBacgroundCalc(sensorValue);
+            result = onOffSensorBackgroundCalc(sensorValue);
             expect(result.status).toBe(expectedStatus);
             expect(result.background).toBe(expectedBackground);
         });

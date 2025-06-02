@@ -39,5 +39,4 @@ public class SensorWeb {
         this.id = id;
         this.type = type;
     }
-
 }

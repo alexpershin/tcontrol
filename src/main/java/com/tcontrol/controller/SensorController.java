@@ -1,9 +1,6 @@
 package com.tcontrol.controller;
 
-import com.tcontrol.controller.dto.SensorValueWeb;
-import com.tcontrol.controller.dto.SensorValuesResult;
-import com.tcontrol.controller.dto.SensorWeb;
-import com.tcontrol.controller.dto.SensorsResult;
+import com.tcontrol.controller.dto.*;
 import com.tcontrol.dao.DaoException;
 import com.tcontrol.dao.DaoInterface;
 import com.tcontrol.dao.Sensor;
@@ -105,6 +102,15 @@ public class SensorController {
         result.setValues(webValues.toArray(new SensorValueWeb[]{}));
         return result;
     }
+
+
+    @PostMapping("/start_process")
+    @CrossOrigin(origins = "http://localhost:8090")
+    public StartProcessResult startProcess() throws DaoException, InterruptedException {
+        Thread.sleep(5000);
+        return new StartProcessResult("ok");
+    }
+
 
     private ResponseStatusException buildWebApplicationException(DaoException ex) {
         Logger.getLogger(SensorController.class.getName()).log(Level.SEVERE, null, ex);

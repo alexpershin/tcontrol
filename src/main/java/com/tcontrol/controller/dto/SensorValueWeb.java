@@ -47,6 +47,4 @@ public class SensorValueWeb {
         this.state = state;
         this.gradient = gradient;
     }
-
-
 }

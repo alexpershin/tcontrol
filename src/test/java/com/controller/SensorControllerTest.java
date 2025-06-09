@@ -2,7 +2,7 @@ package com.controller;
 
 
 import com.tcontrol.controller.SensorController;
-import com.tcontrol.controller.dto.SensorValueWeb;
+import com.tcontrol.controller.dto.SensorValueDto;
 import com.tcontrol.dao.Sensor;
 import com.tcontrol.dao.SensorValue;
 
@@ -12,9 +12,9 @@ import org.junit.jupiter.params.provider.MethodSource;
 
 import java.util.stream.Stream;
 
-import static com.tcontrol.controller.dto.SensorValueWeb.SensorValueState.NORMAL;
-import static com.tcontrol.controller.dto.SensorValueWeb.SensorValueState.WARNING;
-import static com.tcontrol.controller.dto.SensorValueWeb.SensorValueState.ALERT;
+import static com.tcontrol.controller.dto.SensorValueDto.SensorValueState.NORMAL;
+import static com.tcontrol.controller.dto.SensorValueDto.SensorValueState.WARNING;
+import static com.tcontrol.controller.dto.SensorValueDto.SensorValueState.ALERT;
 import static com.tcontrol.dao.Sensor.SensorType.*;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -23,7 +23,7 @@ public class SensorControllerTest {
 
     private SensorValue value;
     private Sensor sensor;
-    private SensorValueWeb.SensorValueState state;//result
+    private SensorValueDto.SensorValueState state;//result
 
     public static Stream<Arguments> data() {
         int id = 1;
@@ -137,7 +137,7 @@ public class SensorControllerTest {
     @MethodSource("data")
     public void calculateStateTest(SensorValue value,
                                    Sensor sensor,
-                                   SensorValueWeb.SensorValueState state) {
+                                   SensorValueDto.SensorValueState state) {
 
         assertEquals(SensorController.calculateSate(value, sensor), state);
     }

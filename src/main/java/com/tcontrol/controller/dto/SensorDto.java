@@ -17,7 +17,7 @@ import com.tcontrol.dao.Sensor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Schema(description = "Объект с информацией о сенсоре")
-public class SensorWeb {
+public class SensorDto {
 
     @Schema(example = "1", description = "Идентификатор сенсора", maxLength = 4)
     private int id;
@@ -34,7 +34,7 @@ public class SensorWeb {
      * @param name sensor's name;
      * @param id sensor's id;
      */
-    public SensorWeb(String name, int id, Sensor.SensorType type) {
+    public SensorDto(String name, int id, Sensor.SensorType type) {
         this.name = name;
         this.id = id;
         this.type = type;

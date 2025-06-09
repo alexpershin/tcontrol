@@ -1,8 +1,10 @@
 package com.tcontrol.controller.dto;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
 
 /**
  * Sensor value to be passed to web UI.
@@ -10,7 +12,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
-public class SensorValueWeb {
+public class SensorValueDto {
 
     public enum SensorValueState {
         NORMAL,
@@ -39,12 +41,25 @@ public class SensorValueWeb {
      * @param state the value state;
      * @param gradient the gradient;
      */
-    public SensorValueWeb(int sensorId, long timestamp, 
-            double value, SensorValueState state, Double gradient) {
+    public SensorValueDto(int sensorId, long timestamp,
+                          double value, SensorValueState state, Double gradient) {
         this.sensorId = sensorId;
         this.timestamp = timestamp;
         this.value = value;
         this.state = state;
         this.gradient = gradient;
+    }
+
+    /**
+     * Sensors wrapper to be passed to web UI.
+     */
+    @Getter
+    @Setter
+    @ToString
+    @NoArgsConstructor
+    @Schema(description = "Объект с информацией о сенсорах")
+    public static class SensorsResult {
+
+        private SensorDto[] sensors;
     }
 }

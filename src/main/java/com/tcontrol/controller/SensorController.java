@@ -13,8 +13,8 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
@@ -26,7 +26,7 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import static com.tcontrol.controller.dto.SensorValueWeb.SensorValueState.*;
+import static com.tcontrol.controller.dto.SensorValueDto.SensorValueState.*;
 import static java.net.HttpURLConnection.HTTP_BAD_REQUEST;
 import static java.net.HttpURLConnection.HTTP_OK;
 
@@ -58,22 +58,22 @@ public class SensorController {
                     description = "Список сенсоров",
                     content = @Content(
                             mediaType = "application/json",
-                            array = @ArraySchema(schema = @Schema(implementation = SensorsResult.class))
+                            array = @ArraySchema(schema = @Schema(implementation = SensorValueDto.SensorsResult.class))
                     )),
                     @ApiResponse(responseCode = "" + HTTP_BAD_REQUEST,
                             content = @Content(mediaType = "application/json"))})
 
-    public SensorsResult getSensors() {
+    public SensorValueDto.SensorsResult getSensors() {
         LOGGER.log(Level.INFO, "get sensors");
-        SensorsResult result = new SensorsResult();
+        SensorValueDto.SensorsResult result = new SensorValueDto.SensorsResult();
         Collection<Sensor> sensors;
         try {
             sensors = dao.getUserSensors(CURRENT_USER_ID).values();
         } catch (DaoException ex) {
             throw buildWebApplicationException(ex);
         }
-        List<SensorWeb> webSensors = convertSensorToWeb(sensors);
-        result.setSensors(webSensors.toArray(new SensorWeb[]{}));
+        List<SensorDto> webSensors = convertSensorToWeb(sensors);
+        result.setSensors(webSensors.toArray(new SensorDto[]{}));
         return result;
     }
 
@@ -98,17 +98,27 @@ public class SensorController {
     public SensorValuesResult getSensorValues() throws DaoException {
         SensorValuesResult result = new SensorValuesResult();
         List<SensorValue> values = dao.getCurrentValues(CURRENT_USER_ID);
-        List<SensorValueWeb> webValues = convertSensorValuesToWeb(values);
-        result.setValues(webValues.toArray(new SensorValueWeb[]{}));
+        List<SensorValueDto> webValues = convertSensorValuesToWeb(values);
+        result.setValues(webValues.toArray(new SensorValueDto[]{}));
         return result;
     }
 
 
     @PostMapping("/start_process")
     @CrossOrigin(origins = "http://localhost:8090")
-    public StartProcessResult startProcess() throws DaoException, InterruptedException {
+    public ResponseEntity<StartProcessResult> startProcess(StartProcessRequest processChangeRequest) throws DaoException, InterruptedException {
         Thread.sleep(5000);
-        return new StartProcessResult("ok");
+        int result = dao.startProcess(processChangeRequest.getSensorId());
+        return new ResponseEntity<>(new StartProcessResult(result == -1 ? null : result, "ok"),
+                result == -1 ? HttpStatus.INTERNAL_SERVER_ERROR : HttpStatus.OK);
+    }
+
+    @PostMapping("/stop_process")
+    @CrossOrigin(origins = "http://localhost:8090")
+    public StopProcessResult stopProcess(StartProcessRequest processChangeRequest) throws DaoException, InterruptedException {
+        Thread.sleep(5000);
+        int result = dao.stopProcess(processChangeRequest.getSensorId());
+        return new StopProcessResult(result == -1 ? null : result, result == -1 ? "error" : "ok");
     }
 
 
@@ -120,10 +130,10 @@ public class SensorController {
         );
     }
 
-    List<SensorWeb> convertSensorToWeb(Collection<Sensor> sensors) {
-        List<SensorWeb> webSensors = new ArrayList<>();
+    List<SensorDto> convertSensorToWeb(Collection<Sensor> sensors) {
+        List<SensorDto> webSensors = new ArrayList<>();
         for (Sensor sensor : sensors) {
-            final SensorWeb sensorWeb = new SensorWeb(
+            final SensorDto sensorWeb = new SensorDto(
                     sensor.getName(),
                     sensor.getId(),
                     sensor.getType()
@@ -135,9 +145,9 @@ public class SensorController {
         return webSensors;
     }
 
-    List<SensorValueWeb> convertSensorValuesToWeb(List<SensorValue> values) throws DaoException {
+    List<SensorValueDto> convertSensorValuesToWeb(List<SensorValue> values) throws DaoException {
 
-        List<SensorValueWeb> webValues = new ArrayList<>();
+        List<SensorValueDto> webValues = new ArrayList<>();
 
         final Map<Integer, Sensor> allSensors = dao.getAllSensors();
 
@@ -145,7 +155,7 @@ public class SensorController {
 
             Sensor sensor = allSensors.get(value.getSensorId());
 
-            SensorValueWeb webValue = new SensorValueWeb(
+            SensorValueDto webValue = new SensorValueDto(
                     value.getSensorId(),
                     value.getTimestamp().getTime(),
                     value.getValue(),
@@ -158,10 +168,10 @@ public class SensorController {
         return webValues;
     }
 
-    public static SensorValueWeb.SensorValueState calculateSate(SensorValue value,
+    public static SensorValueDto.SensorValueState calculateSate(SensorValue value,
                                                                 Sensor sensor) {
 
-        SensorValueWeb.SensorValueState result = NORMAL;
+        SensorValueDto.SensorValueState result = NORMAL;
 
         double v = value.getValue();
         if (Sensor.SensorType.ALARM == sensor.getType()

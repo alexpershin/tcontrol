@@ -113,4 +113,7 @@ public interface DaoInterface {
 
     List<SensorValue> getCurrentValues(final int userId, Date date);
 
+    int startProcess(int sensorId);
+
+    int stopProcess(int sensorId);
 }

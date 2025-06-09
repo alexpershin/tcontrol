@@ -4,14 +4,15 @@ import com.tcontrol.dao.DaoInterface;
 import com.tcontrol.dao.Sensor;
 import com.tcontrol.dao.SensorValue;
 import com.tcontrol.dao.User;
+import jakarta.annotation.PostConstruct;
 import org.springframework.stereotype.Component;
 
 import java.sql.Timestamp;
-import java.util.Arrays;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * DAO stub to use while real DAO has not been completely implemented.
@@ -19,10 +20,12 @@ import java.util.Map;
 @Component
 public class DaoStub implements DaoInterface {
 
-    @Override
-    public Map<Integer, Sensor> getAllSensors() {
-        Map<Integer, Sensor> result = new HashMap<>();
-        for (Sensor sensor : Arrays.asList(
+    private Map<Integer, Sensor> sensors;
+    private Map<Integer, SensorValue> sensorValues;
+
+    @PostConstruct
+    public void init() {
+        sensors = Stream.of(
                 new Sensor(1, "Indoor",
                         Sensor.SensorType.TEMPERATURE,
                         "Inside home sensor", 10, 31, 2),
@@ -49,10 +52,26 @@ public class DaoStub implements DaoInterface {
                         "Heating switcher"),
                 new Sensor(9, "Doors&Windows",
                         Sensor.SensorType.ALARM,
-                        "Doors and windows close circuit"))) {
-            result.put(sensor.getId(), sensor);
-        }
-        return result;
+                        "Doors and windows close circuit")
+        ).collect(Collectors.toMap(Sensor::getId, s -> s));
+
+        final Timestamp timestamp = new Timestamp(new Date().getTime());
+        sensorValues = Stream.of(
+                new SensorValue(1, timestamp, 25.5),
+                new SensorValue(2, timestamp, -22.6),
+                new SensorValue(3, timestamp, +2.4),
+                new SensorValue(4, timestamp, -11.4),
+                new SensorValue(5, timestamp, +23.7),
+                new SensorValue(6, timestamp, -7.4),
+                new SensorValue(7, timestamp, 241),
+                new SensorValue(8, timestamp, 0.0),
+                new SensorValue(9, timestamp, 1.0)
+        ).collect(Collectors.toMap(SensorValue::getSensorId, sv -> sv));
+    }
+
+    @Override
+    public Map<Integer, Sensor> getAllSensors() {
+        return sensors;
     }
 
     @Override
@@ -64,20 +83,41 @@ public class DaoStub implements DaoInterface {
     public List<SensorValue> getCurrentValues(int userId, java.sql.Date date) {
         return getCurrentValues(userId);
     }
-    
+
+    @Override
+    public int startProcess(int sensorId) {
+        SensorValue sv = sensorValues.get(sensorId);
+        Sensor s = sensors.get(sensorId);
+        if (sv != null && s != null && s.getType() == Sensor.SensorType.ON_OFF) {
+            sv.setState(SensorValue.SensorState.ON);
+            sv.setValue(1);
+            sensorValues.put(sensorId, sv);
+            return 1;
+        }
+        return -1;
+    }
+
+    @Override
+    public int stopProcess(int sensorId) {
+        SensorValue sv = sensorValues.get(sensorId);
+        Sensor s = sensors.get(sensorId);
+        if (sv != null && s != null && s.getType() == Sensor.SensorType.ON_OFF) {
+            sv.setState(SensorValue.SensorState.OFF);
+            sensorValues.put(sensorId, sv);
+            sv.setValue(0);
+            return 0;
+        }
+        return -1;
+    }
+
     @Override
     public List<SensorValue> getCurrentValues(int userId) {
         Timestamp timestamp = new Timestamp(new Date().getTime());
-        return Arrays.asList(
-                new SensorValue(1, timestamp, 25.5),
-                new SensorValue(2, timestamp, -22.6),
-                new SensorValue(3, timestamp, +2.4),
-                new SensorValue(4, timestamp, -11.4),
-                new SensorValue(5, timestamp, +23.7),
-                new SensorValue(6, timestamp, -7.4),
-                new SensorValue(7, timestamp, 241),
-                new SensorValue(8, timestamp, 0.0),
-                new SensorValue(9, timestamp, 1.0));
+        return sensorValues.values().stream().map(sv ->
+        {
+            sv.setTimestamp(timestamp);
+            return sv;
+        }).collect(Collectors.toList());
     }
 
     @Override

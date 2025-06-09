@@ -10,5 +10,5 @@ import lombok.Setter;
 @Setter
 public class SensorValuesResult {
 
-    private SensorValueWeb[] values;
+    private SensorValueDto[] values;
 }

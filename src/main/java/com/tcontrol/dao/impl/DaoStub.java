@@ -113,11 +113,9 @@ public class DaoStub implements DaoInterface {
     @Override
     public List<SensorValue> getCurrentValues(int userId) {
         Timestamp timestamp = new Timestamp(new Date().getTime());
-        return sensorValues.values().stream().map(sv ->
-        {
-            sv.setTimestamp(timestamp);
-            return sv;
-        }).collect(Collectors.toList());
+        return sensorValues.values().stream()
+                .peek(sv -> sv.setTimestamp(timestamp))
+                .collect(Collectors.toList());
     }
 
     @Override

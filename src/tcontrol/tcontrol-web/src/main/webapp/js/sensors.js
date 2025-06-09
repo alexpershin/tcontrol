@@ -32,15 +32,14 @@ function loadStubDataOnLoad() {
 
 function loadDataFromServer() {
     $.post("http://localhost:8080/sensors",
-            function (sensorsJsonData)
-            {
-                console.log("sensors processing start");
-                var sensors = sensorsJsonData.sensors;
-                sensorMap = convertSensorsJsonToMap(sensors);
-                console.log("sensors loaded: " + sensorMap.length);
-                layoutSensors(sensors);
-                loadValuesFromServer();
-            }, 'json').done(function () {
+        function (sensorsJsonData) {
+            console.log("sensors processing start");
+            var sensors = sensorsJsonData.sensors;
+            sensorMap = convertSensorsJsonToMap(sensors);
+            console.log("sensors loaded: " + sensorMap.length);
+            layoutSensors(sensors);
+            loadValuesFromServer();
+        }, 'json').done(function () {
         console.log("sensors loaded");
     }).fail(function (jqXHR, textStatus) {
         showAlert("Sensors loading failed!", jqXHR, textStatus);
@@ -51,12 +50,11 @@ function loadDataFromServer() {
 
 function loadValuesFromServer() {
     $.post("http://localhost:8080/sensor_values",
-            function (valuesJsonData)
-            {
-                console.log('sensor values processing start');
-                renderSensorValues(sensorMap, valuesJsonData.values);
-            },
-            'json').done(function () {
+        function (valuesJsonData) {
+            console.log('sensor values processing start');
+            renderSensorValues(sensorMap, valuesJsonData.values);
+        },
+        'json').done(function () {
         console.log("sensor values loaded");
 
         showCurrentDateTimeInTitle();
@@ -97,7 +95,7 @@ function layoutSensors(sensorsJsonData) {
         sensorElementId = clone.attr('id') + value.id;
         clone.attr("id", sensorElementId);
         sensorTitle =
-                $('#' + sensorElementId + ' #sensor_title');
+            $('#' + sensorElementId + ' #sensor_title');
         sensorTitle.text(value.name);
         //clone.show();
     });
@@ -180,25 +178,43 @@ function voltageSensorRenderer(sensorElementId, value) {
     sensorBody.css('background', sensorBackgroundCalc(value));
 }
 
-function onOffSensorRenderer(sensorElementId, value) {
-    r = onOffSensorBackgroundCalc(value);
+function onOffSensorRenderer(sensorElementId, sensor) {
+    r = onOffSensorBackgroundCalc(sensor);
 
-    $(sensorElementId + ' .sensor_item_body .sensor_value').text(r.status);
-    $(sensorElementId + ' .sensor_item_body .sensor_value').click(function (ev){
-        console.log('on start');
+    let sensorElement = $(sensorElementId + ' .sensor_item_body .sensor_value');
+    sensorElement.text(r.status);
+    sensorElement.click(function (ev) {
+
+        let value = ev.target.textContent;
+        console.log('on start: ' + value);
+
+        let onOffUrl = "";
+        if (value === "Off") {
+            onOffUrl = 'http://localhost:8080/start_process';
+        } else if (value === "On") {
+            onOffUrl = 'http://localhost:8080/stop_process';
+        }
+
         $.ajax({
             type: 'POST',
-            url: 'http://localhost:8080/start_process',
+            dataType: 'json',
+            data: {sensorId: sensor.sensorId},
+            url: onOffUrl,
             beforeSend: function () {
                 $('body').append('<div id="requestOverlay" class="request-overlay"></div>'); /*Create overlay on demand*/
                 $("#requestOverlay").show();/*Show overlay*/
                 $("#loader").show();
             },
             success: function (data) {
-                /*actions on success*/
+                console.log('on finish: ' + data.value);
+                sensor.value = data.value;
+                r = onOffSensorBackgroundCalc(sensor);
+                sensorElement.text(r.status);
+                sensorBody = $(sensorElementId + ' .sensor_item_body');
+                sensorBody.css('background', r.background);
             },
             error: function (jqXhr, textStatus, errorThrown) {
-                /*actions on error*/
+                alert("Error try again later: " + textStatus)
             },
             complete: function () {
                 $("#requestOverlay").remove();/*Remove overlay*/
@@ -206,11 +222,8 @@ function onOffSensorRenderer(sensorElementId, value) {
             }
         });
     })
-
-
     sensorBody = $(sensorElementId + ' .sensor_item_body');
     sensorBody.css('background', r.background);
-    h = sensorBody.css('height');
     sensorBody.css('border-radius', 57.5);
 }
 

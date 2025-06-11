@@ -1,10 +1,9 @@
 package com.controller;
 
-
-import com.tcontrol.controller.SensorController;
-import com.tcontrol.controller.dto.SensorValueDto;
-import com.tcontrol.dao.Sensor;
-import com.tcontrol.dao.SensorValue;
+import org.tcontrol.controller.SensorController;
+import org.tcontrol.controller.dto.SensorValueDto;
+import org.tcontrol.dao.Sensor;
+import org.tcontrol.dao.SensorValue;
 
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -12,12 +11,12 @@ import org.junit.jupiter.params.provider.MethodSource;
 
 import java.util.stream.Stream;
 
-import static com.tcontrol.controller.dto.SensorValueDto.SensorValueState.NORMAL;
-import static com.tcontrol.controller.dto.SensorValueDto.SensorValueState.WARNING;
-import static com.tcontrol.controller.dto.SensorValueDto.SensorValueState.ALERT;
-import static com.tcontrol.dao.Sensor.SensorType.*;
+import static org.tcontrol.controller.dto.SensorValueDto.SensorValueState.NORMAL;
+import static org.tcontrol.controller.dto.SensorValueDto.SensorValueState.WARNING;
+import static org.tcontrol.controller.dto.SensorValueDto.SensorValueState.ALERT;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.tcontrol.dao.Sensor.SensorType.*;
 
 public class SensorControllerTest {
 

@@ -1,0 +1,138 @@
+package org.tcontrol.sms.config;
+
+import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.scheduling.annotation.EnableScheduling;
+import org.tcontrol.sms.*;
+import org.tcontrol.sms.config.props.*;
+
+@Configuration
+@EnableScheduling
+public class AppConfig {
+
+  @Bean
+  @ConfigurationProperties(prefix = "sensor-config")
+  public SensorConfig sensorConfig() {
+    return new SensorConfig();
+  }
+
+  @Bean
+  @ConfigurationProperties(prefix = "sms-config")
+  public SMSConfig smsConfig() {
+    return new SMSConfig();
+  }
+
+  @Bean
+  @ConfigurationProperties(prefix = "thermostat-electro")
+  public ThermostatConfig thermostatElectroConfig() {
+    return new ThermostatConfig();
+  }
+
+  @Bean
+  @ConfigurationProperties(prefix = "thermostat-gas")
+  public ThermostatConfig thermostatGasConfig() {
+    return new ThermostatConfig();
+  }
+
+  @Bean
+  @ConfigurationProperties(prefix = "thermostat-veranda")
+  public ThermostatConfig thermostatVerandaConfig() {
+    return new ThermostatConfig();
+  }
+
+  @Bean
+  @ConfigurationProperties(prefix = "thermostat-veranda-em")
+  public ThermostatConfig thermostatVerandaEmConfig() {
+    return new ThermostatConfig();
+  }
+
+  @Bean
+  @ConfigurationProperties(prefix = "thermostat-my-room")
+  public ThermostatConfig thermostatMyRoomConfig() {
+    return new ThermostatConfig();
+  }
+
+  @Bean
+  @ConfigurationProperties(prefix = "thermostat-hot-watter")
+  public ThermostatConfig thermostatHotWatterConfig() {
+    return new ThermostatConfig();
+  }
+
+  @Bean
+  @ConfigurationProperties(prefix = "voltage-monitor")
+  public VoltageMonitorConfig voltageMonitorConfig() {
+    return new VoltageMonitorConfig();
+  }
+
+  @Bean
+  @ConfigurationProperties(prefix = "button-controller")
+  public ButtonConfig buttonConfig() {
+    return new ButtonConfig();
+  }
+
+  @Bean
+  @ConfigurationProperties(prefix = "relay-aggregator")
+  public RelayAggregatorConfig relayAggregatorConfig(){return new RelayAggregatorConfig();}
+
+  @Bean
+  public IThermostat thermostatElectro(
+      final ThermostatConfig thermostatElectroConfig,
+      final ITemperatureMonitor temperatureMonitor,
+      final IRelayController relayController,
+      final ITimer timer) {
+    return new Thermostat(thermostatElectroConfig, temperatureMonitor, relayController,
+        timer, "termo1(electro)");
+  }
+
+  @Bean
+  public IThermostat thermostatGas(
+      final ThermostatConfig thermostatGasConfig,
+      final ITemperatureMonitor temperatureMonitor,
+      final IRelayController relayAggregator,
+      final ITimer timer) {
+    return new Thermostat(thermostatGasConfig, temperatureMonitor, relayAggregator,
+        timer, "termo2(gas)");
+  }
+
+  @Bean
+  public IThermostat thermostatVeranda(
+      final ThermostatConfig thermostatVerandaConfig,
+      final ITemperatureMonitor temperatureMonitor,
+      final IRelayController relayController,
+      final ITimer timer) {
+    return new Thermostat(thermostatVerandaConfig, temperatureMonitor, relayController,
+        timer, "termo3(veranda)");
+  }
+
+  @Bean
+  public IThermostat thermostatVerandaEm(
+      final ThermostatConfig thermostatVerandaEmConfig,
+      final ITemperatureMonitor temperatureMonitor,
+      final IRelayController relayAggregator,
+      final ITimer timer) {
+    return new Thermostat(thermostatVerandaEmConfig, temperatureMonitor, relayAggregator,
+        timer, "termo5(veranda em)");
+  }
+
+  @Bean
+  public IThermostat thermostatMyRoom(
+      final ThermostatConfig thermostatMyRoomConfig,
+      final ITemperatureMonitor temperatureMonitor,
+      final IRelayController relayAggregator,
+      final ITimer timer) {
+    return new Thermostat(thermostatMyRoomConfig, temperatureMonitor, relayAggregator,
+        timer, "termo4(my room)");
+  }
+
+  @Bean
+  public IThermostat thermostatHotWatter(
+      final ThermostatConfig thermostatHotWatterConfig,
+      final ITemperatureMonitor temperatureMonitor,
+      final IRelayController relayController,
+      final ITimer timer) {
+    return new Thermostat(thermostatHotWatterConfig, temperatureMonitor, relayController,
+        timer, "termo5(hot watter)");
+  }
+
+}

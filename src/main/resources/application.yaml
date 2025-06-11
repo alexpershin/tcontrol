@@ -10,3 +10,111 @@
       enabled: true
       path: /swagger
     enable-data-rest: true
+
+  w1DevicesPath: resources/devices
+
+  dataFile: data.csv
+
+  sensor-config:
+    schedule: '0/15 * * * * ?'
+    sensors:
+      - id: 28-000002c7c3ee
+        name: house
+      - id: 28-000002c7d1b5
+        name: street
+      - id: 28-000002c7eed3
+        name: basement
+      - id: 28-0000058ddc1d
+        name: case
+      - id: 28-000002c7c3ee-1
+        name: veranda
+      - id: 28-000002c7c3ee-2
+        name: my-room
+
+  sms-config:
+    inputFolder: src/test/resources/messages/inbox
+    outputFolder: src/test/resources/messages/outbox
+    processedFolder: src/test/resources/messages/processed
+    schedule: '0/10 * * * * ?'
+    phones:
+      - phone: 79210972100
+        name: megafon
+      - phone: 79112403797
+        name: MTS
+      - phone: 79119378212
+        name: MTS
+
+  thermostat.schedule: '0/5 * * * * ?'
+
+  thermostat-electro:
+    tDay: 12.0
+    tNight: 16.0
+    delta: 0.5
+    nightBegin: 23:10:00
+    nightEnd: 7:10:00
+    sensor: 28-000002c7c3ee
+    relayPins:
+      - 'GPIO 0'
+
+  thermostat-gas:
+    tDay: 20.0
+    tNight: 18.0
+    delta: 0.5
+    nightBegin: 22:00:00
+    nightEnd: 7:00:00
+    schedule: '0/5 * * * * ?'
+    sensor: 28-0000058ddc1d
+    relayPins:
+      - 'GPIO 1'
+
+  thermostat-veranda:
+    tDay: 7
+    tNight: 8.0
+    delta: 0.5
+    nightBegin: 22:00:00
+    nightEnd: 7:00:00
+    schedule: '0/5 * * * * ?'
+    sensor: 28-000002c7c3ee-1
+    relayPins:
+      - 'GPIO 2'
+
+  thermostat-veranda-em:  #emergency
+    tDay: 4.0
+    tNight: 4.0
+    delta: 0.5
+    nightBegin: 22:00:00
+    nightEnd: 7:00:00
+    schedule: '0/5 * * * * ?'
+    sensor: 28-000002c7c3ee-1
+    relayPins:
+      - 'GPIO 1'
+
+  thermostat-my-room:
+    tDay: 7
+    tNight: 8.0
+    delta: 0.5
+    nightBegin: 22:00:00
+    nightEnd: 7:00:00
+    schedule: '0/5 * * * * ?'
+    sensor: 28-000002c7c3ee-1
+    relayPins:
+      - 'GPIO 3'
+
+  button-controller:
+    buttonPinName: 'GPIO 5'
+
+  voltage-monitor:
+    schedule: '0/30 * * * * ?'
+    pins:
+      - id: 0
+        ratio: 0.022573
+        unit: V
+      - id: 1
+        ratio: 0.32573
+        unit: V
+
+  relay-aggregator:
+    schedule: '1/5 * * * * ?'
+    pinAggregates:
+      '[GPIO 1]': 3
+

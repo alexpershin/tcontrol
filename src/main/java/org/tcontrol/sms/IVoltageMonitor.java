@@ -1,0 +1,20 @@
+package org.tcontrol.sms;
+
+import lombok.AllArgsConstructor;
+import lombok.Data;
+
+import java.util.List;
+
+public interface IVoltageMonitor {
+
+  List<VoltageResult> getVoltageResults();
+
+  @Data
+  @AllArgsConstructor
+  public static final class VoltageResult {
+
+    String name;
+    Double value;
+    String unit;
+  }
+}

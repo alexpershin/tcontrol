@@ -1,7 +1,7 @@
 package com.dao;
 
-import com.tcontrol.dao.Sensor;
-import com.tcontrol.dao.Sensor.SensorType;
+import org.tcontrol.dao.Sensor;
+import org.tcontrol.dao.Sensor.SensorType;
 
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;

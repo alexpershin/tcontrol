@@ -51,7 +51,7 @@ public class SensorController {
      * @return sensors list;
      */
     @PostMapping("/sensors")
-    @CrossOrigin(origins = "http://localhost:8090")
+    @CrossOrigin(origins = {"http://localhost:8090", "http://localhost"})
     @Operation(summary = "Получение списка сенсоров",
             description = "Получение списка сенсоров",
             responses = {@ApiResponse(responseCode = "" + HTTP_OK,
@@ -84,7 +84,7 @@ public class SensorController {
      * @throws DaoException if some exeption;
      */
     @PostMapping("/sensor_values")
-    @CrossOrigin(origins = "http://localhost:8090")
+    @CrossOrigin(origins = {"http://localhost:8090", "http://localhost"})
     @Operation(summary = "Получение значений сенсоров",
             description = "Получение значений сенсоров",
             responses = {@ApiResponse(responseCode = "" + HTTP_OK,
@@ -105,7 +105,7 @@ public class SensorController {
 
 
     @PostMapping("/start_process")
-    @CrossOrigin(origins = "http://localhost:8090")
+    @CrossOrigin(origins = {"http://localhost:8090", "http://localhost"})
     public ResponseEntity<StartProcessResult> startProcess(StartProcessRequest processChangeRequest) throws DaoException, InterruptedException {
         Thread.sleep(5000);
         int result = dao.startProcess(processChangeRequest.getSensorId());
@@ -114,7 +114,7 @@ public class SensorController {
     }
 
     @PostMapping("/stop_process")
-    @CrossOrigin(origins = "http://localhost:8090")
+    @CrossOrigin(origins = {"http://localhost:8090", "http://localhost"})
     public StopProcessResult stopProcess(StartProcessRequest processChangeRequest) throws DaoException, InterruptedException {
         Thread.sleep(5000);
         int result = dao.stopProcess(processChangeRequest.getSensorId());

@@ -1,10 +1,10 @@
 package org.tcontrol.controller;
 
 import org.tcontrol.controller.dto.*;
-import org.tcontrol.dao.DaoException;
-import org.tcontrol.dao.DaoInterface;
-import org.tcontrol.dao.Sensor;
-import org.tcontrol.dao.SensorValue;
+import org.tcontrol.service.DaoException;
+import org.tcontrol.service.SensorService;
+import org.tcontrol.service.Sensor;
+import org.tcontrol.service.SensorValue;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -35,7 +35,7 @@ import static java.net.HttpURLConnection.HTTP_OK;
 public class SensorController {
     private final static Logger LOGGER = Logger.getLogger(SensorController.class.getName());
 
-    private final DaoInterface dao;
+    private final SensorService dao;
 
     //Temp user
     private static final int CURRENT_USER_ID = 1;

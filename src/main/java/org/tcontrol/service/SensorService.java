@@ -1,4 +1,4 @@
-package org.tcontrol.dao;
+package org.tcontrol.service;
 
 import java.sql.Date;
 import java.util.List;
@@ -7,7 +7,7 @@ import java.util.Map;
 /**
  *
  */
-public interface DaoInterface {
+public interface SensorService {
 
     /**
      * Get all sensors in the system.

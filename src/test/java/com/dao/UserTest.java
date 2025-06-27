@@ -1,6 +1,6 @@
 package com.dao;
 
-import org.tcontrol.dao.User;
+import org.tcontrol.service.User;
 
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;

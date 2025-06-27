@@ -1,4 +1,4 @@
-package org.tcontrol.dao;
+package org.tcontrol.service;
 
 /**
  * Base DAO exception.

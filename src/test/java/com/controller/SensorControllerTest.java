@@ -2,8 +2,8 @@ package com.controller;
 
 import org.tcontrol.controller.SensorController;
 import org.tcontrol.controller.dto.SensorValueDto;
-import org.tcontrol.dao.Sensor;
-import org.tcontrol.dao.SensorValue;
+import org.tcontrol.service.Sensor;
+import org.tcontrol.service.SensorValue;
 
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -16,7 +16,7 @@ import static org.tcontrol.controller.dto.SensorValueDto.SensorValueState.WARNIN
 import static org.tcontrol.controller.dto.SensorValueDto.SensorValueState.ALERT;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.tcontrol.dao.Sensor.SensorType.*;
+import static org.tcontrol.service.Sensor.SensorType.*;
 
 public class SensorControllerTest {
 

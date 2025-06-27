@@ -1,13 +1,13 @@
-package org.tcontrol.dao.impl;
+package org.tcontrol.service.impl;
 
 import jakarta.annotation.PostConstruct;
 import lombok.AllArgsConstructor;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
-import org.tcontrol.dao.DaoInterface;
-import org.tcontrol.dao.Sensor;
-import org.tcontrol.dao.SensorValue;
-import org.tcontrol.dao.User;
+import org.tcontrol.service.SensorService;
+import org.tcontrol.service.Sensor;
+import org.tcontrol.service.SensorValue;
+import org.tcontrol.service.User;
 import org.tcontrol.sms.ITemperatureMonitor;
 import org.tcontrol.sms.IVoltageMonitor;
 import org.tcontrol.sms.config.props.SensorConfig;
@@ -18,7 +18,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 /**
  * DAO stub to use while real DAO has not been completely implemented.
@@ -26,7 +25,7 @@ import java.util.stream.Stream;
 @Component
 @ConditionalOnProperty(value = "tcontrol-config.sensorsStub", havingValue = "false")
 @AllArgsConstructor
-public class DaoImpl implements DaoInterface {
+public class SensorServiceImpl implements SensorService {
 
     private final IVoltageMonitor voltageMonitor;
     private final ITemperatureMonitor temperatureMonitor;

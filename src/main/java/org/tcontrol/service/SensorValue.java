@@ -1,4 +1,4 @@
-package org.tcontrol.dao;
+package org.tcontrol.service;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;

@@ -1,10 +1,10 @@
-package org.tcontrol.dao.impl;
+package org.tcontrol.service.impl;
 
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.tcontrol.dao.DaoInterface;
-import org.tcontrol.dao.Sensor;
-import org.tcontrol.dao.SensorValue;
-import org.tcontrol.dao.User;
+import org.tcontrol.service.SensorService;
+import org.tcontrol.service.Sensor;
+import org.tcontrol.service.SensorValue;
+import org.tcontrol.service.User;
 import jakarta.annotation.PostConstruct;
 import org.springframework.stereotype.Component;
 
@@ -20,7 +20,7 @@ import java.util.stream.Stream;
  */
 @Component
 @ConditionalOnProperty(value = "tcontrol-config.sensorsStub", havingValue = "true")
-public class DaoStub implements DaoInterface {
+public class SensorServiceStab implements SensorService {
 
     private Map<Integer, Sensor> sensors;
     private Map<Integer, SensorValue> sensorValues;

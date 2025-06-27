@@ -1,28 +1,22 @@
-package org.tcontrol.service;
+package org.tcontrol.sms.models;
 
-import lombok.Getter;
+
+import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 import java.sql.Timestamp;
 
-/**
- *
- * @author Anton Buslavskii
- */
-@Getter
-@Setter
+@Data
 @NoArgsConstructor
 public class SensorValue {
 
-    private int sensorValueId;
-    private int sensorId;
+    private String sensorId;
     private Timestamp timestamp;
     private double value;
     private Double gradient;
     /**
      * State of the sensor. Are not stored in the database. It should be
-     * calculated in accordance with the sensor value and the low and hight
+     * calculated in accordance with the sensor value and the low and height
      * threshold. For example when temperature inside a house is lower than low
      * threshold set to 12 degrees, the sensor state must be ALARM, also if the
      * temperature is higher than 30 degrees it must be ALARM, when temperature
@@ -30,23 +24,14 @@ public class SensorValue {
      */
     private SensorState state;
 
-    public SensorValue(int sensorId, Timestamp timestamp,
-            double value) {
-        this.sensorId = sensorId;
-        this.timestamp = timestamp;
-        this.value = value;
-    }
-    
-    public SensorValue(int sensorId, long time,
-            double value) {
+
+    public SensorValue(String sensorId, long time,
+                       double value) {
         this.sensorId = sensorId;
         this.timestamp = new Timestamp(time);
         this.value = value;
     }
 
-    public SensorValue(double value) {
-        this.value = value;
-    }
 
     public enum SensorState {
 
@@ -78,3 +63,4 @@ public class SensorValue {
 
     }
 }
+

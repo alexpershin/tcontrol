@@ -4,7 +4,7 @@ import com.pi4j.io.gpio.*;
 import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
-import org.tcontrol.sms.dao.SensorValue;
+import org.tcontrol.sms.models.SensorValue;
 
 import java.sql.Timestamp;
 import java.util.HashMap;

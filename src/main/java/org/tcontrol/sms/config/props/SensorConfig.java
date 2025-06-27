@@ -2,7 +2,7 @@ package org.tcontrol.sms.config.props;
 
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
-import org.tcontrol.service.Sensor;
+import org.tcontrol.service.models.Sensor;
 
 import java.util.ArrayList;
 import java.util.List;

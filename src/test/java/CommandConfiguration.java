@@ -6,7 +6,7 @@ import org.springframework.context.annotation.Configuration;
 import org.tcontrol.sms.*;
 import org.tcontrol.sms.config.props.SensorConfig;
 import org.tcontrol.sms.config.props.ThermostatConfig;
-import org.tcontrol.sms.dao.SensorValue;
+import org.tcontrol.sms.models.SensorValue;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;

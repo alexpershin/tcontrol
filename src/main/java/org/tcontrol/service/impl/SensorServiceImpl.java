@@ -5,9 +5,9 @@ import lombok.AllArgsConstructor;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
 import org.tcontrol.service.SensorService;
-import org.tcontrol.service.Sensor;
-import org.tcontrol.service.SensorValue;
-import org.tcontrol.service.User;
+import org.tcontrol.service.models.Sensor;
+import org.tcontrol.service.models.SensorValue;
+import org.tcontrol.service.models.User;
 import org.tcontrol.sms.ITemperatureMonitor;
 import org.tcontrol.sms.IVoltageMonitor;
 import org.tcontrol.sms.config.props.SensorConfig;
@@ -53,7 +53,7 @@ public class SensorServiceImpl implements SensorService {
     public List<SensorValue> getCurrentValues(int userId, java.sql.Date date) {
         Timestamp timestamp = new Timestamp(new Date().getTime());
         return temperatureMonitor.getSensorValueMap().values().stream()
-                .map(org.tcontrol.sms.dao.SensorValue::getSensorId)
+                .map(org.tcontrol.sms.models.SensorValue::getSensorId)
                 .map(sensorId -> {
                     Optional<SensorConfig.SensorConfiguration> sc = sensorConfig.getSensors().stream()
                             .filter(sensor -> sensor.getId().equals(sensorId)).findFirst();

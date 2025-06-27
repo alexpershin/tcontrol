@@ -1,4 +1,4 @@
-package org.tcontrol.service;
+package org.tcontrol.service.models;
 
 import lombok.Getter;
 import lombok.Setter;

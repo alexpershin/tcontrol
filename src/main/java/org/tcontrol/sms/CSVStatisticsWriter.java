@@ -4,7 +4,7 @@ import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-import org.tcontrol.sms.dao.SensorValue;
+import org.tcontrol.sms.models.SensorValue;
 
 import java.io.FileWriter;
 import java.io.IOException;

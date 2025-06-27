@@ -2,9 +2,9 @@ package org.tcontrol.service.impl;
 
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.tcontrol.service.SensorService;
-import org.tcontrol.service.Sensor;
-import org.tcontrol.service.SensorValue;
-import org.tcontrol.service.User;
+import org.tcontrol.service.models.Sensor;
+import org.tcontrol.service.models.SensorValue;
+import org.tcontrol.service.models.User;
 import jakarta.annotation.PostConstruct;
 import org.springframework.stereotype.Component;
 

@@ -1,5 +1,9 @@
 package org.tcontrol.service;
 
+import org.tcontrol.service.models.Sensor;
+import org.tcontrol.service.models.SensorValue;
+import org.tcontrol.service.models.User;
+
 import java.sql.Date;
 import java.util.List;
 import java.util.Map;
@@ -13,9 +17,9 @@ public interface SensorService {
      * Get all sensors in the system.
      *
      * @return map id->sensor;
-     * @throws DaoException ;
+     * @throws SensorServiceException ;
      */
-    Map<Integer, Sensor> getAllSensors() throws DaoException;
+    Map<Integer, Sensor> getAllSensors() throws SensorServiceException;
 
     /**
      * Get sensors by identifiers in Sensor objects.
@@ -68,9 +72,9 @@ public interface SensorService {
      *
      * @param userId user's identifier;
      * @return map id->sensor;
-     * @throws DaoException ;
+     * @throws SensorServiceException ;
      */
-    Map<Integer, Sensor> getUserSensors(int userId) throws DaoException;
+    Map<Integer, Sensor> getUserSensors(int userId) throws SensorServiceException;
 
     /**
      * Adds a new user

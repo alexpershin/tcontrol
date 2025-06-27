@@ -1,6 +1,6 @@
-package com.dao;
+package org.service;
 
-import org.tcontrol.service.User;
+import org.tcontrol.service.models.User;
 
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;

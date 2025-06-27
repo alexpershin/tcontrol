@@ -1,10 +1,10 @@
 package org.tcontrol.controller;
 
 import org.tcontrol.controller.dto.*;
-import org.tcontrol.service.DaoException;
+import org.tcontrol.service.SensorServiceException;
 import org.tcontrol.service.SensorService;
-import org.tcontrol.service.Sensor;
-import org.tcontrol.service.SensorValue;
+import org.tcontrol.service.models.Sensor;
+import org.tcontrol.service.models.SensorValue;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -35,7 +35,7 @@ import static java.net.HttpURLConnection.HTTP_OK;
 public class SensorController {
     private final static Logger LOGGER = Logger.getLogger(SensorController.class.getName());
 
-    private final SensorService dao;
+    private final SensorService sensorService;
 
     //Temp user
     private static final int CURRENT_USER_ID = 1;
@@ -68,8 +68,8 @@ public class SensorController {
         SensorValueDto.SensorsResult result = new SensorValueDto.SensorsResult();
         Collection<Sensor> sensors;
         try {
-            sensors = dao.getUserSensors(CURRENT_USER_ID).values();
-        } catch (DaoException ex) {
+            sensors = sensorService.getUserSensors(CURRENT_USER_ID).values();
+        } catch (SensorServiceException ex) {
             throw buildWebApplicationException(ex);
         }
         List<SensorDto> webSensors = convertSensorToWeb(sensors);
@@ -81,7 +81,7 @@ public class SensorController {
      * Current values.
      *
      * @return list of values;
-     * @throws DaoException if some exeption;
+     * @throws SensorServiceException if some exeption;
      */
     @PostMapping("/sensor_values")
     @CrossOrigin(origins = {"http://localhost:8090", "http://localhost"})
@@ -95,9 +95,9 @@ public class SensorController {
                     )),
                     @ApiResponse(responseCode = "" + HTTP_BAD_REQUEST,
                             content = @Content(mediaType = "application/json"))})
-    public SensorValuesResult getSensorValues() throws DaoException {
+    public SensorValuesResult getSensorValues() throws SensorServiceException {
         SensorValuesResult result = new SensorValuesResult();
-        List<SensorValue> values = dao.getCurrentValues(CURRENT_USER_ID, null);
+        List<SensorValue> values = sensorService.getCurrentValues(CURRENT_USER_ID, null);
         List<SensorValueDto> webValues = convertSensorValuesToWeb(values);
         result.setValues(webValues.toArray(new SensorValueDto[]{}));
         return result;
@@ -106,23 +106,23 @@ public class SensorController {
 
     @PostMapping("/start_process")
     @CrossOrigin(origins = {"http://localhost:8090", "http://localhost"})
-    public ResponseEntity<StartProcessResult> startProcess(StartProcessRequest processChangeRequest) throws DaoException, InterruptedException {
+    public ResponseEntity<StartProcessResult> startProcess(StartProcessRequest processChangeRequest) throws SensorServiceException, InterruptedException {
         Thread.sleep(5000);
-        int result = dao.startProcess(processChangeRequest.getSensorId());
+        int result = sensorService.startProcess(processChangeRequest.getSensorId());
         return new ResponseEntity<>(new StartProcessResult(result == -1 ? null : result, "ok"),
                 result == -1 ? HttpStatus.INTERNAL_SERVER_ERROR : HttpStatus.OK);
     }
 
     @PostMapping("/stop_process")
     @CrossOrigin(origins = {"http://localhost:8090", "http://localhost"})
-    public StopProcessResult stopProcess(StartProcessRequest processChangeRequest) throws DaoException, InterruptedException {
+    public StopProcessResult stopProcess(StartProcessRequest processChangeRequest) throws SensorServiceException, InterruptedException {
         Thread.sleep(5000);
-        int result = dao.stopProcess(processChangeRequest.getSensorId());
+        int result = sensorService.stopProcess(processChangeRequest.getSensorId());
         return new StopProcessResult(result == -1 ? null : result, result == -1 ? "error" : "ok");
     }
 
 
-    private ResponseStatusException buildWebApplicationException(DaoException ex) {
+    private ResponseStatusException buildWebApplicationException(SensorServiceException ex) {
         Logger.getLogger(SensorController.class.getName()).log(Level.SEVERE, null, ex);
         throw new ResponseStatusException(
                 HttpStatus.INTERNAL_SERVER_ERROR,
@@ -145,11 +145,11 @@ public class SensorController {
         return webSensors;
     }
 
-    List<SensorValueDto> convertSensorValuesToWeb(List<SensorValue> values) throws DaoException {
+    List<SensorValueDto> convertSensorValuesToWeb(List<SensorValue> values) throws SensorServiceException {
 
         List<SensorValueDto> webValues = new ArrayList<>();
 
-        final Map<Integer, Sensor> allSensors = dao.getAllSensors();
+        final Map<Integer, Sensor> allSensors = sensorService.getAllSensors();
 
         for (SensorValue value : values) {
 

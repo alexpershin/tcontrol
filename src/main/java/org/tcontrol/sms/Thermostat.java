@@ -5,7 +5,7 @@ import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.tcontrol.sms.config.props.ThermostatConfig;
-import org.tcontrol.sms.dao.SensorValue;
+import org.tcontrol.sms.models.SensorValue;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;

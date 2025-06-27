@@ -7,7 +7,7 @@ import org.tcontrol.sms.ITemperatureMonitor;
 import org.tcontrol.sms.ITimer;
 import org.tcontrol.sms.Thermostat;
 import org.tcontrol.sms.config.props.ThermostatConfig;
-import org.tcontrol.sms.dao.SensorValue;
+import org.tcontrol.sms.models.SensorValue;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;

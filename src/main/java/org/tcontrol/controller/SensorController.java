@@ -97,7 +97,7 @@ public class SensorController {
                             content = @Content(mediaType = "application/json"))})
     public SensorValuesResult getSensorValues() throws DaoException {
         SensorValuesResult result = new SensorValuesResult();
-        List<SensorValue> values = dao.getCurrentValues(CURRENT_USER_ID);
+        List<SensorValue> values = dao.getCurrentValues(CURRENT_USER_ID, null);
         List<SensorValueDto> webValues = convertSensorValuesToWeb(values);
         result.setValues(webValues.toArray(new SensorValueDto[]{}));
         return result;

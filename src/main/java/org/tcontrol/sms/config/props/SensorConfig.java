@@ -2,6 +2,7 @@ package org.tcontrol.sms.config.props;
 
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
+import org.tcontrol.dao.Sensor;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,6 +17,9 @@ public class SensorConfig {
     public static class SensorConfiguration
     {
         private String id;
+        private int order;
         private String name;
+        private Sensor.SensorType type;
+        private String description;
     }
 }

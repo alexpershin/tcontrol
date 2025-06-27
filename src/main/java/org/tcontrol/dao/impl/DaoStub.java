@@ -1,5 +1,6 @@
 package org.tcontrol.dao.impl;
 
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.tcontrol.dao.DaoInterface;
 import org.tcontrol.dao.Sensor;
 import org.tcontrol.dao.SensorValue;
@@ -18,6 +19,7 @@ import java.util.stream.Stream;
  * DAO stub to use while real DAO has not been completely implemented.
  */
 @Component
+@ConditionalOnProperty(value = "tcontrol-config.sensorsStub", havingValue = "true")
 public class DaoStub implements DaoInterface {
 
     private Map<Integer, Sensor> sensors;
@@ -81,7 +83,10 @@ public class DaoStub implements DaoInterface {
 
     @Override
     public List<SensorValue> getCurrentValues(int userId, java.sql.Date date) {
-        return getCurrentValues(userId);
+        Timestamp timestamp = new Timestamp(new Date().getTime());
+        return sensorValues.values().stream()
+                .peek(sv -> sv.setTimestamp(timestamp))
+                .collect(Collectors.toList());
     }
 
     @Override
@@ -108,14 +113,6 @@ public class DaoStub implements DaoInterface {
             return 0;
         }
         return -1;
-    }
-
-    @Override
-    public List<SensorValue> getCurrentValues(int userId) {
-        Timestamp timestamp = new Timestamp(new Date().getTime());
-        return sensorValues.values().stream()
-                .peek(sv -> sv.setTimestamp(timestamp))
-                .collect(Collectors.toList());
     }
 
     @Override

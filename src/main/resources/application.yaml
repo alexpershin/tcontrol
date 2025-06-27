@@ -19,17 +19,35 @@
     schedule: '0/15 * * * * ?'
     sensors:
       - id: 28-000002c7c3ee
+        order: 0
         name: house
+        type: TEMPERATURE
+        description: кридор
       - id: 28-000002c7d1b5
+        order: 1
         name: street
+        type: TEMPERATURE
+        description: улица
       - id: 28-000002c7eed3
+        order: 2
         name: basement
+        type: TEMPERATURE
+        description: подвал
       - id: 28-0000058ddc1d
+        order: 3
         name: case
+        type: TEMPERATURE
+        description: щит
       - id: 28-000002c7c3ee-1
+        order: 4
         name: veranda
+        type: TEMPERATURE
+        description: веранда
       - id: 28-000002c7c3ee-2
+        order: 5
         name: my-room
+        type: TEMPERATURE
+        description: моя комната
 
   sms-config:
     inputFolder: src/test/resources/messages/inbox
@@ -117,4 +135,7 @@
     schedule: '1/5 * * * * ?'
     pinAggregates:
       '[GPIO 1]': 3
+
+  tcontrol-config:
+    sensorsStub: false
 

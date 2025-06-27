@@ -26,15 +26,6 @@ public interface DaoInterface {
     Map<Integer, Sensor> getSensors(List<Integer> ids);
 
     /**
-     * Returns last(current) values for sensors belong to specified user.
-     *
-     * @param userId the user which sensor values to be extracted from the
-     * store;
-     * @return list of sensor values;
-     */
-    List<SensorValue> getCurrentValues(int userId);
-
-    /**
      * Adds values to sensor with specified ID.
      *
      * @param values values to be added;
@@ -111,6 +102,13 @@ public interface DaoInterface {
      */
     int nextId();
 
+    /**
+     * Returns last(current) values for sensors belong to specified user.
+     *
+     * @param userId the user which sensor values to be extracted from the
+     * store;
+     * @return list of sensor values;
+     */
     List<SensorValue> getCurrentValues(final int userId, Date date);
 
     int startProcess(int sensorId);

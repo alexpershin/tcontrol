@@ -102,14 +102,14 @@ function layoutSensors(sensorsJsonData) {
 }
 
 function renderSensorValues(sensorsMap, valuesJsonData) {
-    $(valuesJsonData).each(function (key, value) {
-        if (sensorsMap[value.sensorId] !== null) {
-            sensor = sensorsMap[value.sensorId];
-            sensorElementId = '#sensor_element' + value.sensorId;
-            renderSensor(sensorElementId, sensor, value);
-            $(sensorElementId).show();
-        }
-    });
+    for ( const key in sensorsMap) {
+        const sensor=sensorsMap[key]
+        const sensorId=sensor.id
+        sensorValue = valuesJsonData[sensorId];
+        sensorElementId = '#sensor_element' + sensorId;
+        renderSensor(sensorElementId, sensor, sensorValue??{sensorId: sensorId, value: 0.0, state: 'UNDEFINED'},);
+        $(sensorElementId).show();
+    }
 }
 
 function renderSensor(sensorElementId, sensor, value) {
@@ -124,16 +124,17 @@ function renderSensor(sensorElementId, sensor, value) {
     }
 }
 
-function temperatureSensorRenderer(sensorElementId, value) {
-    var resValue = value.value.toFixed(1) + '\xB0'
-    $(sensorElementId + ' .sensor_item_body .sensor_value').text(resValue);
-    var sensorBody = $(sensorElementId + ' .sensor_item_body');
-    sensorBody.css('background', sensorBackgroundCalc(value));
+function temperatureSensorRenderer(sensorElementId, sensorValue) {
+    var resValue = sensorValue.state !='UNDEFINED'? sensorValue.value.toFixed(1) + '\xB0':'--\xB0'
+    $(sensorElementId + ' .sensor_item_body .sensor_value').text(resValue)
+    var sensorBody = $(sensorElementId + ' .sensor_item_body')
+    const background = sensorBackgroundCalc(sensorValue)
+    sensorBody.css('background', background)
 
-    var gradient = $(sensorElementId + ' .sensor_item_body .sensor_gradient');
-    textColor = calcGradientValueAndColor(value.gradient);
-    gradient.text(textColor.text);
-    gradient.css('color', textColor.color);
+    var gradient = $(sensorElementId + ' .sensor_item_body .sensor_gradient')
+    textColor = calcGradientValueAndColor(sensorValue.gradient)
+    gradient.text(textColor.text)
+    gradient.css('color', textColor.color)
 }
 
 function calcGradientValueAndColor(gradient) {

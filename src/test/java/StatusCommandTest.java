@@ -105,7 +105,7 @@ public class StatusCommandTest {
     };
 
     relayController = new IRelayController() {
-      Map<Pin,PinState> currentPinStates = new HashMap<>();
+      final Map<Pin,PinState> currentPinStates = new HashMap<>();
       {
         currentPinStates.put(thermostatConfig.relayPins().get(0),PinState.LOW);
         currentPinStates.put(thermostatConfig2.relayPins().get(0),PinState.LOW);

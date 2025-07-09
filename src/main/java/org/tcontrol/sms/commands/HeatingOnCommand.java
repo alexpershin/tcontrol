@@ -21,17 +21,13 @@ public class HeatingOnCommand implements ISMSCommand {
 
     private final IThermostat thermostat;
 
-    private final SMSConfig smsConfig;
-
     @Getter
     private Boolean prevThermostatState;
 
     public HeatingOnCommand(IRelayController relayController,
-                            IThermostat thermostatElectro,
-                            SMSConfig smsConfig) {
+                            IThermostat thermostatElectro) {
         this.relayController = relayController;
         this.thermostat = thermostatElectro;
-        this.smsConfig = smsConfig;
     }
 
     @Override

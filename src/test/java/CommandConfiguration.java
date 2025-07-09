@@ -51,7 +51,7 @@ public class CommandConfiguration {
   public ITemperatureMonitor temperatureMonitor() {
     return new ITemperatureMonitor() {
 
-      Map<String, SensorValue> map = new HashMap<>();
+      final Map<String, SensorValue> map = new HashMap<>();
 
       {
         SensorValue v = new SensorValue();

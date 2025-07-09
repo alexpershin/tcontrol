@@ -28,16 +28,8 @@ import java.util.stream.Collectors;
 @AllArgsConstructor
 public class SensorServiceImpl implements SensorService {
 
-    private final IVoltageMonitor voltageMonitor;
-    private final ITemperatureMonitor temperatureMonitor;
     private final SensorConfig sensorConfig;
     private final IStatisticsSaver sensorLastDataSaver;
-
-
-    @PostConstruct
-    public void init() {
-
-    }
 
     @Override
     public Map<Integer, Sensor> getAllSensors() {
@@ -54,12 +46,10 @@ public class SensorServiceImpl implements SensorService {
     @Override
     public List<SensorValue> getCurrentValues(int userId, java.sql.Date date) {
         Timestamp timestamp = new Timestamp(new Date().getTime());
-       return sensorLastDataSaver.currentValues().values().stream().map(org.tcontrol.sms.models.SensorValue::getSensorCode)
-                .map(sensorCode -> {
-                    Optional<SensorConfig.SensorConfiguration> sc = sensorConfig.getSensors().stream()
-                            .filter(sensor -> sensor.getCode().equals(sensorCode)).findFirst();
-                    return sc;
-                }).filter(Optional::isPresent)
+        return sensorLastDataSaver.currentValues().values().stream().map(org.tcontrol.sms.models.SensorValue::getSensorCode)
+                .map(sensorCode -> sensorConfig.getSensors().stream()
+                        .filter(sensor -> sensor.getCode().equals(sensorCode)).findFirst()
+                ).filter(Optional::isPresent)
                 .map(Optional::get)
                 .map(sc -> new SensorValue(sc.getId(), timestamp, 0.0))
                 .collect(Collectors.toList());

@@ -35,7 +35,7 @@ public class HeatingOnOffCommandsTest {
     public void thermostatWasOnTest(){
         SMSConfig smsConfig = new SMSConfig();
         HeatingOnCommand heatingOnCommand =
-                new HeatingOnCommand(relayController, thermostat, smsConfig);
+                new HeatingOnCommand(relayController, thermostat);
         ISMSCommand heatingOffCommand =
                 new HeatingOffCommand(relayController, thermostat, heatingOnCommand);
 
@@ -60,7 +60,7 @@ public class HeatingOnOffCommandsTest {
         SMSConfig smsConfig = new SMSConfig();
 
         HeatingOnCommand heatingOnCommand =
-                new HeatingOnCommand(relayController, thermostat, smsConfig);
+                new HeatingOnCommand(relayController, thermostat);
 
         ISMSCommand heatingOffCommand =
                 new HeatingOffCommand(relayController, thermostat, heatingOnCommand);

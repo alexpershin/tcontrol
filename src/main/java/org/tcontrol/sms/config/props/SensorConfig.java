@@ -16,8 +16,8 @@ public class SensorConfig {
     @RequiredArgsConstructor
     public static class SensorConfiguration
     {
-        private String id;
-        private int order;
+        private String code;
+        private int id;
         private String name;
         private Sensor.SensorType type;
         private String description;

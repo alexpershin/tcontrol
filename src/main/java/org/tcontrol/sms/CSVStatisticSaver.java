@@ -1,22 +1,29 @@
 package org.tcontrol.sms;
 
+import lombok.extern.java.Log;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import org.tcontrol.service.IStatisticsSaver;
 import org.tcontrol.sms.models.SensorValue;
 
 import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.List;
+import java.util.Map;
 
 @Component
-public class CSVStatisticsWriter {
+@Slf4j
+public class CSVStatisticSaver implements IStatisticsSaver {
 
     @Value("${dataFile}")
     private String dataFile;
 
+    @Override
     public void write(SensorValue[] values) {
         boolean fileExist = Files.exists(Paths.get(dataFile));
         try (CSVPrinter printer = new CSVPrinter(new FileWriter(dataFile, true), CSVFormat.EXCEL)) {
@@ -29,7 +36,17 @@ public class CSVStatisticsWriter {
                 }
             }
         } catch (IOException ex) {
-            ex.printStackTrace();
+            log.error("error while saving CSV", ex);
         }
+    }
+
+    @Override
+    public Map<Integer, SensorValue> currentValues() {
+        return Map.of();
+    }
+
+    @Override
+    public List<SensorValue> lastValues(int sensorId) {
+        return List.of();
     }
 }

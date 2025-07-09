@@ -28,7 +28,7 @@ public class StatusCommandTest {
   private static final String GPIO_01 = "GPIO_01";
   private static final String GPIO_02 = "GPIO_02";
   private static final String GPIO_03 = "GPIO_03";
-  private static final String SENSOR = "abc";
+  private static final String SENSOR_CODE = "abc";
   private Thermostat thermostat1;
   private Thermostat thermostat2;
   private Thermostat thermostat3;
@@ -49,7 +49,7 @@ public class StatusCommandTest {
     thermostatConfig.setDelta(0.5f);
     thermostatConfig.setNightBegin(60 * 60 * 23);
     thermostatConfig.setNightEnd(60 * 60 * 7);
-    thermostatConfig.setSensor(SENSOR);
+    thermostatConfig.setSensor(SENSOR_CODE);
     thermostatConfig.setTDay(12.0f);
     thermostatConfig.setTNight(16.0f);
     thermostatConfig.getRelayPins().add(GPIO_00);
@@ -58,7 +58,7 @@ public class StatusCommandTest {
     thermostatConfig2.setDelta(0.5f);
     thermostatConfig2.setNightBegin(60 * 60 * 23);
     thermostatConfig2.setNightEnd(60 * 60 * 7);
-    thermostatConfig2.setSensor(SENSOR);
+    thermostatConfig2.setSensor(SENSOR_CODE);
     thermostatConfig2.setTDay(18.0f);
     thermostatConfig2.setTNight(20.0f);
     thermostatConfig2.getRelayPins().add(GPIO_01);
@@ -67,7 +67,7 @@ public class StatusCommandTest {
     thermostatConfig3.setDelta(0.5f);
     thermostatConfig3.setNightBegin(60 * 60 * 23);
     thermostatConfig3.setNightEnd(60 * 60 * 7);
-    thermostatConfig3.setSensor(SENSOR);
+    thermostatConfig3.setSensor(SENSOR_CODE);
     thermostatConfig3.setTDay(17.0f);
     thermostatConfig3.setTNight(18.0f);
     thermostatConfig3.getRelayPins().add(GPIO_02);
@@ -76,7 +76,7 @@ public class StatusCommandTest {
     thermostatConfig4.setDelta(0.5f);
     thermostatConfig4.setNightBegin(60 * 60 * 23);
     thermostatConfig4.setNightEnd(60 * 60 * 7);
-    thermostatConfig4.setSensor(SENSOR);
+    thermostatConfig4.setSensor(SENSOR_CODE);
     thermostatConfig4.setTDay(17.0f);
     thermostatConfig4.setTNight(18.0f);
     thermostatConfig4.getRelayPins().add(GPIO_03);
@@ -87,9 +87,9 @@ public class StatusCommandTest {
 
       {
         SensorValue v = new SensorValue();
-        v.setSensorId(SENSOR);
+        v.setSensorCode(SENSOR_CODE);
         v.setValue(13.0);
-        map.put(SENSOR, v);
+        map.put(SENSOR_CODE, v);
 
       }
 
@@ -173,7 +173,7 @@ public class StatusCommandTest {
 
     SensorConfig.SensorConfiguration sensorConfiguration = new SensorConfig.SensorConfiguration();
     sensorConfiguration.setName("дом");
-    sensorConfiguration.setId(SENSOR);
+    sensorConfiguration.setCode(SENSOR_CODE);
 
     sensorConfig.setSensors(Collections.singletonList(sensorConfiguration));
 

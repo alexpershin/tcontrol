@@ -19,7 +19,7 @@ import java.util.Map;
 public class CommandConfiguration {
 
   private static final String GPIO_00 = "GPIO_00";
-  private static final String SENSOR = "abc";
+  private static final String SENSOR_CODE = "abc";
 
   @Bean
   public ThermostatConfig thermostatConfig() {
@@ -27,7 +27,7 @@ public class CommandConfiguration {
     thermostatConfig.setDelta(0.5f);
     thermostatConfig.setNightBegin(60 * 60 * 23);
     thermostatConfig.setNightEnd(60 * 60 * 7);
-    thermostatConfig.setSensor(SENSOR);
+    thermostatConfig.setSensor(SENSOR_CODE);
     thermostatConfig.setTDay(12.0f);
     thermostatConfig.setTNight(16.0f);
     thermostatConfig.getRelayPins().add(GPIO_00);
@@ -40,7 +40,7 @@ public class CommandConfiguration {
     thermostatConfig.setDelta(0.5f);
     thermostatConfig.setNightBegin(60 * 60 * 23);
     thermostatConfig.setNightEnd(60 * 60 * 7);
-    thermostatConfig.setSensor(SENSOR);
+    thermostatConfig.setSensor(SENSOR_CODE);
     thermostatConfig.setTDay(18.0f);
     thermostatConfig.setTNight(20.0f);
     thermostatConfig.getRelayPins().add(GPIO_00);
@@ -55,9 +55,9 @@ public class CommandConfiguration {
 
       {
         SensorValue v = new SensorValue();
-        v.setSensorId(SENSOR);
+        v.setSensorCode(SENSOR_CODE);
         v.setValue(13.0);
-        map.put(SENSOR, v);
+        map.put(SENSOR_CODE, v);
 
       }
 
@@ -138,7 +138,7 @@ public class CommandConfiguration {
 
     SensorConfig.SensorConfiguration sensorConfiguration = new SensorConfig.SensorConfiguration();
     sensorConfiguration.setName("дом");
-    sensorConfiguration.setId(SENSOR);
+    sensorConfiguration.setCode(SENSOR_CODE);
 
     sensorConfig.setSensors(Collections.singletonList(sensorConfiguration));
     return sensorConfig;

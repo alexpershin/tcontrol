@@ -25,14 +25,14 @@ public class TemperatureReader implements ITemperatureReader {
     private String w1SensorInfoFileName;
 
     @Override
-    public SensorValue loadValue(String sensorUUID) throws IOException {
-        double t = readTemperatureFromFile(getFullPathToDevice(sensorUUID));
+    public SensorValue loadValue(String sensorCode) throws IOException {
+        double t = readTemperatureFromFile(getFullPathToDevice(sensorCode));
         return new SensorValue(null, System.currentTimeMillis(), t);
     }
 
-    private Path getFullPathToDevice(String deviceFileName) {
+    private Path getFullPathToDevice(String sensorCode) {
         return FileSystems.getDefault().getPath(
-                getW1DevicesPath() + "/" + deviceFileName
+                getW1DevicesPath() + "/" + sensorCode
                         + "/" + getW1SensorInfoFileName());
     }
 

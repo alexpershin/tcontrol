@@ -9,8 +9,9 @@ import java.sql.Timestamp;
 @Data
 @NoArgsConstructor
 public class SensorValue {
-
-    private String sensorId;
+    private Integer sensorId;
+    private String sensorCode;
+    private String pin;
     private Timestamp timestamp;
     private double value;
     private Double gradient;
@@ -25,9 +26,17 @@ public class SensorValue {
     private SensorState state;
 
 
-    public SensorValue(String sensorId, long time,
+    public SensorValue(String sensorCode, long time,
+                       double value) {
+        this.sensorCode = sensorCode;
+        this.timestamp = new Timestamp(time);
+        this.value = value;
+    }
+
+    public SensorValue(int sensorId, String sensorCode, long time,
                        double value) {
         this.sensorId = sensorId;
+        this.sensorCode = sensorCode;
         this.timestamp = new Timestamp(time);
         this.value = value;
     }

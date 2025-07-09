@@ -23,7 +23,7 @@ import static org.mockito.Mockito.when;
 public class ThermostatTest {
 
     private static final String GPIO_00 = "GPIO_00";
-    private static final String SENSOR = "abc";
+    private static final String SENSOR_CODE = "abc";
     private Thermostat thermostat;
     private ThermostatConfig thermostatConfig;
     private ITemperatureMonitor temperatureMonitor;
@@ -36,7 +36,7 @@ public class ThermostatTest {
         thermostatConfig.setDelta(0.5f);
         thermostatConfig.setNightBegin(60 * 60 * 23);
         thermostatConfig.setNightEnd(60 * 60 * 7);
-        thermostatConfig.setSensor(SENSOR);
+        thermostatConfig.setSensor(SENSOR_CODE);
         thermostatConfig.setTDay(12.0f);
         thermostatConfig.setTNight(16.0f);
         thermostatConfig.getRelayPins().add(GPIO_00);
@@ -47,9 +47,9 @@ public class ThermostatTest {
 
             {
                 SensorValue v = new SensorValue();
-                v.setSensorId(SENSOR);
+                v.setSensorCode(SENSOR_CODE);
                 v.setValue(13.0);
-                map.put(SENSOR, v);
+                map.put(SENSOR_CODE, v);
 
             }
 
@@ -126,8 +126,8 @@ public class ThermostatTest {
         assertTrue(thermostat.isHeatingOn());
         assertTrue(relayController.getPinState(heatingPin).isHigh());
 
-        SensorValue v = temperatureMonitor.getSensorValueMap().get(SENSOR);
-        v.setSensorId(SENSOR);
+        SensorValue v = temperatureMonitor.getSensorValueMap().get(SENSOR_CODE);
+        v.setSensorCode(SENSOR_CODE);
         v.setValue(15.0);
 
         thermostat.checkTemperature();

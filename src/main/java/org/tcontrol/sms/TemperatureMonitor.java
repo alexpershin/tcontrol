@@ -22,7 +22,7 @@ public class TemperatureMonitor implements ITemperatureMonitor {
 
     private SensorConfig config;
 
-    private CSVStatisticsWriter csvWriter;
+    private CSVStatisticSaver csvWriter;
 
     @Scheduled(cron = "${sensor-config.schedule}")
     public void readSensors() {
@@ -33,10 +33,12 @@ public class TemperatureMonitor implements ITemperatureMonitor {
         SensorValue[] values = new SensorValue[sensors.size()];
         for (SensorConfig.SensorConfiguration sensor : sensors) {
             try {
-                String id = sensor.getId();
-                SensorValue value = temperatureReader.loadValue(id);
-                value.setSensorId(id);
-                sensorValueMap.put(id, value);
+                Integer sensorId = sensor.getId();
+                String sensorCode = sensor.getCode();
+                SensorValue value = temperatureReader.loadValue(sensorCode);
+                value.setSensorCode(sensorCode);
+                value.setSensorId(sensorId);
+                sensorValueMap.put(sensorCode, value);
                 values[successCount] = value;
                 successCount++;
             } catch (IOException e) {

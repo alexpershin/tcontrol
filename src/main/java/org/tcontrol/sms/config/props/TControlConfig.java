@@ -6,5 +6,6 @@ import lombok.RequiredArgsConstructor;
 @Data
 @RequiredArgsConstructor
 public class TControlConfig {
+    private Integer sensorValuesBufferSize;
     private Boolean sensorsStub;
 }

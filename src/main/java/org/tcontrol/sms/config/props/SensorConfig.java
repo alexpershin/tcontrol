@@ -12,14 +12,5 @@ import java.util.List;
 public class SensorConfig {
     private List<SensorConfiguration> sensors = new ArrayList<>();
 
-    @Data
-    @RequiredArgsConstructor
-    public static class SensorConfiguration
-    {
-        private String code;
-        private int id;
-        private String name;
-        private Sensor.SensorType type;
-        private String description;
-    }
+
 }

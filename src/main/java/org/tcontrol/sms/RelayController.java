@@ -6,7 +6,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.tcontrol.service.IStatisticsSaver;
-import org.tcontrol.sms.models.SensorValue;
+import org.tcontrol.service.models.SensorValue;
 
 import java.sql.Timestamp;
 import java.util.HashMap;

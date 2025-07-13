@@ -2,8 +2,10 @@ package org.tcontrol.service.impl;
 
 import jakarta.annotation.PostConstruct;
 import lombok.AllArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
+import org.tcontrol.mappers.SensorMapper;
 import org.tcontrol.service.SensorService;
 import org.tcontrol.service.models.Sensor;
 import org.tcontrol.service.models.SensorValue;
@@ -28,13 +30,14 @@ import java.util.stream.Collectors;
 @AllArgsConstructor
 public class SensorServiceImpl implements SensorService {
 
-    private final SensorConfig sensorConfig;
-    private final IStatisticsSaver sensorLastDataSaver;
+    protected final SensorConfig sensorConfig;
+    protected final IStatisticsSaver sensorLastDataSaver;
+    protected final SensorMapper sensorMapper;
 
     @Override
     public Map<Integer, Sensor> getAllSensors() {
         return sensorConfig.getSensors().stream()
-                .map(sc -> new Sensor(sc.getId(), sc.getName(), sc.getType(), sc.getDescription()))
+                .map(sensorMapper::map)
                 .collect(Collectors.toMap(Sensor::getId, s -> s));
     }
 
@@ -46,23 +49,28 @@ public class SensorServiceImpl implements SensorService {
     @Override
     public List<SensorValue> getCurrentValues(int userId, java.sql.Date date) {
         Timestamp timestamp = new Timestamp(new Date().getTime());
-        return sensorLastDataSaver.currentValues().values().stream().map(org.tcontrol.sms.models.SensorValue::getSensorCode)
+        return sensorLastDataSaver.currentValues().values().stream()
+                .map(SensorValue::getSensorCode)
                 .map(sensorCode -> sensorConfig.getSensors().stream()
                         .filter(sensor -> sensor.getCode().equals(sensorCode)).findFirst()
                 ).filter(Optional::isPresent)
                 .map(Optional::get)
-                .map(sc -> new SensorValue(sc.getId(), timestamp, 0.0))
+                .map(sc -> new SensorValue(sc.getId(), sc.getCode(), timestamp,
+                        sensorLastDataSaver.currentValues().get(sc.getId()).getValue()))
                 .collect(Collectors.toList());
-      /*  return temperatureMonitor.getSensorValueMap().values().stream()
-                .map(org.tcontrol.sms.models.SensorValue::getSensorCode)
-                .map(sensorCode -> {
-                    Optional<SensorConfig.SensorConfiguration> sc = sensorConfig.getSensors().stream()
-                            .filter(sensor -> sensor.getCode().equals(sensorCode)).findFirst();
-                    return sc;
-                }).filter(Optional::isPresent)
-                .map(Optional::get)
-                .map(sc -> new SensorValue(sc.getId(), timestamp, 0.0))
-                .collect(Collectors.toList());*/
+    }
+
+    @Override
+    public List<SensorValue> getPrevSensorValues(int userId, java.sql.Date date, int sensorId) {
+        return sensorLastDataSaver.lastValues(sensorId)
+                .stream()
+                .map(v -> new SensorValue(
+                        v.getSensorId(),
+                        v.getSensorCode(),
+                        v.getTimestamp(),
+                        v.getValue())
+                )
+                .collect(Collectors.toList());
     }
 
     @Override

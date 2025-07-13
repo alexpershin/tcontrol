@@ -4,8 +4,9 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
+import org.tcontrol.service.models.SensorValue;
 import org.tcontrol.sms.config.props.SensorConfig;
-import org.tcontrol.sms.models.SensorValue;
+import org.tcontrol.sms.config.props.SensorConfiguration;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -29,9 +30,9 @@ public class TemperatureMonitor implements ITemperatureMonitor {
         log.info("Reading temperature sensors...");
 
         int successCount = 0;
-        List<SensorConfig.SensorConfiguration> sensors = config.getSensors();
+        List<SensorConfiguration> sensors = config.getSensors();
         SensorValue[] values = new SensorValue[sensors.size()];
-        for (SensorConfig.SensorConfiguration sensor : sensors) {
+        for (SensorConfiguration sensor : sensors) {
             try {
                 Integer sensorId = sensor.getId();
                 String sensorCode = sensor.getCode();

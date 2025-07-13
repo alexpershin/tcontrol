@@ -115,6 +115,17 @@ public interface SensorService {
      */
     List<SensorValue> getCurrentValues(final int userId, Date date);
 
+    /**
+     * Returns last(current) values for sensors belong to specified user.
+     *
+     * @param userId the user which sensor values to be extracted from the
+     * store;
+     * @param sensorId sensor's identifier;
+     *
+     * @return list of sensor values;
+     */
+    List<SensorValue> getPrevSensorValues(final int userId, Date date, final int sensorId);
+
     int startProcess(int sensorId);
 
     int stopProcess(int sensorId);

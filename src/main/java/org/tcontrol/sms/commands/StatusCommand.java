@@ -10,6 +10,7 @@ import org.springframework.stereotype.Component;
 import org.tcontrol.sms.*;
 import org.tcontrol.sms.IVoltageMonitor.VoltageResult;
 import org.tcontrol.sms.config.props.SensorConfig;
+import org.tcontrol.sms.config.props.SensorConfiguration;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -45,7 +46,7 @@ public class StatusCommand implements ISMSCommand {
   public CommandResult run() {
     Optional<String> res = temperatureMonitor.getSensorValueMap().values().stream().map(value -> {
       String sensorCode = value.getSensorCode();
-      Optional<SensorConfig.SensorConfiguration> sc = sensorConfig.getSensors().stream()
+      Optional<SensorConfiguration> sc = sensorConfig.getSensors().stream()
           .filter(sensor -> sensor.getCode().equals(sensorCode)).findFirst();
       return sc.map(sensorConfiguration -> sensorConfiguration.getName() + ": " + value.getValue())
           .orElse("");

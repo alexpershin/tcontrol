@@ -3,7 +3,7 @@ package org.service;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.tcontrol.service.impl.SensorLastDataSaver;
-import org.tcontrol.sms.models.SensorValue;
+import org.tcontrol.service.models.SensorValue;
 
 import java.util.List;
 

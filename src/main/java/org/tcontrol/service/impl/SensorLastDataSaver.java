@@ -4,7 +4,7 @@ import lombok.Setter;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.tcontrol.service.IStatisticsSaver;
-import org.tcontrol.sms.models.SensorValue;
+import org.tcontrol.service.models.SensorValue;
 
 import java.util.Deque;
 import java.util.HashMap;
@@ -15,7 +15,6 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Component
-
 public class SensorLastDataSaver implements IStatisticsSaver {
 
     @Setter

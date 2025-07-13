@@ -7,7 +7,6 @@ import org.tcontrol.sms.*;
 import org.tcontrol.sms.commands.CommandResult;
 import org.tcontrol.sms.commands.HeatingOffCommand;
 import org.tcontrol.sms.commands.HeatingOnCommand;
-import org.tcontrol.sms.config.props.SMSConfig;
 import org.tcontrol.sms.config.props.SensorConfig;
 import org.tcontrol.sms.config.props.ThermostatConfig;
 
@@ -33,7 +32,6 @@ public class HeatingOnOffCommandsTest {
 
     @Test
     public void thermostatWasOnTest(){
-        SMSConfig smsConfig = new SMSConfig();
         HeatingOnCommand heatingOnCommand =
                 new HeatingOnCommand(relayController, thermostat);
         ISMSCommand heatingOffCommand =
@@ -57,7 +55,6 @@ public class HeatingOnOffCommandsTest {
 
     @Test
     public void thermostatWasOffTest(){
-        SMSConfig smsConfig = new SMSConfig();
 
         HeatingOnCommand heatingOnCommand =
                 new HeatingOnCommand(relayController, thermostat);

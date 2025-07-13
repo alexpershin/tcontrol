@@ -1,6 +1,6 @@
 package org.tcontrol.sms;
 
-import org.tcontrol.sms.models.SensorValue;
+import org.tcontrol.service.models.SensorValue;
 
 import java.util.Map;
 

@@ -138,5 +138,5 @@
 
   tcontrol-config:
     sensorValuesBufferSize: 20
-    sensorsStub: false
+    sensorsStub: true
 

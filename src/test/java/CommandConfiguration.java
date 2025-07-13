@@ -3,10 +3,10 @@ import com.pi4j.io.gpio.PinState;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.tcontrol.service.models.SensorValue;
 import org.tcontrol.sms.*;
 import org.tcontrol.sms.config.props.SensorConfig;
 import org.tcontrol.sms.config.props.ThermostatConfig;
-import org.tcontrol.sms.models.SensorValue;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;

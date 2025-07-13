@@ -1,5 +1,6 @@
 package org.tcontrol.controller;
 
+import org.springframework.web.bind.annotation.RequestParam;
 import org.tcontrol.controller.dto.*;
 import org.tcontrol.service.SensorServiceException;
 import org.tcontrol.service.SensorService;
@@ -17,6 +18,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.ArrayList;
@@ -103,6 +106,39 @@ public class SensorController {
         return result;
     }
 
+    /**
+     * Current values.
+     *
+     * @return list of values;
+     * @throws SensorServiceException if some exeption;
+     */
+    @PostMapping("/sensor_previous_values")
+    @CrossOrigin(origins = {"http://localhost:8090", "http://localhost"})
+    @Operation(summary = "Получение предыдущих значений сенсора",
+            description = "Получение предыдущих значений сенсора",
+            responses = {@ApiResponse(responseCode = "" + HTTP_OK,
+                    description = "Список значений сенсоров",
+                    content = @Content(
+                            mediaType = "application/json",
+                            array = @ArraySchema(schema = @Schema(implementation = SensorValuesResult.class))
+                    )),
+                    @ApiResponse(responseCode = "" + HTTP_BAD_REQUEST,
+                            content = @Content(mediaType = "application/json"))
+            },
+            parameters = {@Parameter(name = "campaignName", description = "Параметр для поиска кампаний по шаблону наименования",
+                    in = ParameterIn.QUERY,
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(maxLength = 255, example = "Кредит"))
+            )}
+    )
+    public SensorValuesResult getSensorPrevValues(@RequestParam(name = "sensorId")Integer sensorId)  throws SensorServiceException {
+        SensorValuesResult result = new SensorValuesResult();
+        List<SensorValue> values = sensorService.getPrevSensorValues(CURRENT_USER_ID, null, sensorId);
+        List<SensorValueDto> webValues = convertSensorValuesToWeb(values);
+        result.setValues(webValues.toArray(new SensorValueDto[]{}));
+        return result;
+    }
+
 
     @PostMapping("/start_process")
     @CrossOrigin(origins = {"http://localhost:8090", "http://localhost"})
@@ -115,10 +151,11 @@ public class SensorController {
 
     @PostMapping("/stop_process")
     @CrossOrigin(origins = {"http://localhost:8090", "http://localhost"})
-    public StopProcessResult stopProcess(StartProcessRequest processChangeRequest) throws SensorServiceException, InterruptedException {
+    public ResponseEntity<StopProcessResult> stopProcess(StartProcessRequest processChangeRequest) throws SensorServiceException, InterruptedException {
         Thread.sleep(5000);
         int result = sensorService.stopProcess(processChangeRequest.getSensorId());
-        return new StopProcessResult(result == -1 ? null : result, result == -1 ? "error" : "ok");
+        return new ResponseEntity<>(new StopProcessResult(result == -1 ? null : result, "ok"),
+                result == -1 ? HttpStatus.INTERNAL_SERVER_ERROR : HttpStatus.OK);
     }
 
 

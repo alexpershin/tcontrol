@@ -2,12 +2,12 @@ import com.pi4j.io.gpio.Pin;
 import com.pi4j.io.gpio.PinState;
 import com.pi4j.io.gpio.RaspiPin;
 import org.junit.jupiter.api.BeforeEach;
+import org.tcontrol.service.models.SensorValue;
 import org.tcontrol.sms.IRelayController;
 import org.tcontrol.sms.ITemperatureMonitor;
 import org.tcontrol.sms.ITimer;
 import org.tcontrol.sms.Thermostat;
 import org.tcontrol.sms.config.props.ThermostatConfig;
-import org.tcontrol.sms.models.SensorValue;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;

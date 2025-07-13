@@ -1,13 +1,13 @@
 import com.pi4j.io.gpio.Pin;
 import com.pi4j.io.gpio.PinState;
 import org.junit.jupiter.api.BeforeEach;
+import org.tcontrol.service.models.SensorValue;
 import org.tcontrol.sms.*;
 import org.tcontrol.sms.IVoltageMonitor.VoltageResult;
 import org.tcontrol.sms.commands.CommandResult;
 import org.tcontrol.sms.commands.StatusCommand;
 import org.tcontrol.sms.config.props.SensorConfig;
 import org.tcontrol.sms.config.props.ThermostatConfig;
-import org.tcontrol.sms.models.SensorValue;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;

@@ -52,7 +52,8 @@ function loadValuesFromServer() {
     $.post("http://localhost:8080/sensor_values",
         function (valuesJsonData) {
             console.log('sensor values processing start');
-            renderSensorValues(sensorMap, valuesJsonData.values);
+            valuesMap = convertValuesJsonToMap(valuesJsonData.values)
+            renderSensorValues(sensorMap, valuesMap);
         },
         'json').done(function () {
         console.log("sensor values loaded");
@@ -88,6 +89,14 @@ function convertSensorsJsonToMap(sensorsJsonData) {
     return result;
 }
 
+function convertValuesJsonToMap(valuesJsonData) {
+    var result = {};//new Map; //Waiting release of Draft ECMA-262 6th Edition
+    $(valuesJsonData).each(function (key, value) {
+        result[value.sensorId] = value;
+    });
+    return result;
+}
+
 function layoutSensors(sensorsJsonData) {
     $(sensorsJsonData).each(function (key, value) {
         clone = $('#sensor_element').clone();
@@ -101,11 +110,11 @@ function layoutSensors(sensorsJsonData) {
     });
 }
 
-function renderSensorValues(sensorsMap, valuesJsonData) {
+function renderSensorValues(sensorsMap, valuesMap) {
     for ( const key in sensorsMap) {
         const sensor=sensorsMap[key]
         const sensorId=sensor.id
-        sensorValue = valuesJsonData[sensorId];
+        sensorValue = valuesMap[sensorId];
         sensorElementId = '#sensor_element' + sensorId;
         renderSensor(sensorElementId, sensor, sensorValue??{sensorId: sensorId, value: 0.0, state: 'UNDEFINED'},);
         $(sensorElementId).show();

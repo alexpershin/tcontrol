@@ -34,7 +34,7 @@ public class TemperatureMonitor implements ITemperatureMonitor {
         SensorValue[] values = new SensorValue[sensors.size()];
         for (SensorConfiguration sensor : sensors) {
             try {
-                Integer sensorId = sensor.getId();
+                int sensorId = sensor.getId();
                 String sensorCode = sensor.getCode();
                 SensorValue value = temperatureReader.loadValue(sensorCode);
                 value.setSensorCode(sensorCode);

@@ -3,7 +3,6 @@ package org.tcontrol.service.impl;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.tcontrol.mappers.SensorMapper;
 import org.tcontrol.service.IStatisticsSaver;
-import org.tcontrol.service.SensorService;
 import org.tcontrol.service.models.Sensor;
 import org.tcontrol.service.models.SensorValue;
 import jakarta.annotation.PostConstruct;
@@ -14,7 +13,6 @@ import org.tcontrol.sms.config.props.SensorConfiguration;
 import java.sql.Timestamp;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 

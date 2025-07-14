@@ -45,7 +45,7 @@ public class SMSProcessor {
         Path path = Paths.get(inputFolderName);
 
         try (Stream<Path> stream = Files.list(path)) {
-            List<Path> files = stream.collect(Collectors.toList());
+            List<Path> files = stream.toList();
             for (Path incomingFile : files) {
                 if (!Files.isDirectory(incomingFile)) {
                     processIncomingSmsFile(incomingFile);
@@ -138,14 +138,14 @@ public class SMSProcessor {
             String command = null;
             List<String> lines = Files.readAllLines(filePath, Charset.defaultCharset());
             if (lines.size() == 1) {
-                String commandText = lines.get(0);
+                String commandText = lines.getFirst();
                 command = StringUtil.trim(commandText).toUpperCase();
             } else {
                 log.info("Error while found command: {}", lines);
             }
             return command;
         } catch (IOException ex) {
-            log.info("Error while reading file " + filePath.toString());
+            log.info("Error while reading file " + filePath);
         }
         return null;
     }
@@ -155,7 +155,7 @@ public class SMSProcessor {
             List<String> lines = Files.readAllLines(filePath, Charset.defaultCharset());
             return lines.stream().reduce((s1, s2) -> s1 + "\n" + s2).orElse("");
         } catch (IOException ex) {
-            log.info("Error while reading file " + filePath.toString());
+            log.info("Error while reading file " + filePath);
         }
         return null;
     }

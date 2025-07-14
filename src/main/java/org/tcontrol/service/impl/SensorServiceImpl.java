@@ -1,8 +1,6 @@
 package org.tcontrol.service.impl;
 
-import jakarta.annotation.PostConstruct;
 import lombok.AllArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
 import org.tcontrol.mappers.SensorMapper;
@@ -11,8 +9,6 @@ import org.tcontrol.service.models.Sensor;
 import org.tcontrol.service.models.SensorValue;
 import org.tcontrol.service.models.User;
 import org.tcontrol.service.IStatisticsSaver;
-import org.tcontrol.sms.ITemperatureMonitor;
-import org.tcontrol.sms.IVoltageMonitor;
 import org.tcontrol.sms.config.props.SensorConfig;
 
 import java.sql.Timestamp;

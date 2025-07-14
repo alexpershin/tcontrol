@@ -16,6 +16,7 @@ import java.time.LocalTime;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.junit.jupiter.api.Test;
@@ -108,15 +109,15 @@ public class StatusCommandTest {
     relayController = new IRelayController() {
       final Map<Pin,PinState> currentPinStates = new HashMap<>();
       {
-        currentPinStates.put(thermostatConfig.relayPins().get(0),PinState.LOW);
-        currentPinStates.put(thermostatConfig2.relayPins().get(0),PinState.LOW);
-        currentPinStates.put(thermostatConfig3.relayPins().get(0),PinState.LOW);
-        currentPinStates.put(thermostatConfig4.relayPins().get(0),PinState.LOW);
+        currentPinStates.put(thermostatConfig.relayPins().getFirst(),PinState.LOW);
+        currentPinStates.put(thermostatConfig2.relayPins().getFirst(),PinState.LOW);
+        currentPinStates.put(thermostatConfig3.relayPins().getFirst(),PinState.LOW);
+        currentPinStates.put(thermostatConfig4.relayPins().getFirst(),PinState.LOW);
       }
       @Override
       public PinState turnOnRelay(Pin controlPin) {
         PinState currentPinState = PinState.HIGH;
-        currentPinStates.put(thermostatConfig.relayPins().get(0),PinState.HIGH);
+        currentPinStates.put(thermostatConfig.relayPins().getFirst(),PinState.HIGH);
         return currentPinState;
       }
 
@@ -178,7 +179,7 @@ public class StatusCommandTest {
 
     sensorConfig.setSensors(Collections.singletonList(sensorConfiguration));
 
-    final IVoltageMonitor voltageMonitor = ()->Arrays.asList(new VoltageResult("socket", 220.1, "V"));
+    final IVoltageMonitor voltageMonitor = ()-> List.of(new VoltageResult("socket", 220.1, "V"));
 
     statusCommand = new StatusCommand(temperatureMonitor, sensorConfig,
         relayController, thermostat1, thermostat2, thermostat3, thermostat4, voltageMonitor);

@@ -6,6 +6,7 @@ import org.springframework.context.annotation.Configuration;
 import org.tcontrol.service.models.SensorValue;
 import org.tcontrol.sms.*;
 import org.tcontrol.sms.config.props.SensorConfig;
+import org.tcontrol.sms.config.props.SensorConfiguration;
 import org.tcontrol.sms.config.props.ThermostatConfig;
 
 import java.time.LocalDate;
@@ -136,7 +137,7 @@ public class CommandConfiguration {
   public SensorConfig sensorConfig() {
     SensorConfig sensorConfig = new SensorConfig();
 
-    SensorConfig.SensorConfiguration sensorConfiguration = new SensorConfig.SensorConfiguration();
+    SensorConfiguration sensorConfiguration = new SensorConfiguration();
     sensorConfiguration.setName("дом");
     sensorConfiguration.setCode(SENSOR_CODE);
 

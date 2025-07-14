@@ -26,7 +26,7 @@ import java.util.stream.Collectors;
  * DAO stub to use while real DAO has not been completely implemented.
  */
 @Component
-@ConditionalOnProperty(value = "tcontrol-config.sensorsStub", havingValue = "false")
+@ConditionalOnProperty(value = "main-config.sensorsStub", havingValue = "false")
 @AllArgsConstructor
 public class SensorServiceImpl implements SensorService {
 

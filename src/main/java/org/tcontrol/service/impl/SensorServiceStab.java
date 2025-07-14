@@ -22,7 +22,7 @@ import java.util.stream.Stream;
  * DAO stub to use while real DAO has not been completely implemented.
  */
 @Component
-@ConditionalOnProperty(value = "tcontrol-config.sensorsStub", havingValue = "true")
+@ConditionalOnProperty(value = "main-config.sensorsStub", havingValue = "true")
 public class SensorServiceStab extends SensorServiceImpl {
 
     public SensorServiceStab(SensorConfig sensorConfig, IStatisticsSaver sensorLastDataSaver, SensorMapper sensorMapper) {

@@ -76,8 +76,8 @@ public class AppConfig {
   public RelayAggregatorConfig relayAggregatorConfig(){return new RelayAggregatorConfig();}
 
   @Bean
-  @ConfigurationProperties(prefix = "tcontrol-config")
-  public TControlConfig tcontrolConfig(){return new TControlConfig();}
+  @ConfigurationProperties(prefix = "main-config")
+  public MainConfig mainConfig(){return new MainConfig();}
 
   @Bean
   public IThermostat thermostatElectro(

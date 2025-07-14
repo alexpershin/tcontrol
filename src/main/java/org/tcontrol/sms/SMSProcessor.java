@@ -52,7 +52,8 @@ public class SMSProcessor {
                 }
             }
         } catch (IOException e) {
-            e.printStackTrace();
+           log.error("reading file exception: " +
+                   "{}", e.getMessage());
         }
     }
 

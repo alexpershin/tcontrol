@@ -67,4 +67,9 @@ public class SensorLastDataSaverTest {
         assertEquals(sensorLastDataSaver.lastValues(1).size(), 1);
         assertEquals(sensorLastDataSaver.lastValues(2).size(), 3);
     }
+
+    @Test
+    public void emptyTest() {
+        assertEquals(sensorLastDataSaver.lastValues(1).size(), 0);
+    }
 }

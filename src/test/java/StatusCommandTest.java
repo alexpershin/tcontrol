@@ -13,7 +13,6 @@ import org.tcontrol.sms.config.props.ThermostatConfig;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -98,11 +97,6 @@ public class StatusCommandTest {
       @Override
       public Map<String, SensorValue> getSensorValueMap() {
         return map;
-      }
-
-      @Override
-      public void readSensors() {
-
       }
     };
 

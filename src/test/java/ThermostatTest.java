@@ -57,11 +57,6 @@ public class ThermostatTest {
             public Map<String, SensorValue> getSensorValueMap() {
                 return map;
             }
-
-            @Override
-            public void readSensors() {
-
-            }
         };
 
         relayController = new IRelayController() {

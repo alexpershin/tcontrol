@@ -83,9 +83,4 @@ public class VoltageController implements IVoltageController {
       log.error("Voltage values is null");
     }
   }
-
-  @Override
-  public List<String> getRelayPins() {
-    return voltageControllerConfig.getRelayPins();
-  }
 }

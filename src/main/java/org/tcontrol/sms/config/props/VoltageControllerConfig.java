@@ -21,7 +21,7 @@ public class VoltageControllerConfig {
 
   @PostConstruct
   public void postConstruct() {
-    relayPins.forEach((pin) -> RaspiPin.getPinByName(pin));
+    relayPins.forEach(RaspiPin::getPinByName);
   }
 
   public List<Pin> relayPins() {

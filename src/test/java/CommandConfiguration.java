@@ -66,11 +66,6 @@ public class CommandConfiguration {
       public Map<String, SensorValue> getSensorValueMap() {
         return map;
       }
-
-      @Override
-      public void readSensors() {
-
-      }
     };
   }
 

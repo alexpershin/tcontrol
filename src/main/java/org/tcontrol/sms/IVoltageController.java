@@ -6,7 +6,5 @@ public interface IVoltageController {
 
   void checkVoltage();
 
-  List<String> getRelayPins();
-
   boolean isOn();
 }

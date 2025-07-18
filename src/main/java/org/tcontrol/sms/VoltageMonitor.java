@@ -72,7 +72,7 @@ public class VoltageMonitor implements IVoltageMonitor {
 
   @PostConstruct
   public void init() {
-    log.info("Initializing voltage controller...");
+    log.info("Initializing voltage monitor...");
     // create gpio controller
     try {
       gpio = GpioFactory.getInstance();

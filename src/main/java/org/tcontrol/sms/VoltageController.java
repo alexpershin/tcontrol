@@ -1,0 +1,91 @@
+package org.tcontrol.sms;
+
+import com.pi4j.io.gpio.PinState;
+import jakarta.annotation.PostConstruct;
+import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.stereotype.Service;
+import org.tcontrol.sms.config.props.VoltageControllerConfig;
+
+import java.util.List;
+
+@Service
+@Slf4j
+public class VoltageController implements IVoltageController {
+
+  private final VoltageControllerConfig voltageControllerConfig;
+
+  private final IVoltageMonitor voltageMonitor;
+
+  private final IRelayController relayController;
+
+  @Getter
+  private final String name;
+
+  @Getter
+  boolean enable = true;
+
+  @Getter
+  boolean on = false;
+
+  public VoltageController(VoltageControllerConfig voltageControllerConfig,
+                           IVoltageMonitor voltageMonitor,
+                           IRelayController relayController
+  ) {
+    this.voltageControllerConfig = voltageControllerConfig;
+    this.voltageMonitor = voltageMonitor;
+    this.relayController = relayController;
+    this.name = "Battery voltage controller";
+  }
+
+  @PostConstruct
+  public void init() {
+    log.info("Initializing voltage controller: {}", name);
+  }
+
+  @Override
+  @Scheduled(cron = "${voltage-controller.schedule}")
+  public void checkVoltage() {
+    log.info(name + "> checkVoltage");
+    if (!enable) {
+      return;
+    }
+    List<IVoltageMonitor.VoltageResult> voltageResults = voltageMonitor.getVoltageResults();
+    if (voltageResults != null) {
+      IVoltageMonitor.VoltageResult value
+            = voltageResults.get(voltageControllerConfig.getValueId());
+
+      double currentVoltage =  value.getValue();
+
+      if (on && currentVoltage <= voltageControllerConfig.getVoltageMin()) {
+        on = false;
+      } else if(!on && currentVoltage >= voltageControllerConfig.getVoltageMax()){
+        on = true;
+      }
+
+      voltageControllerConfig.relayPins().forEach(heatingPin -> {
+            PinState oldState = relayController.getPinState(heatingPin);
+            if (oldState == null || oldState.isHigh() != on) {
+              if (on) {
+                relayController.turnOnRelay(heatingPin);
+              } else {
+                relayController.turnOffRelay(heatingPin);
+              }
+            }
+          });
+
+      log.info(name + "> Checked voltage between({},{}), current:{}, state:{}",
+              voltageControllerConfig.getVoltageMin(),
+              voltageControllerConfig.getVoltageMax(),
+              currentVoltage, on);
+    } else {
+      log.error("Voltage values is null");
+    }
+  }
+
+  @Override
+  public List<String> getRelayPins() {
+    return voltageControllerConfig.getRelayPins();
+  }
+}

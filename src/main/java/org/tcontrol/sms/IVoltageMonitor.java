@@ -11,8 +11,7 @@ public interface IVoltageMonitor {
 
   @Data
   @AllArgsConstructor
-  public static final class VoltageResult {
-
+  final class VoltageResult {
     String name;
     Double value;
     String unit;

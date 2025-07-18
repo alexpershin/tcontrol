@@ -13,7 +13,7 @@ springdoc:
 
 main-config:
   sensorValuesBufferSize: 20
-  sensorsStub: true
+  sensorsStub: false
 
 w1DevicesPath: /sys/bus/w1/devices
 
@@ -162,4 +162,4 @@ voltage-controller:
   valueId: 0
   relayPins:
     - 'GPIO 5'
-    -
+

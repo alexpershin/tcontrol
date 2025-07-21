@@ -96,9 +96,7 @@ public class Thermostat implements IThermostat {
   public void changeOn(boolean v) {
     if (!v && on) {
       this.on = false;
-      thermostatConfig.relayPins().forEach(pin->{
-        relayController.turnOffRelay(pin);
-      });
+      thermostatConfig.relayPins().forEach(relayController::turnOffRelay);
       log.info(name + "> termostat's relay switched off");
     } else {
       this.on = v;

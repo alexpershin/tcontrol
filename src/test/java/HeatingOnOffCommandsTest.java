@@ -7,8 +7,6 @@ import org.tcontrol.sms.*;
 import org.tcontrol.sms.commands.CommandResult;
 import org.tcontrol.sms.commands.HeatingOffCommand;
 import org.tcontrol.sms.commands.HeatingOnCommand;
-import org.tcontrol.sms.config.props.SensorConfig;
-import org.tcontrol.sms.config.props.ThermostatConfig;
 
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
@@ -20,15 +18,7 @@ public class HeatingOnOffCommandsTest {
     @Qualifier("thermostatElectro")
     private IThermostat thermostat;
     @Autowired
-    private ThermostatConfig thermostatConfig;
-    @Autowired
-    private ITemperatureMonitor temperatureMonitor;
-    @Autowired
     private IRelayController relayController;
-    @Autowired
-    private ITimer timer;
-    @Autowired
-    private SensorConfig sensorConfig;
 
     @Test
     public void thermostatWasOnTest(){

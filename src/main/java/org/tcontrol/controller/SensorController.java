@@ -142,7 +142,7 @@ public class SensorController {
 
     @PostMapping("/start_process")
     @CrossOrigin(origins = {"http://localhost:8090", "http://localhost"})
-    public ResponseEntity<StartProcessResult> startProcess(StartProcessRequest processChangeRequest) throws SensorServiceException, InterruptedException {
+    public ResponseEntity<StartProcessResult> startProcess(StartProcessRequest processChangeRequest) throws InterruptedException {
         Thread.sleep(5000);
         int result = sensorService.startProcess(processChangeRequest.getSensorId());
         return new ResponseEntity<>(new StartProcessResult(result == -1 ? null : result, "ok"),
@@ -151,7 +151,7 @@ public class SensorController {
 
     @PostMapping("/stop_process")
     @CrossOrigin(origins = {"http://localhost:8090", "http://localhost"})
-    public ResponseEntity<StopProcessResult> stopProcess(StartProcessRequest processChangeRequest) throws SensorServiceException, InterruptedException {
+    public ResponseEntity<StopProcessResult> stopProcess(StartProcessRequest processChangeRequest) throws InterruptedException {
         Thread.sleep(5000);
         int result = sensorService.stopProcess(processChangeRequest.getSensorId());
         return new ResponseEntity<>(new StopProcessResult(result == -1 ? null : result, "ok"),

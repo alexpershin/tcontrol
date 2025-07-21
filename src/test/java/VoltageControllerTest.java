@@ -22,7 +22,6 @@ public class VoltageControllerTest {
     private static final String GPIO_00 = "GPIO_00";
     private static final Integer SENSOR = 0;
     private IVoltageMonitor voltageMonitor;
-    private VoltageControllerConfig voltageControllerConfig;
     private IRelayController relayController;
 
     private IVoltageController voltageController;
@@ -32,7 +31,7 @@ public class VoltageControllerTest {
 
     @BeforeEach
     public void before() {
-        voltageControllerConfig = new VoltageControllerConfig();
+        VoltageControllerConfig voltageControllerConfig = new VoltageControllerConfig();
         voltageControllerConfig.setValueId(SENSOR);
         voltageControllerConfig.setVoltageMin(11.5f);
         voltageControllerConfig.setVoltageMax(14.4f);

@@ -2,10 +2,11 @@ package org.tcontrol.sms;
 
 import com.pi4j.io.gpio.*;
 import com.pi4j.io.gpio.event.GpioPinListenerDigital;
-import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.tcontrol.sms.config.props.ButtonConfig;
+
+import javax.annotation.PostConstruct;
 
 
 @Service

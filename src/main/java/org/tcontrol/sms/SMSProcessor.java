@@ -137,7 +137,7 @@ public class SMSProcessor {
             String command = null;
             List<String> lines = Files.readAllLines(filePath, Charset.defaultCharset());
             if (lines.size() == 1) {
-                String commandText = lines.getFirst();
+                String commandText = lines.get(0);
                 command = StringUtil.trim(commandText).toUpperCase();
             } else {
                 log.info("Error while found command: {}", lines);

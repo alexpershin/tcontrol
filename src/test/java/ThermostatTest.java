@@ -115,7 +115,7 @@ public class ThermostatTest {
     public void testSwitch() {
         when(timer.getCurrentTime()).thenReturn(LocalDateTime.of(LocalDate.now(), LocalTime.of(3, 0)));
 
-        Pin heatingPin = RaspiPin.getPinByName(thermostatConfig.getRelayPins().getFirst());
+        Pin heatingPin = RaspiPin.getPinByName(thermostatConfig.getRelayPins().get(0));
 
         thermostat.checkTemperature();
         assertTrue(thermostat.isHeatingOn());
@@ -215,7 +215,7 @@ public class ThermostatTest {
     public void testOnOff() {
         when(timer.getCurrentTime()).thenReturn(LocalDateTime.of(LocalDate.now(), LocalTime.of(3, 0)));
 
-        Pin heatingPin = RaspiPin.getPinByName(thermostatConfig.getRelayPins().getFirst());
+        Pin heatingPin = RaspiPin.getPinByName(thermostatConfig.getRelayPins().get(0));
 
         thermostat.checkTemperature();
         assertTrue(thermostat.isHeatingOn());

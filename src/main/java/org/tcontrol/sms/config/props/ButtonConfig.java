@@ -2,9 +2,10 @@ package org.tcontrol.sms.config.props;
 
 import com.pi4j.io.gpio.Pin;
 import com.pi4j.io.gpio.RaspiPin;
-import jakarta.annotation.PostConstruct;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
+
+import javax.annotation.PostConstruct;
 
 @Data
 @RequiredArgsConstructor

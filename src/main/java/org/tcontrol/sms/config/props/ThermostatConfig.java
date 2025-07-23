@@ -2,12 +2,13 @@ package org.tcontrol.sms.config.props;
 
 import com.pi4j.io.gpio.Pin;
 import com.pi4j.io.gpio.RaspiPin;
-import jakarta.annotation.PostConstruct;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 
+import javax.annotation.PostConstruct;
 import java.time.LocalTime;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -38,7 +39,7 @@ public class ThermostatConfig {
     return LocalTime.ofSecondOfDay(nightEnd);
   }
 
-  public List<Pin> relayPins() {
-    return relayPins.stream().map(RaspiPin::getPinByName).collect(Collectors.toList());
+  public LinkedList<Pin> relayPins() {
+    return relayPins.stream().map(RaspiPin::getPinByName).collect(Collectors.toCollection(LinkedList::new));
   }
 }

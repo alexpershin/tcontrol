@@ -5,11 +5,11 @@ import org.tcontrol.mappers.SensorMapper;
 import org.tcontrol.service.IStatisticsSaver;
 import org.tcontrol.service.models.Sensor;
 import org.tcontrol.service.models.SensorValue;
-import jakarta.annotation.PostConstruct;
 import org.springframework.stereotype.Component;
 import org.tcontrol.sms.config.props.SensorConfig;
 import org.tcontrol.sms.config.props.SensorConfiguration;
 
+import javax.annotation.PostConstruct;
 import java.sql.Timestamp;
 import java.util.Date;
 import java.util.List;

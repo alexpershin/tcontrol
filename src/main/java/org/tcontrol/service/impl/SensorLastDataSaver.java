@@ -27,7 +27,7 @@ public class SensorLastDataSaver implements IStatisticsSaver {
     @Override
     public void write(SensorValue[] values) {
         for (SensorValue sensorValue : values) {
-            var queue = cache.computeIfAbsent(
+            LinkedList<SensorValue> queue = cache.computeIfAbsent(
                     sensorValue.getSensorId(),
                     k -> new LinkedList<>()
             );
@@ -47,8 +47,8 @@ public class SensorLastDataSaver implements IStatisticsSaver {
     }
 
     @Override
-    public List<SensorValue> lastValues(int sensorId) {
+    public LinkedList<SensorValue> lastValues(int sensorId) {
         LinkedList<SensorValue> sensorValues = cache.get(sensorId);
-        return sensorValues != null ? sensorValues : new ArrayList<>();
+        return sensorValues != null ? sensorValues : new LinkedList<>();
     }
 }

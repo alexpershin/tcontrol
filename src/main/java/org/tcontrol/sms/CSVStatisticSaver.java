@@ -12,6 +12,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -45,7 +46,7 @@ public class CSVStatisticSaver implements IStatisticsSaver {
     }
 
     @Override
-    public List<SensorValue> lastValues(int sensorId) {
-        return List.of();
+    public LinkedList<SensorValue> lastValues(int sensorId) {
+        return new LinkedList<>();
     }
 }

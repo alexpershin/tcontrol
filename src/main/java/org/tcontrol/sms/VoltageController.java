@@ -1,13 +1,13 @@
 package org.tcontrol.sms;
 
 import com.pi4j.io.gpio.PinState;
-import jakarta.annotation.PostConstruct;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.tcontrol.sms.config.props.VoltageControllerConfig;
 
+import javax.annotation.PostConstruct;
 import java.util.List;
 
 @Service

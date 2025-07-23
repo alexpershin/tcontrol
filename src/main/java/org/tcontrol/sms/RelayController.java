@@ -1,13 +1,13 @@
 package org.tcontrol.sms;
 
 import com.pi4j.io.gpio.*;
-import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.tcontrol.service.IStatisticsSaver;
 import org.tcontrol.service.models.SensorValue;
 
+import javax.annotation.PostConstruct;
 import java.sql.Timestamp;
 import java.util.HashMap;
 import java.util.Map;

@@ -2,6 +2,7 @@ package org.tcontrol.service;
 
 import org.tcontrol.service.models.SensorValue;
 
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -10,5 +11,5 @@ public interface IStatisticsSaver {
 
     Map<Integer, SensorValue> currentValues();
 
-    List<SensorValue> lastValues(int sensorId);
+    LinkedList<SensorValue> lastValues(int sensorId);
 }

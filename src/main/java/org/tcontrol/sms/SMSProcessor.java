@@ -18,6 +18,7 @@ import java.nio.file.Paths;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @Component
@@ -44,7 +45,7 @@ public class SMSProcessor {
         Path path = Paths.get(inputFolderName);
 
         try (Stream<Path> stream = Files.list(path)) {
-            List<Path> files = stream.toList();
+            List<Path> files = stream.collect(Collectors.toList());
             for (Path incomingFile : files) {
                 if (!Files.isDirectory(incomingFile)) {
                     processIncomingSmsFile(incomingFile);

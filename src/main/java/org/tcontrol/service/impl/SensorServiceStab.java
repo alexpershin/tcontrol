@@ -62,17 +62,17 @@ public class SensorServiceStab extends SensorServiceImpl {
         sensorConfig.setSensors(sensors);
 
         final Timestamp timestamp = new Timestamp(new Date().getTime());
-        SensorValue[] sensorValues = Stream.of(
+        SensorValue[] sensorValues = new SensorValue[]{
                 new SensorValue(1, "s1", timestamp, 25.5),
-                new SensorValue(2,"s2", timestamp, -22.6),
-                new SensorValue(3,"s3", timestamp, +2.4),
-                new SensorValue(4,"s4", timestamp, -11.4),
+                new SensorValue(2, "s2", timestamp, -22.6),
+                new SensorValue(3, "s3", timestamp, +2.4),
+                new SensorValue(4, "s4", timestamp, -11.4),
                 new SensorValue(5, "s5", timestamp, +23.7),
                 new SensorValue(6, "s6", timestamp, -7.4),
-                new SensorValue(7,"s7", timestamp, 241),
-                new SensorValue(8,"s8", timestamp, 0.0),
-                new SensorValue(9,"s9", timestamp, 1.0)
-        ).toList().toArray(new SensorValue[0]);
+                new SensorValue(7, "s7", timestamp, 241),
+                new SensorValue(8, "s8", timestamp, 0.0),
+                new SensorValue(9, "s9", timestamp, 1.0)
+        };
         sensorLastDataSaver.write(sensorValues);
     }
 

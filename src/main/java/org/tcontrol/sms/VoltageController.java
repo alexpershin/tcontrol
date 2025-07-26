@@ -46,7 +46,7 @@ public class VoltageController implements IVoltageController {
       return;
     }
     List<IVoltageMonitor.VoltageResult> voltageResults = voltageMonitor.getVoltageResults();
-    if (voltageResults != null) {
+    if (voltageResults != null && !voltageResults.isEmpty()) {
       IVoltageMonitor.VoltageResult value
             = voltageResults.get(voltageControllerConfig.getValueId());
 

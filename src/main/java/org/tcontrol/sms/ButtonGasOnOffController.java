@@ -43,7 +43,7 @@ public class ButtonGasOnOffController {
                 gpio.provisionDigitalInputPin(
                     buttonConfig.pin(),
                     "Thermostat on/of",
-                    PinPullResistance.PULL_UP);
+                    PinPullResistance.PULL_DOWN);
 
             gpio.addListener(listener, pin);
             log.info("Button listener added: " + pin.getPin().getName());

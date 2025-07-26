@@ -31,18 +31,23 @@ public class PinFactoryImpl implements IPinFactory {
 
     @Override
     public GpioPinDigitalOutput getDigitalPin(Pin controlPin) {
-        log.info("Initializing output pin: " + controlPin.getName());
         if (gpio == null) {
             log.info("Initializing output pin {} {}: {}", controlPin.getName(), "FAILED", "GPIO not initiated");
             return null;
         }
         GpioPinDigitalOutput gpioPinDigitalOutput = pins.get(controlPin.getName());
         if (gpioPinDigitalOutput == null) {
+            log.info("Initializing output pin: " + controlPin.getName());
             GpioPinDigitalOutput pin = gpio
                     .provisionDigitalOutputPin(controlPin, "heat_relay_" + controlPin.getAddress(),
                             PinState.LOW);
             pins.put(controlPin.getName(), pin);
             log.info("Initializing output pin (" + controlPin.getName() + ") COMPLETE");
+        }
+        if(gpioPinDigitalOutput != null) {
+            log.info("Output pin provided: " + controlPin.getName());
+        }else{
+            log.error("Output pin NOT provided: " + controlPin.getName());
         }
         return gpioPinDigitalOutput;
     }

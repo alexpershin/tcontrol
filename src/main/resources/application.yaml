@@ -148,7 +148,7 @@ thermostat-hot-watter:
     - 'GPIO 6'
 
 button-controller:
-  buttonPinName: 'GPIO 5'
+  buttonPinName: 'GPIO 24'
 
 relay-aggregator:
   schedule: '10 0/1 * * * ?'

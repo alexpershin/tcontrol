@@ -37,9 +37,12 @@ import com.pi4j.io.gpio.GpioFactory;
 import com.pi4j.io.gpio.GpioPinAnalogInput;
 import com.pi4j.io.gpio.event.GpioPinListenerAnalog;
 import com.pi4j.io.spi.SpiChannel;
+import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
+import org.tcontrol.service.IPinFactory;
 import org.tcontrol.sms.config.props.VoltageMonitorConfig;
 import org.tcontrol.sms.config.props.VoltageMonitorConfig.PinConfiguration;
 
@@ -53,21 +56,18 @@ import java.util.Optional;
 
 @Service
 @Slf4j
+@RequiredArgsConstructor
 public class VoltageMonitor implements IVoltageMonitor {
 
     public static final int DEFAULT_PRECISION = 4;
 
+    private final VoltageMonitorConfig voltageMonitorConfig;
+
     private AdcGpioProvider provider;
 
-    GpioPinAnalogInput[] inputs;
+    private GpioPinAnalogInput[] inputs;
 
-    private final List<VoltageResult> voltageResults = new ArrayList<>();
-
-    public VoltageMonitor(VoltageMonitorConfig voltageMonitorConfig) {
-        this.voltageMonitorConfig = voltageMonitorConfig;
-    }
-
-    private final VoltageMonitorConfig voltageMonitorConfig;
+    private List<VoltageResult> voltageResults = new ArrayList<>();
 
     @PostConstruct
     public void init() {
@@ -80,12 +80,6 @@ public class VoltageMonitor implements IVoltageMonitor {
             inputs = new GpioPinAnalogInput[]{
                     gpio.provisionAnalogInputPin(provider, MCP3008Pin.CH0, "battery-voltage"),
                     gpio.provisionAnalogInputPin(provider, MCP3008Pin.CH1, "power-voltage")
-//                    gpio.provisionAnalogInputPin(provider, MCP3008Pin.CH2, "MyAnalogInput-CH2"),
-//                    gpio.provisionAnalogInputPin(provider, MCP3008Pin.CH3, "MyAnalogInput-CH3"),
-//                    gpio.provisionAnalogInputPin(provider, MCP3008Pin.CH4, "MyAnalogInput-CH4"),
-//                    gpio.provisionAnalogInputPin(provider, MCP3008Pin.CH5, "MyAnalogInput-CH5"),
-//                    gpio.provisionAnalogInputPin(provider, MCP3008Pin.CH6, "MyAnalogInput-CH6"),
-//                    gpio.provisionAnalogInputPin(provider, MCP3008Pin.CH7, "MyAnalogInput-CH7")
             };
             provider.setEventThreshold(100, inputs);
             provider.setMonitorInterval(250);

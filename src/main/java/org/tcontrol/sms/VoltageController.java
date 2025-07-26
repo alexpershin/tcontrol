@@ -2,9 +2,11 @@ package org.tcontrol.sms;
 
 import com.pi4j.io.gpio.PinState;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
+import org.tcontrol.service.IPinFactory;
 import org.tcontrol.sms.config.props.VoltageControllerConfig;
 
 import javax.annotation.PostConstruct;
@@ -12,6 +14,7 @@ import java.util.List;
 
 @Service
 @Slf4j
+@RequiredArgsConstructor
 public class VoltageController implements IVoltageController {
 
   private final VoltageControllerConfig voltageControllerConfig;
@@ -21,7 +24,7 @@ public class VoltageController implements IVoltageController {
   private final IRelayController relayController;
 
   @Getter
-  private final String name;
+  private String name;
 
   @Getter
   boolean enable = true;
@@ -29,18 +32,9 @@ public class VoltageController implements IVoltageController {
   @Getter
   boolean on = false;
 
-  public VoltageController(VoltageControllerConfig voltageControllerConfig,
-                           IVoltageMonitor voltageMonitor,
-                           IRelayController relayController
-  ) {
-    this.voltageControllerConfig = voltageControllerConfig;
-    this.voltageMonitor = voltageMonitor;
-    this.relayController = relayController;
-    this.name = "Battery voltage controller";
-  }
-
   @PostConstruct
   public void init() {
+    this.name = "Battery voltage controller";
     log.info("Initializing voltage controller: {}", name);
   }
 

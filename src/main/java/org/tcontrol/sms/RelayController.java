@@ -4,13 +4,12 @@ import com.pi4j.io.gpio.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
+import org.tcontrol.service.IPinFactory;
 import org.tcontrol.service.IStatisticsSaver;
 import org.tcontrol.service.models.SensorValue;
 
 import javax.annotation.PostConstruct;
 import java.sql.Timestamp;
-import java.util.HashMap;
-import java.util.Map;
 
 @Component
 @Slf4j
@@ -18,21 +17,14 @@ import java.util.Map;
 public class RelayController implements IRelayController {
 
     private final CSVStatisticSaver csvStatisticSaver;
+
     private final IStatisticsSaver sensorLastDataSaver;
 
-    private GpioController gpio;
-    final private Map<String, GpioPinDigitalOutput> pins = new HashMap<>();
+    private final IPinFactory pinFactory;
 
     @PostConstruct
     void init() {
         log.info("Initializing relay controller...");
-        // create gpio controller
-        try {
-            gpio = GpioFactory.getInstance();
-            log.info("Initializing relay controller COMPLETE");
-        } catch (Throwable e) {
-            log.error(e.getMessage());
-        }
     }
 
     @Override
@@ -47,27 +39,20 @@ public class RelayController implements IRelayController {
 
     @Override
     public PinState getPinState(Pin controlPin) {
-        if (gpio == null) {
-            return null;
-        }
 
-        init(controlPin);
+        GpioPinDigitalOutput gpioPinDigitalOutput = pinFactory.getDigitalPin(controlPin);
 
-        GpioPinDigitalOutput gpioPinDigitalOutput = pins.get(controlPin.getName());
-
-        return gpioPinDigitalOutput.getState();
+        return gpioPinDigitalOutput!=null?gpioPinDigitalOutput.getState():null;
     }
 
     private PinState changeStateOfRelay(boolean action, Pin controlPin) {
-        if (gpio == null) {
-            return null;
-        }
-
-        init(controlPin);
-
         PinState pinState = action ? PinState.HIGH : PinState.LOW;
 
-        GpioPinDigitalOutput pin = pins.get(controlPin.getName());
+        GpioPinDigitalOutput pin = pinFactory.getDigitalPin(controlPin);
+
+        if (pin == null) {
+            return null;
+        }
 
         // set shutdown state for this pin
         pin.setShutdownOptions(true, pinState);
@@ -93,15 +78,4 @@ public class RelayController implements IRelayController {
         return pin.getState();
     }
 
-    private void init(Pin controlPin) {
-        log.info("Initializing output pin: " + controlPin.getName());
-        GpioPinDigitalOutput gpioPinDigitalOutput = pins.get(controlPin.getName());
-        if (gpioPinDigitalOutput == null) {
-            GpioPinDigitalOutput pin = gpio
-                    .provisionDigitalOutputPin(controlPin, "heat_relay_" + controlPin.getAddress(),
-                            PinState.LOW);
-            pins.put(controlPin.getName(), pin);
-            log.info("Initializing output pin (" + controlPin.getName() + ") COMPLETE");
-        }
-    }
 }

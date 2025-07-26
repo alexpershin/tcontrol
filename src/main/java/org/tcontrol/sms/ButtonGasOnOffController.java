@@ -32,7 +32,7 @@ public class ButtonGasOnOffController {
 
                 // display output
                 log.info("BUTTON state: " + value.isHigh());
-                if(value.isHigh()){
+                if(value.isLow()){
                     boolean thetmostatNewState = !thermostatGas.isOn();
                     log.info("Thermostat new state: " + thetmostatNewState);
                     thermostatGas.changeOn(thetmostatNewState);
@@ -40,12 +40,9 @@ public class ButtonGasOnOffController {
             };
 
             final GpioPinDigitalInput pin =
-                gpio.provisionDigitalInputPin(
-                    buttonConfig.pin(),
-                    "Thermostat on/of",
-                    PinPullResistance.PULL_DOWN);
+                    gpio.provisionDigitalInputPin(buttonConfig.pin());
 
-            gpio.addListener(listener, pin);
+            pin.addListener(listener);
             log.info("Button listener added: " + pin.getPin().getName());
         } catch (Throwable e) {
             log.error(e.getMessage());

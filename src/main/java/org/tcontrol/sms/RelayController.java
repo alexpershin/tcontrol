@@ -57,7 +57,7 @@ public class RelayController implements IRelayController {
         // set shutdown state for this pin
         pin.setShutdownOptions(true, pinState);
 
-        log.info("GPIO state was: " + pin.getState());
+        log.info("{} state was: {} ", pin.getName(), pin.getState());
 
         SensorValue sensorValue = new SensorValue();
         sensorValue.setPin(controlPin.getName());

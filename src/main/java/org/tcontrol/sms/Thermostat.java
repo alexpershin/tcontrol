@@ -15,121 +15,125 @@ import java.util.List;
 @Slf4j
 public class Thermostat implements IThermostat {
 
-  private final ThermostatConfig thermostatConfig;
+    private final ThermostatConfig thermostatConfig;
 
-  private final ITemperatureMonitor temperatureMonitor;
+    private final ITemperatureMonitor temperatureMonitor;
 
-  private final IRelayController relayController;
+    private final IRelayController relayController;
 
-  private final ITimer timer;
+    private final ITimer timer;
 
-  @Getter
-  private final String name;
+    @Getter
+    private final String name;
 
-  @Getter
-  boolean heatingOn;
+    @Getter
+    boolean heatingOn;
 
-  @Getter
-  boolean on = true;
+    @Getter
+    boolean on = true;
 
-  @Getter
-  float mediumT;
+    @Getter
+    float mediumT;
 
-  public Thermostat(ThermostatConfig thermostatConfig,
-      ITemperatureMonitor temperatureMonitor,
-      IRelayController relayController,
-      ITimer timer,
-      String name
-  ) {
-    this.thermostatConfig = thermostatConfig;
-    this.temperatureMonitor = temperatureMonitor;
-    this.relayController = relayController;
-    this.timer = timer;
-    this.name = name;
-  }
+    private boolean firstTime = true;
 
-
-  @Override
-  @Scheduled(cron = "${thermostat.schedule}")
-  public void checkTemperature() {
-    log.info(name + "> checkTemperature");
-    if (!on) {
-      return;
+    public Thermostat(ThermostatConfig thermostatConfig,
+                      ITemperatureMonitor temperatureMonitor,
+                      IRelayController relayController,
+                      ITimer timer,
+                      String name
+    ) {
+        this.thermostatConfig = thermostatConfig;
+        this.temperatureMonitor = temperatureMonitor;
+        this.relayController = relayController;
+        this.timer = timer;
+        this.name = name;
     }
 
-    mediumT = night() ? thermostatConfig.getTNight() : thermostatConfig.getTDay();
 
-    SensorValue sensorValue = temperatureMonitor.getSensorValueMap()
-        .get(thermostatConfig.getSensor());
-    if (sensorValue != null) {
+    @Override
+    @Scheduled(cron = "${thermostat.schedule}")
+    public void checkTemperature() {
+        log.info(name + "> checkTemperature");
+        if (!on) {
+            return;
+        }
 
-      float currentT = (float) sensorValue.getValue();
+        mediumT = night() ? thermostatConfig.getTNight() : thermostatConfig.getTDay();
 
-      float delta = thermostatConfig.getDelta();
+        SensorValue sensorValue = temperatureMonitor.getSensorValueMap()
+                .get(thermostatConfig.getSensor());
+        if (sensorValue != null) {
 
-      if (heatingOn) {
-        heatingOn = currentT <= mediumT + delta;
-      } else {
-        heatingOn = currentT <= mediumT - delta;
-      }
+            float currentT = (float) sensorValue.getValue();
 
-      thermostatConfig.relayPins().forEach(heatingPin -> {
-            PinState oldState = relayController.getPinState(heatingPin);
-            if (oldState == null || oldState.isHigh() != heatingOn) {
-              if (heatingOn) {
-                relayController.turnOnRelay(heatingPin);
-              } else {
-                relayController.turnOffRelay(heatingPin);
-              }
+            float delta = thermostatConfig.getDelta();
+
+            if (heatingOn) {
+                heatingOn = currentT <= mediumT + delta;
+            } else {
+                heatingOn = currentT <= mediumT - delta;
             }
-          });
 
-      log.info(name + "> Check temperature between({},{}), current:{}, state:{}", mediumT - delta,
-          mediumT + delta,
-          currentT, heatingOn);
-    } else {
-      log.error("temperature sensor value is null");
-    }
-  }
+            thermostatConfig.relayPins().forEach(heatingPin -> {
+                PinState oldState = relayController.getPinState(heatingPin);
+                if (oldState == null || oldState.isHigh() != heatingOn) {
+                    if (heatingOn) {
+                        relayController.turnOnRelay(heatingPin);
+                    } else {
+                        relayController.turnOffRelay(heatingPin);
+                    }
+                }
+            });
 
-  @Override
-  public void changeOn(boolean v) {
-    if (!v && on) {
-      this.on = false;
-      thermostatConfig.relayPins().forEach(relayController::turnOffRelay);
-      log.info(name + "> termostat's relay switched off");
-    } else {
-      this.on = v;
-    }
-    log.info(name + "> termostat is " + (this.on ? "ON" : "OFF"));
-  }
-
-  @Override
-  public List<String> getHeatingPins() {
-    return thermostatConfig.getRelayPins();
-  }
-
-  private boolean night() {
-
-    LocalDateTime currentLocalTime = timer.getCurrentTime();
-    LocalDate currentDate = currentLocalTime.toLocalDate();
-    LocalTime currentTme = currentLocalTime.toLocalTime();
-
-    LocalTime nightBegin = thermostatConfig.nightBegin();
-    LocalDateTime begin = LocalDateTime.of(currentDate, nightBegin);
-
-    LocalTime nightEnd = thermostatConfig.nightEnd();
-    LocalDateTime end = LocalDateTime.of(currentDate, nightEnd);
-
-    if (thermostatConfig.getNightBegin() > thermostatConfig.getNightEnd()) {
-      if (currentTme.isAfter(nightBegin)) {
-        end = end.plusDays(1);
-      } else if (currentTme.isBefore(nightBegin)) {
-        begin = begin.minusDays(1);
-      }
+            log.info(name + "> Check temperature between({},{}), current:{}, state:{}", mediumT - delta,
+                    mediumT + delta,
+                    currentT, heatingOn);
+        } else {
+            if (firstTime) log.info("no sensor value yet");
+            else log.error("temperature sensor value is null");
+        }
+        firstTime = false;
     }
 
-    return currentLocalTime.isAfter(begin) && currentLocalTime.isBefore(end);
-  }
+    @Override
+    public void changeOn(boolean v) {
+        if (!v && on) {
+            this.on = false;
+            thermostatConfig.relayPins().forEach(relayController::turnOffRelay);
+            log.info(name + "> termostat's relay switched off");
+        } else {
+            this.on = v;
+        }
+        log.info(name + "> termostat is " + (this.on ? "ON" : "OFF"));
+    }
+
+    @Override
+    public List<String> getHeatingPins() {
+        return thermostatConfig.getRelayPins();
+    }
+
+    private boolean night() {
+
+        LocalDateTime currentLocalTime = timer.getCurrentTime();
+        LocalDate currentDate = currentLocalTime.toLocalDate();
+        LocalTime currentTme = currentLocalTime.toLocalTime();
+
+        LocalTime nightBegin = thermostatConfig.nightBegin();
+        LocalDateTime begin = LocalDateTime.of(currentDate, nightBegin);
+
+        LocalTime nightEnd = thermostatConfig.nightEnd();
+        LocalDateTime end = LocalDateTime.of(currentDate, nightEnd);
+
+        if (thermostatConfig.getNightBegin() > thermostatConfig.getNightEnd()) {
+            if (currentTme.isAfter(nightBegin)) {
+                end = end.plusDays(1);
+            } else if (currentTme.isBefore(nightBegin)) {
+                begin = begin.minusDays(1);
+            }
+        }
+
+        return currentLocalTime.isAfter(begin) && currentLocalTime.isBefore(end);
+    }
 
 }

@@ -25,7 +25,7 @@ public class PinFactoryImpl implements IPinFactory {
             gpio = GpioFactory.getInstance();
             log.info("Initializing pin factory COMPLETE");
         } catch (Throwable e) {
-            log.error(e.getMessage());
+            log.error(e);
         }
     }
 

@@ -31,7 +31,7 @@ function loadStubDataOnLoad() {
 }
 
 function loadDataFromServer() {
-    $.post("http://localhost:8080/sensors",
+    $.post("http://"+window.location.host+":8080/sensors",
         function (sensorsJsonData) {
             console.log("sensors processing start");
             var sensors = sensorsJsonData.sensors;
@@ -49,7 +49,7 @@ function loadDataFromServer() {
 }
 
 function loadValuesFromServer() {
-    $.post("http://localhost:8080/sensor_values",
+    $.post("http://"+window.location.host+":8080/sensor_values",
         function (valuesJsonData) {
             console.log('sensor values processing start');
             valuesMap = convertValuesJsonToMap(valuesJsonData.values)
@@ -200,9 +200,9 @@ function onOffSensorRenderer(sensorElementId, sensor) {
 
         let onOffUrl = "";
         if (value === "Off") {
-            onOffUrl = 'http://localhost:8080/start_process';
+            onOffUrl = 'http://'+window.location.host+':8080/start_process';
         } else if (value === "On") {
-            onOffUrl = 'http://localhost:8080/stop_process';
+            onOffUrl = 'http://'+window.location.host+':8080/stop_process';
         }
 
         $.ajax({

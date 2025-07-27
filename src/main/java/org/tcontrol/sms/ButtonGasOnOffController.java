@@ -45,7 +45,7 @@ public class ButtonGasOnOffController {
             pin.addListener(listener);
             log.info("Button listener added: " + pin.getPin().getName());
         } catch (Throwable e) {
-            log.error(e);
+            log.error("", e);
         }
     }
 }

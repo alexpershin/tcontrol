@@ -96,7 +96,7 @@ public class VoltageMonitor implements IVoltageMonitor {
             gpio.addListener(listener, inputs);
             log.info("Initializing voltage controller COMPLETE");
         } catch (Throwable e) {
-            log.error(e);
+            log.error("", e);
         }
     }
 

@@ -1,9 +1,11 @@
 package org.tcontrol.sms;
 
 import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
+import org.tcontrol.service.IStatisticsSaver;
 import org.tcontrol.service.models.SensorValue;
 import org.tcontrol.sms.config.props.SensorConfig;
 import org.tcontrol.sms.config.props.SensorConfiguration;
@@ -15,15 +17,17 @@ import java.util.Map;
 
 @Component
 @Slf4j
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class TemperatureMonitor implements ITemperatureMonitor {
     final private Map<String, SensorValue> sensorValueMap = new HashMap<>();
 
-    private ITemperatureReader temperatureReader;
+    private final ITemperatureReader temperatureReader;
 
-    private SensorConfig config;
+    private final SensorConfig config;
 
-    private CSVStatisticSaver csvWriter;
+    private final CSVStatisticSaver csvWriter;
+
+    private final IStatisticsSaver sensorLastDataSaver;
 
     @Scheduled(cron = "${sensor-config.schedule}")
     public void readSensors() {
@@ -47,6 +51,9 @@ public class TemperatureMonitor implements ITemperatureMonitor {
             }
         }
         csvWriter.write(values);
+
+        sensorLastDataSaver.write(values);
+
         log.info("Reading temperature completed(read {} sensors)", successCount);
     }
 

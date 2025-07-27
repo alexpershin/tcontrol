@@ -26,14 +26,14 @@ import java.util.stream.Stream;
 @AllArgsConstructor
 public class SMSProcessor {
 
+    final private static Pattern patternPhone = Pattern.compile(".*_00_\\+([0-9]*)_00.txt");
+    final private static Pattern patternTime = Pattern.compile("IN([0-9]*)_([0-9]*)_00_.*_(0[0-9]).txt");
+
     private SMSConfig smsConfig;
 
     private CommandExecutor commandExecutor;
 
-    final private static Pattern patternPhone = Pattern.compile(".*_00_\\+([0-9]*)_00.txt");
-    final private static Pattern patternTime = Pattern.compile("IN([0-9]*)_([0-9]*)_00_.*_(0[0-9]).txt");
-
-    @Scheduled(cron = "${sms-config.schedule}")
+   @Scheduled(cron = "${sms-config.schedule}")
     public void inputSmsScan() {
         log.info("Scanning input SMS to process..");
         processInputFolderSMS();

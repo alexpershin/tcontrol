@@ -3,7 +3,6 @@ package org.tcontrol.sms.config.props;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.RequiredArgsConstructor;
 import org.tcontrol.service.models.Sensor;
 
 @Data

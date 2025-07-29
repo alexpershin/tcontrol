@@ -14,6 +14,7 @@ public class RelayPinsConfig {
     @Data
     @RequiredArgsConstructor
     public static class RelayPinConfig {
+        private int pinId;
         private String pin;
         private String name;
         private String userName;

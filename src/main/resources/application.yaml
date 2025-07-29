@@ -103,28 +103,36 @@ sms-config:
 
 relay-pins:
   pins:
-    - pin: 'GPIO 0'
+    - pinId: 100
+      pin: 'GPIO 0'
       name: 'el-heater'
       userName: "Электрический котел"
-    - pin: 'GPIO 1'
+    - pinId: 101
+      pin: 'GPIO 1'
       name: 'gas-heater'
       userName: "Газовый котел"
-    - pin: 'GPIO 2'
+    - pinId: 102
+      pin: 'GPIO 2'
       name: 'veranda-circulation'
       userName: "Веранда контур"
-    - pin: 'GPIO 3'
+    - pinId: 103
+      pin: 'GPIO 3'
       name: 'my-room'
       userName: "Моя комната"
-    - pin: 'GPIO 4'
+    - pinId: 104
+      pin: 'GPIO 4'
       name: 'big-room'
       userName: "Большая комната"
-    - pin: 'GPIO 5'
+    - pinId: 105
+      pin: 'GPIO 5'
       name: 'gas-heater-button-on'
       userName: "Кнопка вкл/выкл газового котла"
-    - pin: 'GPIO 6'
+    - pinId: 106
+      pin: 'GPIO 6'
       name: 'hot-watter'
       userName: "Горячая вода"
-    - pin: 'GPIO 25'
+    - pinId: 125
+      pin: 'GPIO 25'
       name: 'solar-supply'
       userName: "Питание от солнечной панели"
 

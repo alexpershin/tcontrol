@@ -67,8 +67,9 @@ public class RelayHandler implements IRelayHandler {
         log.info("{} state was: {} ", pin.getName(), pin.getState());
 
         SensorValue sensorValue = new SensorValue();
-        String pinName=relayPinsConfig.getPins().stream().filter(p->p.getPin().equals(pin.getName())).findFirst().get().getName();
-        sensorValue.setSensorCode(pinName);
+        RelayPinsConfig.RelayPinConfig relayPinConfig=relayPinsConfig.getPins().stream().filter(p->p.getPin().equals(pin.getName())).findFirst().get();
+        sensorValue.setSensorId(relayPinConfig.getPinId());
+        sensorValue.setSensorCode(relayPinConfig.getName());
         sensorValue.setPin(controlPin.getName());
         sensorValue.setTimestamp(new Timestamp(System.currentTimeMillis()));
 

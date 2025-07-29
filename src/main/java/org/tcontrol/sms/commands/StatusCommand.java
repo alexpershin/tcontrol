@@ -3,14 +3,16 @@ package org.tcontrol.sms.commands;
 import com.pi4j.io.gpio.Pin;
 import com.pi4j.io.gpio.PinState;
 import com.pi4j.io.gpio.RaspiPin;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 import org.tcontrol.sms.*;
+import org.tcontrol.sms.IVoltageMonitor;
 import org.tcontrol.sms.IVoltageMonitor.VoltageResult;
 import org.tcontrol.sms.config.props.SensorConfig;
 import org.tcontrol.sms.config.props.SensorConfiguration;
+import org.tcontrol.sms.handler.IRelayHandler;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -20,7 +22,7 @@ import java.util.Optional;
 @Component
 @Slf4j
 @Qualifier("statusCommand")
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class StatusCommand implements ISMSCommand {
 
   private static final SimpleDateFormat simpleDateFormat = new SimpleDateFormat(
@@ -30,7 +32,7 @@ public class StatusCommand implements ISMSCommand {
 
   private final SensorConfig sensorConfig;
 
-  private final IRelayController relayController;
+  private final IRelayHandler relayHandler;
 
   private final IThermostat thermostatElectro;
 
@@ -52,10 +54,10 @@ public class StatusCommand implements ISMSCommand {
           .orElse("");
     }).reduce((a, b) -> a + "\n" + b);
 
-    res = thermostatStatus(res, thermostatElectro, relayController);
-    res = thermostatStatus(res, thermostatGas, relayController);
-    res = thermostatStatus(res, thermostatVeranda, relayController);
-    res = thermostatStatus(res, thermostatMyRoom, relayController);
+    res = thermostatStatus(res, thermostatElectro, relayHandler);
+    res = thermostatStatus(res, thermostatGas, relayHandler);
+    res = thermostatStatus(res, thermostatVeranda, relayHandler);
+    res = thermostatStatus(res, thermostatMyRoom, relayHandler);
     res = voltageStatus(res, voltageMonitor);
 
     res = Optional.of(res.orElse("") + "\n" + simpleDateFormat.format(new Date()));
@@ -75,12 +77,12 @@ public class StatusCommand implements ISMSCommand {
   }
 
   private static Optional<String> thermostatStatus(Optional<String> res,
-      IThermostat thermostat, IRelayController relayController) {
+      IThermostat thermostat, IRelayHandler relayHandler) {
 
     StringBuilder resultString = new StringBuilder(" ");
     for (String heatingPin : thermostat.getHeatingPins()) {
       Pin pin = RaspiPin.getPinByName(heatingPin);
-      PinState heatingState = relayController.getPinState(pin);
+      PinState heatingState = relayHandler.getPinState(pin);
       resultString.append(heatingState == null ? "UNDEFINED" : (heatingState.isHigh() ? "ON" : "OFF"));
     }
 

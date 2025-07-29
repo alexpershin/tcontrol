@@ -9,6 +9,8 @@ import org.tcontrol.sms.commands.HeatingOffCommand;
 import org.tcontrol.sms.commands.HeatingOnCommand;
 
 import org.junit.jupiter.api.Test;
+import org.tcontrol.sms.handler.IRelayHandler;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 @ContextConfiguration(classes=CommandConfiguration.class, loader= AnnotationConfigContextLoader.class)
@@ -18,14 +20,14 @@ public class HeatingOnOffCommandsTest {
     @Qualifier("thermostatElectro")
     private IThermostat thermostat;
     @Autowired
-    private IRelayController relayController;
+    private IRelayHandler relayHandler;
 
     @Test
     public void thermostatWasOnTest(){
         HeatingOnCommand heatingOnCommand =
-                new HeatingOnCommand(relayController, thermostat);
+                new HeatingOnCommand(relayHandler, thermostat);
         ISMSCommand heatingOffCommand =
-                new HeatingOffCommand(relayController, thermostat, heatingOnCommand);
+                new HeatingOffCommand(relayHandler, thermostat, heatingOnCommand);
 
         thermostat.changeOn(true);
         assertTrue(thermostat.isOn());
@@ -47,10 +49,10 @@ public class HeatingOnOffCommandsTest {
     public void thermostatWasOffTest(){
 
         HeatingOnCommand heatingOnCommand =
-                new HeatingOnCommand(relayController, thermostat);
+                new HeatingOnCommand(relayHandler, thermostat);
 
         ISMSCommand heatingOffCommand =
-                new HeatingOffCommand(relayController, thermostat, heatingOnCommand);
+                new HeatingOffCommand(relayHandler, thermostat, heatingOnCommand);
 
         thermostat.changeOn(false);
         assertFalse(thermostat.isOn());

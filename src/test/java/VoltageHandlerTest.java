@@ -3,10 +3,10 @@ import com.pi4j.io.gpio.PinState;
 import com.pi4j.io.gpio.RaspiPin;
 
 import org.junit.jupiter.api.BeforeEach;
-import org.tcontrol.sms.IRelayController;
-import org.tcontrol.sms.IVoltageController;
+import org.tcontrol.sms.handler.IRelayHandler;
+import org.tcontrol.sms.handler.IVoltageHandler;
 import org.tcontrol.sms.IVoltageMonitor;
-import org.tcontrol.sms.VoltageController;
+import org.tcontrol.sms.handler.impl.VoltageHandler;
 import org.tcontrol.sms.config.props.VoltageControllerConfig;
 
 import java.util.ArrayList;
@@ -17,16 +17,16 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public class VoltageControllerTest {
+public class VoltageHandlerTest {
 
     private static final String GPIO_00 = "GPIO_00";
     private static final Integer SENSOR = 0;
     private IVoltageMonitor voltageMonitor;
-    private IRelayController relayController;
+    private IRelayHandler relayHandler;
 
-    private IVoltageController voltageController;
+    private IVoltageHandler voltageController;
 
-    public VoltageControllerTest() {
+    public VoltageHandlerTest() {
     }
 
     @BeforeEach
@@ -39,7 +39,7 @@ public class VoltageControllerTest {
 
         voltageMonitor = mock(IVoltageMonitor.class);
 
-        relayController = new IRelayController() {
+        relayHandler = new IRelayHandler() {
             PinState currentPinState = PinState.LOW;
 
             @Override
@@ -61,10 +61,10 @@ public class VoltageControllerTest {
         };
 
 
-        voltageController = new VoltageController(
+        voltageController = new VoltageHandler(
                 voltageControllerConfig,
                 voltageMonitor,
-                relayController
+                relayHandler
        );
 
     }
@@ -84,14 +84,14 @@ public class VoltageControllerTest {
         when(voltageMonitor.getVoltageResults()).thenReturn(vresult(13.0));
         voltageController.checkVoltage();
         assertFalse(voltageController.isOn());
-        assertTrue(relayController.getPinState(pin).isLow());
+        assertTrue(relayHandler.getPinState(pin).isLow());
         when(voltageMonitor.getVoltageResults()).thenReturn(vresult(14.3));
         voltageController.checkVoltage();
         assertFalse(voltageController.isOn());
         when(voltageMonitor.getVoltageResults()).thenReturn(vresult(14.4));
         voltageController.checkVoltage();
         assertTrue(voltageController.isOn());
-        assertTrue(relayController.getPinState(pin).isHigh());
+        assertTrue(relayHandler.getPinState(pin).isHigh());
         when(voltageMonitor.getVoltageResults()).thenReturn(vresult(14.5));
         voltageController.checkVoltage();
         assertTrue(voltageController.isOn());
@@ -113,7 +113,7 @@ public class VoltageControllerTest {
         when(voltageMonitor.getVoltageResults()).thenReturn(vresult(11.5));
         voltageController.checkVoltage();
         assertFalse(voltageController.isOn());
-        assertTrue(relayController.getPinState(pin).isLow());
+        assertTrue(relayHandler.getPinState(pin).isLow());
         when(voltageMonitor.getVoltageResults()).thenReturn(vresult(11.3));
         voltageController.checkVoltage();
         assertFalse(voltageController.isOn());

@@ -1,26 +1,33 @@
-package org.tcontrol.sms;
+package org.tcontrol.sms.handler.impl;
 
 import com.pi4j.io.gpio.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 import org.tcontrol.service.IPinFactory;
 import org.tcontrol.service.IStatisticsSaver;
 import org.tcontrol.service.models.SensorValue;
+import org.tcontrol.service.impl.CSVStatisticSaver;
+import org.tcontrol.sms.handler.IRelayHandler;
+import org.tcontrol.sms.config.props.RelayPinsConfig;
 
 import javax.annotation.PostConstruct;
 import java.sql.Timestamp;
+import java.util.Collections;
+import java.util.List;
 
-@Component
+@Service
 @Slf4j
 @RequiredArgsConstructor
-public class RelayController implements IRelayController {
+public class RelayHandler implements IRelayHandler {
 
     private final CSVStatisticSaver csvStatisticSaver;
 
     private final IStatisticsSaver sensorLastDataSaver;
 
     private final IPinFactory pinFactory;
+
+    private final RelayPinsConfig relayPinsConfig;
 
     @PostConstruct
     void init() {
@@ -29,12 +36,12 @@ public class RelayController implements IRelayController {
 
     @Override
     public PinState turnOnRelay(Pin controlPin) {
-        return changeStateOfRelay(true, controlPin);
+        return changeStateOfRelay(PinState.HIGH, controlPin);
     }
 
     @Override
     public PinState turnOffRelay(Pin controlPin) {
-        return changeStateOfRelay(false, controlPin);
+        return changeStateOfRelay(PinState.LOW, controlPin);
     }
 
     @Override
@@ -45,8 +52,7 @@ public class RelayController implements IRelayController {
         return gpioPinDigitalOutput!=null?gpioPinDigitalOutput.getState():null;
     }
 
-    private PinState changeStateOfRelay(boolean action, Pin controlPin) {
-        PinState pinState = action ? PinState.HIGH : PinState.LOW;
+    private PinState changeStateOfRelay(PinState pinState, Pin controlPin) {
 
         GpioPinDigitalOutput pin = pinFactory.getDigitalPin(controlPin);
 
@@ -57,9 +63,12 @@ public class RelayController implements IRelayController {
         // set shutdown state for this pin
         pin.setShutdownOptions(true, pinState);
 
+
         log.info("{} state was: {} ", pin.getName(), pin.getState());
 
         SensorValue sensorValue = new SensorValue();
+        String pinName=relayPinsConfig.getPins().stream().filter(p->p.getPin().equals(pin.getName())).findFirst().get().getName();
+        sensorValue.setSensorCode(pinName);
         sensorValue.setPin(controlPin.getName());
         sensorValue.setTimestamp(new Timestamp(System.currentTimeMillis()));
 
@@ -72,8 +81,9 @@ public class RelayController implements IRelayController {
             sensorValue.setValue(1.0);
         }
 
-        csvStatisticSaver.write(new SensorValue[]{sensorValue});
-        sensorLastDataSaver.write(new SensorValue[]{sensorValue});
+        List<SensorValue> values = Collections.singletonList(sensorValue);
+        csvStatisticSaver.write(values);
+        sensorLastDataSaver.write(values);
 
         return pin.getState();
     }

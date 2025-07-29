@@ -1,5 +1,6 @@
 package org.tcontrol.controller;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.tcontrol.controller.dto.*;
 import org.tcontrol.service.SensorServiceException;
@@ -33,11 +34,10 @@ import static org.tcontrol.controller.dto.SensorValueDto.SensorValueState.*;
 import static java.net.HttpURLConnection.HTTP_BAD_REQUEST;
 import static java.net.HttpURLConnection.HTTP_OK;
 
+@Slf4j
 @RestController
 @RequiredArgsConstructor
 public class SensorController {
-    private final static Logger LOGGER = Logger.getLogger(SensorController.class.getName());
-
     private final SensorService sensorService;
 
     //Temp user
@@ -45,7 +45,7 @@ public class SensorController {
 
     @PostConstruct
     public void AfterBegin() {
-        LOGGER.log(Level.INFO, "after begin");
+        log.debug("after begin");
     }
 
     /**
@@ -67,7 +67,7 @@ public class SensorController {
                             content = @Content(mediaType = "application/json"))})
 
     public SensorValueDto.SensorsResult getSensors() {
-        LOGGER.log(Level.INFO, "get sensors");
+        log.info("get sensors");
         SensorValueDto.SensorsResult result = new SensorValueDto.SensorsResult();
         Collection<Sensor> sensors;
         try {
@@ -99,6 +99,7 @@ public class SensorController {
                     @ApiResponse(responseCode = "" + HTTP_BAD_REQUEST,
                             content = @Content(mediaType = "application/json"))})
     public SensorValuesResult getSensorValues() throws SensorServiceException {
+        log.info("get values");
         SensorValuesResult result = new SensorValuesResult();
         List<SensorValue> values = sensorService.getCurrentValues(CURRENT_USER_ID, null);
         List<SensorValueDto> webValues = convertSensorValuesToWeb(values);
@@ -131,7 +132,8 @@ public class SensorController {
                             schema = @Schema(maxLength = 255, example = "Кредит"))
             )}
     )
-    public SensorValuesResult getSensorPrevValues(@RequestParam(name = "sensorId")Integer sensorId)  throws SensorServiceException {
+    public SensorValuesResult getSensorPrevValues(@RequestParam(name = "sensorId") Integer sensorId) throws SensorServiceException {
+        log.info("get previous values for sensor {}", sensorId);
         SensorValuesResult result = new SensorValuesResult();
         List<SensorValue> values = sensorService.getPrevSensorValues(CURRENT_USER_ID, null, sensorId);
         List<SensorValueDto> webValues = convertSensorValuesToWeb(values);
@@ -143,6 +145,7 @@ public class SensorController {
     @PostMapping("/start_process")
     @CrossOrigin(origins = {"http://localhost:8090", "http://localhost"})
     public ResponseEntity<StartProcessResult> startProcess(StartProcessRequest processChangeRequest) throws InterruptedException {
+        log.info("start process for sensor {}: {}", processChangeRequest.getSensorId(), processChangeRequest.getState().name());
         Thread.sleep(5000);
         int result = sensorService.startProcess(processChangeRequest.getSensorId());
         return new ResponseEntity<>(new StartProcessResult(result == -1 ? null : result, "ok"),
@@ -151,7 +154,8 @@ public class SensorController {
 
     @PostMapping("/stop_process")
     @CrossOrigin(origins = {"http://localhost:8090", "http://localhost"})
-    public ResponseEntity<StopProcessResult> stopProcess(StartProcessRequest processChangeRequest) throws InterruptedException {
+    public ResponseEntity<StopProcessResult> stopProcess(StopProcessRequest processChangeRequest) throws InterruptedException {
+        log.info("stop process for sensor {}: {}", processChangeRequest.getSensorId(), processChangeRequest.getState().name());
         Thread.sleep(5000);
         int result = sensorService.stopProcess(processChangeRequest.getSensorId());
         return new ResponseEntity<>(new StopProcessResult(result == -1 ? null : result, "ok"),
@@ -171,7 +175,7 @@ public class SensorController {
         List<SensorDto> webSensors = new ArrayList<>();
         for (Sensor sensor : sensors) {
             final SensorDto sensorWeb = new SensorDto(
-                    sensor.getName(),
+                    sensor.getUserName(),
                     sensor.getId(),
                     sensor.getType()
             );

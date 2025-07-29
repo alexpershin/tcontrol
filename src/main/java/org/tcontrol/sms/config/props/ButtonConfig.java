@@ -11,16 +11,17 @@ import javax.annotation.PostConstruct;
 @RequiredArgsConstructor
 public class ButtonConfig {
 
+  private String buttonPinId;
   private String buttonPinName;
 
   @PostConstruct
   public void postConstruct() {
     if (pin() == null) {
-      throw new IllegalArgumentException("pin '" + buttonPinName + "' doesn't exist");
+      throw new IllegalArgumentException("pin '" + buttonPinId + "' doesn't exist");
     }
   }
 
   public Pin pin() {
-    return RaspiPin.getPinByName(buttonPinName);
+    return RaspiPin.getPinByName(buttonPinId);
   }
 }

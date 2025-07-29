@@ -7,26 +7,25 @@ import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
-import org.tcontrol.sms.IRelayController;
+import org.tcontrol.sms.handler.IRelayHandler;
 import org.tcontrol.sms.ISMSCommand;
 import org.tcontrol.sms.IThermostat;
-import org.tcontrol.sms.config.props.SMSConfig;
 
 @Component
 @Slf4j
 @Qualifier("heatingOnCommand")
 public class HeatingOnCommand implements ISMSCommand {
 
-    private final IRelayController relayController;
+    private final IRelayHandler relayHandler;
 
     private final IThermostat thermostat;
 
     @Getter
     private Boolean prevThermostatState;
 
-    public HeatingOnCommand(IRelayController relayController,
+    public HeatingOnCommand(IRelayHandler relayHandler,
                             IThermostat thermostatElectro) {
-        this.relayController = relayController;
+        this.relayHandler = relayHandler;
         this.thermostat = thermostatElectro;
     }
 
@@ -39,7 +38,7 @@ public class HeatingOnCommand implements ISMSCommand {
         StringBuilder resultString = new StringBuilder(" ");
         for(String heatingPin: thermostat.getHeatingPins()){
             Pin pin = RaspiPin.getPinByName(heatingPin);
-            PinState result = relayController.turnOnRelay(pin);
+            PinState result = relayHandler.turnOnRelay(pin);
             resultString.append(result.isHigh() ? "ON" : "OFF");
         }
 

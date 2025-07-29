@@ -1,10 +1,10 @@
 package org.tcontrol.sms.commands;
 
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
-import org.tcontrol.sms.IRelayController;
+import org.tcontrol.sms.handler.IRelayHandler;
 import org.tcontrol.sms.ISMSCommand;
 import org.tcontrol.sms.IThermostat;
 import org.tcontrol.sms.config.props.ThermostatConfig;
@@ -12,10 +12,10 @@ import org.tcontrol.sms.config.props.ThermostatConfig;
 @Component
 @Slf4j
 @Qualifier("thermostatOffCommand")
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class ThermostatOffCommand implements ISMSCommand {
 
-    private final IRelayController relayController;
+    private final IRelayHandler relayHandler;
 
     private final IThermostat thermostatElectro;
 
@@ -27,7 +27,7 @@ public class ThermostatOffCommand implements ISMSCommand {
         thermostatElectro.changeOn(false);
 
         thermostatElectroConfig.relayPins().forEach(pin -> {
-            relayController.turnOffRelay(pin);
+            relayHandler.turnOffRelay(pin);
         });
 
         log.info("Executed");

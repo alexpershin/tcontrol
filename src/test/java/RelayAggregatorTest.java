@@ -2,7 +2,7 @@ import com.pi4j.io.gpio.Pin;
 import com.pi4j.io.gpio.RaspiPin;
 import org.junit.jupiter.api.BeforeEach;
 import org.mockito.Mockito;
-import org.tcontrol.sms.IRelayController;
+import org.tcontrol.sms.handler.IRelayHandler;
 import org.tcontrol.sms.RelayAggregator;
 import org.tcontrol.sms.config.props.RelayAggregatorConfig;
 
@@ -15,21 +15,21 @@ public class RelayAggregatorTest {
   public static final String GPIO_0 = "GPIO 0";
   public static final String GPIO_1 = "GPIO 1";
   private RelayAggregator relayAggregator;
-  private IRelayController relayController;
+  private IRelayHandler relayHandler;
 
   @BeforeEach
   public void before() {
     RelayAggregatorConfig relayAggregatorConfig = new RelayAggregatorConfig();
     relayAggregatorConfig.getPinAggregates().put(GPIO_0, 3);
-    relayController = mock(IRelayController.class);
-    relayAggregator = new RelayAggregator(relayAggregatorConfig, relayController);
+    relayHandler = mock(IRelayHandler.class);
+    relayAggregator = new RelayAggregator(relayAggregatorConfig, relayHandler);
   }
 
   @Test
   public void test1() {
     Pin pin = RaspiPin.getPinByName(GPIO_0);
     relayAggregator.turnOnRelay(pin);
-    Mockito.verify(relayController, never()).turnOnRelay(pin);
+    Mockito.verify(relayHandler, never()).turnOnRelay(pin);
   }
 
   @Test
@@ -37,7 +37,7 @@ public class RelayAggregatorTest {
     Pin pin = RaspiPin.getPinByName(GPIO_0);
     relayAggregator.turnOnRelay(pin);
     relayAggregator.turnOnRelay(pin);
-    Mockito.verify(relayController, never()).turnOnRelay(pin);
+    Mockito.verify(relayHandler, never()).turnOnRelay(pin);
     assertNull(relayAggregator.getPinState(pin));
   }
 
@@ -47,7 +47,7 @@ public class RelayAggregatorTest {
     relayAggregator.turnOnRelay(pin);
     relayAggregator.turnOnRelay(pin);
     relayAggregator.turnOnRelay(pin);
-    Mockito.verify(relayController).turnOnRelay(pin);
+    Mockito.verify(relayHandler).turnOnRelay(pin);
   }
 
   @Test
@@ -56,8 +56,8 @@ public class RelayAggregatorTest {
     relayAggregator.turnOffRelay(pin);
     relayAggregator.turnOnRelay(pin);
     relayAggregator.turnOffRelay(pin);
-    Mockito.verify(relayController).turnOnRelay(pin);
-    Mockito.verify(relayController, times(0)).turnOffRelay(pin);
+    Mockito.verify(relayHandler).turnOnRelay(pin);
+    Mockito.verify(relayHandler, times(0)).turnOffRelay(pin);
   }
 
   @Test
@@ -66,7 +66,7 @@ public class RelayAggregatorTest {
     for (int i = 0; i < 4; i++) {
       relayAggregator.turnOnRelay(pin);
     }
-    Mockito.verify(relayController, times(1)).turnOnRelay(pin);
+    Mockito.verify(relayHandler, times(1)).turnOnRelay(pin);
   }
 
   @Test
@@ -79,7 +79,7 @@ public class RelayAggregatorTest {
     for (int i = 0; i < 3; i++) {
       relayAggregator.turnOnRelay(pin);
     }
-    Mockito.verify(relayController, times(2)).turnOnRelay(pin);
+    Mockito.verify(relayHandler, times(2)).turnOnRelay(pin);
 
     assertTrue(relayAggregator.getPinState(pin).isHigh());
   }
@@ -94,7 +94,7 @@ public class RelayAggregatorTest {
     for (int i = 0; i < 3; i++) {
       relayAggregator.turnOffRelay(pin);
     }
-    Mockito.verify(relayController, times(2)).turnOffRelay(pin);
+    Mockito.verify(relayHandler, times(2)).turnOffRelay(pin);
 
     assertTrue(relayAggregator.getPinState(pin).isLow());
   }
@@ -103,18 +103,18 @@ public class RelayAggregatorTest {
   public void testOnNotAggregated() {
     Pin pin = RaspiPin.getPinByName(GPIO_1);
     relayAggregator.turnOnRelay(pin);
-    Mockito.verify(relayController, times(1)).turnOnRelay(pin);
+    Mockito.verify(relayHandler, times(1)).turnOnRelay(pin);
   }
   @Test
   public void testOffNotAggregated() {
     Pin pin = RaspiPin.getPinByName(GPIO_1);
     relayAggregator.turnOffRelay(pin);
-    Mockito.verify(relayController, times(1)).turnOffRelay(pin);
+    Mockito.verify(relayHandler, times(1)).turnOffRelay(pin);
   }
   @Test
   public void testStatusNotAggregated() {
     Pin pin = RaspiPin.getPinByName(GPIO_1);
     relayAggregator.getPinState(pin);
-    Mockito.verify(relayController, times(1)).getPinState(pin);
+    Mockito.verify(relayHandler, times(1)).getPinState(pin);
   }
 }

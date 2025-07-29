@@ -1,9 +1,9 @@
-package org.tcontrol.sms;
+package org.tcontrol.sms.handler;
 
 import com.pi4j.io.gpio.Pin;
 import com.pi4j.io.gpio.PinState;
 
-public interface IRelayController {
+public interface IRelayHandler {
     PinState turnOnRelay(Pin controlPin);
 
     PinState turnOffRelay(Pin controlPin);

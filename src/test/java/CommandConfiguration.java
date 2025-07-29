@@ -8,6 +8,7 @@ import org.tcontrol.sms.*;
 import org.tcontrol.sms.config.props.SensorConfig;
 import org.tcontrol.sms.config.props.SensorConfiguration;
 import org.tcontrol.sms.config.props.ThermostatConfig;
+import org.tcontrol.sms.handler.IRelayHandler;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -70,8 +71,8 @@ public class CommandConfiguration {
   }
 
   @Bean
-  public IRelayController relayController() {
-    return new IRelayController() {
+  public IRelayHandler relayHandler() {
+    return new IRelayHandler() {
       PinState currentPinState = PinState.LOW;
 
       @Override
@@ -102,12 +103,12 @@ public class CommandConfiguration {
   @Qualifier("thermostatElectro")
   public IThermostat thermostat(ThermostatConfig thermostatConfig,
       ITemperatureMonitor temperatureMonitor,
-      IRelayController relayController,
+      IRelayHandler relayHandler,
       ITimer timer) {
     return new Thermostat(
         thermostatConfig,
         temperatureMonitor,
-        relayController,
+        relayHandler,
         timer,
         "elect"
     );
@@ -117,12 +118,12 @@ public class CommandConfiguration {
   @Qualifier("thermostatGas")
   public IThermostat thermostat2(ThermostatConfig thermostatConfig2,
       ITemperatureMonitor temperatureMonitor,
-      IRelayController relayController,
+      IRelayHandler relayHandler,
       ITimer timer) {
     return new Thermostat(
         thermostatConfig2,
         temperatureMonitor,
-        relayController,
+        relayHandler,
         timer,
         "gast"
     );

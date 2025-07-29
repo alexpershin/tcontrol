@@ -37,12 +37,10 @@ import com.pi4j.io.gpio.GpioFactory;
 import com.pi4j.io.gpio.GpioPinAnalogInput;
 import com.pi4j.io.gpio.event.GpioPinListenerAnalog;
 import com.pi4j.io.spi.SpiChannel;
-import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
-import org.tcontrol.service.IPinFactory;
 import org.tcontrol.sms.config.props.VoltageMonitorConfig;
 import org.tcontrol.sms.config.props.VoltageMonitorConfig.PinConfiguration;
 

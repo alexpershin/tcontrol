@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Map;
 
 public interface IStatisticsSaver {
-    void write(SensorValue[] values);
+    void write(List<SensorValue> values);
 
     Map<Integer, SensorValue> currentValues();
 

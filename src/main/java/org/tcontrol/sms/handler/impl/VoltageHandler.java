@@ -1,4 +1,4 @@
-package org.tcontrol.sms;
+package org.tcontrol.sms.handler.impl;
 
 import com.pi4j.io.gpio.PinState;
 import lombok.Getter;
@@ -6,8 +6,10 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
-import org.tcontrol.service.IPinFactory;
+import org.tcontrol.sms.handler.IRelayHandler;
+import org.tcontrol.sms.IVoltageMonitor;
 import org.tcontrol.sms.config.props.VoltageControllerConfig;
+import org.tcontrol.sms.handler.IVoltageHandler;
 
 import javax.annotation.PostConstruct;
 import java.util.List;
@@ -15,13 +17,13 @@ import java.util.List;
 @Service
 @Slf4j
 @RequiredArgsConstructor
-public class VoltageController implements IVoltageController {
+public class VoltageHandler implements IVoltageHandler {
 
   private final VoltageControllerConfig voltageControllerConfig;
 
   private final IVoltageMonitor voltageMonitor;
 
-  private final IRelayController relayController;
+  private final IRelayHandler relayHandler;
 
   @Getter
   private String name;
@@ -59,12 +61,12 @@ public class VoltageController implements IVoltageController {
       }
 
       voltageControllerConfig.relayPins().forEach(heatingPin -> {
-            PinState oldState = relayController.getPinState(heatingPin);
+            PinState oldState = relayHandler.getPinState(heatingPin);
             if (oldState == null || oldState.isHigh() != on) {
               if (on) {
-                relayController.turnOnRelay(heatingPin);
+                relayHandler.turnOnRelay(heatingPin);
               } else {
-                relayController.turnOffRelay(heatingPin);
+                relayHandler.turnOffRelay(heatingPin);
               }
             }
           });

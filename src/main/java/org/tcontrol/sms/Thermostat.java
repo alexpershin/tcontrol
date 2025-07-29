@@ -6,6 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.tcontrol.service.models.SensorValue;
 import org.tcontrol.sms.config.props.ThermostatConfig;
+import org.tcontrol.sms.handler.IRelayHandler;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -19,7 +20,7 @@ public class Thermostat implements IThermostat {
 
     private final ITemperatureMonitor temperatureMonitor;
 
-    private final IRelayController relayController;
+    private final IRelayHandler relayHandler;
 
     private final ITimer timer;
 
@@ -39,13 +40,13 @@ public class Thermostat implements IThermostat {
 
     public Thermostat(ThermostatConfig thermostatConfig,
                       ITemperatureMonitor temperatureMonitor,
-                      IRelayController relayController,
+                      IRelayHandler relayHandler,
                       ITimer timer,
                       String name
     ) {
         this.thermostatConfig = thermostatConfig;
         this.temperatureMonitor = temperatureMonitor;
-        this.relayController = relayController;
+        this.relayHandler = relayHandler;
         this.timer = timer;
         this.name = name;
     }
@@ -76,12 +77,12 @@ public class Thermostat implements IThermostat {
             }
 
             thermostatConfig.relayPins().forEach(heatingPin -> {
-                PinState oldState = relayController.getPinState(heatingPin);
+                PinState oldState = relayHandler.getPinState(heatingPin);
                 if (oldState == null || oldState.isHigh() != heatingOn) {
                     if (heatingOn) {
-                        relayController.turnOnRelay(heatingPin);
+                        relayHandler.turnOnRelay(heatingPin);
                     } else {
-                        relayController.turnOffRelay(heatingPin);
+                        relayHandler.turnOffRelay(heatingPin);
                     }
                 }
             });
@@ -100,7 +101,7 @@ public class Thermostat implements IThermostat {
     public void changeOn(boolean v) {
         if (!v && on) {
             this.on = false;
-            thermostatConfig.relayPins().forEach(relayController::turnOffRelay);
+            thermostatConfig.relayPins().forEach(relayHandler::turnOffRelay);
             log.info(name + "> termostat's relay switched off");
         } else {
             this.on = v;

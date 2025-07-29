@@ -16,7 +16,7 @@ import java.sql.Timestamp;
 public class SensorValue {
 
     private int sensorValueId;
-    private int sensorId;
+    private Integer sensorId;
     private String pin;
     private String sensorCode;
     private Timestamp timestamp;

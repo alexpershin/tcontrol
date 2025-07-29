@@ -6,6 +6,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.tcontrol.sms.*;
 import org.tcontrol.sms.config.props.*;
+import org.tcontrol.sms.handler.IRelayHandler;
 
 @Configuration
 @EnableScheduling
@@ -21,6 +22,12 @@ public class AppConfig {
     @ConfigurationProperties(prefix = "sms-config")
     public SMSConfig smsConfig() {
         return new SMSConfig();
+    }
+
+    @Bean
+    @ConfigurationProperties(prefix = "relay-pins")
+    public RelayPinsConfig relayPinsConfig() {
+        return new RelayPinsConfig();
     }
 
     @Bean
@@ -93,9 +100,9 @@ public class AppConfig {
     public IThermostat thermostatElectro(
             final ThermostatConfig thermostatElectroConfig,
             final ITemperatureMonitor temperatureMonitor,
-            final IRelayController relayController,
+            final IRelayHandler relayHandler,
             final ITimer timer) {
-        return new Thermostat(thermostatElectroConfig, temperatureMonitor, relayController,
+        return new Thermostat(thermostatElectroConfig, temperatureMonitor, relayHandler,
                 timer, "termo1(electro)");
     }
 
@@ -103,7 +110,7 @@ public class AppConfig {
     public IThermostat thermostatGas(
             final ThermostatConfig thermostatGasConfig,
             final ITemperatureMonitor temperatureMonitor,
-            final IRelayController relayAggregator,
+            final IRelayHandler relayAggregator,
             final ITimer timer) {
         return new Thermostat(thermostatGasConfig, temperatureMonitor, relayAggregator,
                 timer, "termo2(gas)");
@@ -113,9 +120,9 @@ public class AppConfig {
     public IThermostat thermostatVeranda(
             final ThermostatConfig thermostatVerandaConfig,
             final ITemperatureMonitor temperatureMonitor,
-            final IRelayController relayController,
+            final IRelayHandler relayHandler,
             final ITimer timer) {
-        return new Thermostat(thermostatVerandaConfig, temperatureMonitor, relayController,
+        return new Thermostat(thermostatVerandaConfig, temperatureMonitor, relayHandler,
                 timer, "termo3(veranda)");
     }
 
@@ -123,7 +130,7 @@ public class AppConfig {
     public IThermostat thermostatVerandaEm(
             final ThermostatConfig thermostatVerandaEmConfig,
             final ITemperatureMonitor temperatureMonitor,
-            final IRelayController relayAggregator,
+            final IRelayHandler relayAggregator,
             final ITimer timer) {
         return new Thermostat(thermostatVerandaEmConfig, temperatureMonitor, relayAggregator,
                 timer, "termo5(veranda em)");
@@ -133,7 +140,7 @@ public class AppConfig {
     public IThermostat thermostatMyRoom(
             final ThermostatConfig thermostatMyRoomConfig,
             final ITemperatureMonitor temperatureMonitor,
-            final IRelayController relayAggregator,
+            final IRelayHandler relayAggregator,
             final ITimer timer) {
         return new Thermostat(thermostatMyRoomConfig, temperatureMonitor, relayAggregator,
                 timer, "termo4(my room)");
@@ -143,9 +150,9 @@ public class AppConfig {
     public IThermostat thermostatHotWatter(
             final ThermostatConfig thermostatHotWatterConfig,
             final ITemperatureMonitor temperatureMonitor,
-            final IRelayController relayController,
+            final IRelayHandler relayHandler,
             final ITimer timer) {
-        return new Thermostat(thermostatHotWatterConfig, temperatureMonitor, relayController,
+        return new Thermostat(thermostatHotWatterConfig, temperatureMonitor, relayHandler,
                 timer, "termo5(hot watter)");
     }
 

@@ -22,41 +22,69 @@ dataFile: data.csv
 sensor-config:
   schedule: '0 0/1 * * * ?'
   sensors:
-    - code: 28-000002c7c3ee
-      id: 0
+    - id: 0
+      code: 28-000002c7c3ee
       name: house
       type: TEMPERATURE
-      description: коридор
-    - code: 28-031701a152ff
-      id: 1
+      userName: коридор
+      description:
+      lowThreshold: 8.0
+      highThreshold: 30.0
+      thresholdLag: 1.0
+    - id: 1
+      code: 28-031701a152ff
       name: street
       type: TEMPERATURE
-      description: улица
-    - code: 28-000002c7eed3
-      id: 2
+      user-name: улица
+      description: ''
+      lowThreshold: 8.0
+      highThreshold: 30.0
+      thresholdLag: 1.0
+    - id: 2
+      code: 28-000002c7eed3
       name: basement
       type: TEMPERATURE
-      description: подвал
-    - code: 28-0000058ddc1d
-      id: 3
+      userName: подвал
+      description: ''
+      lowThreshold: 8.0
+      highThreshold: 30.0
+      thresholdLag: 1.0
+    - id: 3
+      code: 28-0000058ddc1d
       name: case
       type: TEMPERATURE
-      description: щит
-    - code: 28-0417019b15ff
-      id: 4
+      userName: щит
+      description: ''
+      lowThreshold: 8.0
+      highThreshold: 30.0
+      thresholdLag: 1.0
+    - id: 4
+      code: 28-0417019b15ff
       name: veranda
       type: TEMPERATURE
-      description: веранда
-    - code: 28-0317017a6aff
-      id: 5
+      userName: веранда
+      description: ''
+      lowThreshold: 8.0
+      highThreshold: 30.0
+      thresholdLag: 1.0
+    - id: 5
+      code: 28-0317017a6aff
       name: my-room
       type: TEMPERATURE
-      description: моя комната
-    - code: 28-031701e06cff
-      id: 6
+      userName: моя комната
+      description: ''
+      lowThreshold: 8.0
+      highThreshold: 30.0
+      thresholdLag: 1.0
+    - id: 6
+      code: 28-031701e06cff
       name: hot-watter
       type: TEMPERATURE
-      description: горячая вода
+      userName: горячая вода
+      description: ''
+      lowThreshold: 8.0
+      highThreshold: 30.0
+      thresholdLag: 1.0
 
 sms-config:
   inputFolder: /var/spool/gammu/inbox
@@ -72,6 +100,33 @@ sms-config:
       name: MTS
     - phone: 79119378212
       name: mama
+
+relay-pins:
+  pins:
+    - pin: 'GPIO 0'
+      name: 'el-heater'
+      userName: "Электрический котел"
+    - pin: 'GPIO 1'
+      name: 'gas-heater'
+      userName: "Газовый котел"
+    - pin: 'GPIO 2'
+      name: 'veranda-circulation'
+      userName: "Веранда контур"
+    - pin: 'GPIO 3'
+      name: 'my-room'
+      userName: "Моя комната"
+    - pin: 'GPIO 4'
+      name: 'big-room'
+      userName: "Большая комната"
+    - pin: 'GPIO 5'
+      name: 'gas-heater-button-on'
+      userName: "Кнопка вкл/выкл газового котла"
+    - pin: 'GPIO 6'
+      name: 'hot-watter'
+      userName: "Горячая вода"
+    - pin: 'GPIO 25'
+      name: 'solar-supply'
+      userName: "Питание от солнечной панели"
 
 thermostat.schedule: '5 0/1 * * * ?'
 
@@ -148,7 +203,8 @@ thermostat-hot-watter:
     - 'GPIO 6'
 
 button-controller:
-  buttonPinName: 'GPIO 5'
+  buttonPinId: 'GPIO 5'
+  buttonPinName: 'Включение котла'
 
 relay-aggregator:
   schedule: '10 0/1 * * * ?'

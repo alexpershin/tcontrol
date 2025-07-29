@@ -1,4 +1,4 @@
-package org.tcontrol.sms;
+package org.tcontrol.service.impl;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.csv.CSVFormat;
@@ -25,15 +25,15 @@ public class CSVStatisticSaver implements IStatisticsSaver {
     private String dataFile;
 
     @Override
-    public void write(SensorValue[] values) {
+    public void write(List<SensorValue> values) {
         boolean fileExist = Files.exists(Paths.get(dataFile));
         try (CSVPrinter printer = new CSVPrinter(new FileWriter(dataFile, true), CSVFormat.EXCEL)) {
             if (!fileExist) {
-                printer.printRecord("sensorId", "timestamp", "value");
+                printer.printRecord("sensorId", "sensorCode", "timestamp", "value");
             }
             for (SensorValue value : values) {
                 if (value != null) {
-                    printer.printRecord(value.getSensorId(), value.getTimestamp(), value.getValue());
+                    printer.printRecord(value.getSensorId(), value.getSensorCode(), value.getTimestamp(), value.getValue());
                 }
             }
         } catch (IOException ex) {

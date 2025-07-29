@@ -3,20 +3,20 @@ package org.tcontrol.sms.commands;
 import com.pi4j.io.gpio.Pin;
 import com.pi4j.io.gpio.PinState;
 import com.pi4j.io.gpio.RaspiPin;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
-import org.tcontrol.sms.IRelayController;
+import org.tcontrol.sms.handler.IRelayHandler;
 import org.tcontrol.sms.ISMSCommand;
 import org.tcontrol.sms.IThermostat;
 
 @Component
 @Slf4j
 @Qualifier("heatingOffCommand")
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class HeatingOffCommand implements ISMSCommand {
-    private final IRelayController relayController;
+    private final IRelayHandler relayHandler;
     private final IThermostat thermostatElectro;
     private final HeatingOnCommand heatingOnCommand;
 
@@ -25,7 +25,7 @@ public class HeatingOffCommand implements ISMSCommand {
         String resultString = " ";
         for(String heatingPin: thermostatElectro.getHeatingPins()){
             Pin pin = RaspiPin.getPinByName(heatingPin);
-            PinState result = relayController.turnOffRelay(pin);
+            PinState result = relayHandler.turnOffRelay(pin);
             resultString+=(result.isHigh()?"ON":"OFF");
         }
 

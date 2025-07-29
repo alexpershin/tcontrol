@@ -3,6 +3,7 @@ import com.pi4j.io.gpio.PinState;
 import org.junit.jupiter.api.BeforeEach;
 import org.tcontrol.service.models.SensorValue;
 import org.tcontrol.sms.*;
+import org.tcontrol.sms.IVoltageMonitor;
 import org.tcontrol.sms.IVoltageMonitor.VoltageResult;
 import org.tcontrol.sms.commands.CommandResult;
 import org.tcontrol.sms.commands.StatusCommand;
@@ -19,7 +20,9 @@ import java.util.List;
 import java.util.Map;
 
 import org.junit.jupiter.api.Test;
-import static org.junit.jupiter.api.Assertions.*;
+import org.tcontrol.sms.handler.IRelayHandler;
+
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -39,7 +42,7 @@ public class StatusCommandTest {
   private ThermostatConfig thermostatConfig3;
   private ThermostatConfig thermostatConfig4;
   private ITemperatureMonitor temperatureMonitor;
-  private IRelayController relayController;
+  private IRelayHandler relayHandler;
   private ITimer timer;
   private StatusCommand statusCommand;
   private SensorConfig sensorConfig;
@@ -100,7 +103,7 @@ public class StatusCommandTest {
       }
     };
 
-    relayController = new IRelayController() {
+    relayHandler = new IRelayHandler() {
       final Map<Pin,PinState> currentPinStates = new HashMap<>();
       {
         currentPinStates.put(thermostatConfig.relayPins().getFirst(),PinState.LOW);
@@ -136,7 +139,7 @@ public class StatusCommandTest {
     thermostat1 = new Thermostat(
         thermostatConfig,
         temperatureMonitor,
-        relayController,
+            relayHandler,
         timer,
         "termo1"
     );
@@ -144,7 +147,7 @@ public class StatusCommandTest {
     thermostat2 = new Thermostat(
         thermostatConfig2,
         temperatureMonitor,
-        relayController,
+            relayHandler,
         timer,
         "termo2"
     );
@@ -152,7 +155,7 @@ public class StatusCommandTest {
     thermostat3 = new Thermostat(
         thermostatConfig3,
         temperatureMonitor,
-        relayController,
+            relayHandler,
         timer,
         "termo3"
     );
@@ -160,7 +163,7 @@ public class StatusCommandTest {
     thermostat4 = new Thermostat(
         thermostatConfig4,
         temperatureMonitor,
-        relayController,
+            relayHandler,
         timer,
         "termo4"
     );
@@ -176,7 +179,7 @@ public class StatusCommandTest {
     final IVoltageMonitor voltageMonitor = ()-> List.of(new VoltageResult("socket", 220.1, "V"));
 
     statusCommand = new StatusCommand(temperatureMonitor, sensorConfig,
-        relayController, thermostat1, thermostat2, thermostat3, thermostat4, voltageMonitor);
+            relayHandler, thermostat1, thermostat2, thermostat3, thermostat4, voltageMonitor);
 
   }
 

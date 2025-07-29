@@ -43,24 +43,26 @@ public class Sensor {
      */
     private double thresholdLag;
 
+    private String userName;
+
     private String description;
 
     public Sensor() {
     }
 
-    public Sensor(int id, String name, SensorType type, String description) {
+    public Sensor(int id, String name, SensorType type, String userName) {
         this.id = id;
         this.name = name;
         this.type = type;
-        this.description = description;
+        this.userName = userName;
     }
 
-    public Sensor(int id, String name, SensorType type, String description,
+    public Sensor(int id, String name, SensorType type, String userName,
             double lowThreshold, double highThreshold, double thresholdLag) {
         this.id = id;
         this.name = name;
         this.type = type;
-        this.description = description;
+        this.userName = userName;
         this.lowThreshold = lowThreshold;
         this.highThreshold = highThreshold;
         this.thresholdLag = thresholdLag;

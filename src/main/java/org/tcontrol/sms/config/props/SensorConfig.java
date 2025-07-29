@@ -10,6 +10,4 @@ import java.util.List;
 @RequiredArgsConstructor
 public class SensorConfig {
     private List<SensorConfiguration> sensors = new ArrayList<>();
-
-
 }

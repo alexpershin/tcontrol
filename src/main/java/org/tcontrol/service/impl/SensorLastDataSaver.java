@@ -25,7 +25,7 @@ public class SensorLastDataSaver implements IStatisticsSaver {
     private final Map<Integer, LinkedList<SensorValue>> cache = new HashMap<>();
 
     @Override
-    public void write(SensorValue[] values) {
+    public void write(List<SensorValue> values) {
         for (SensorValue sensorValue : values) {
             LinkedList<SensorValue> queue = cache.computeIfAbsent(
                     sensorValue.getSensorId(),

@@ -2,10 +2,12 @@ package org.tcontrol.sms;
 
 import com.pi4j.io.gpio.Pin;
 import com.pi4j.io.gpio.PinState;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.tcontrol.sms.config.props.RelayAggregatorConfig;
+import org.tcontrol.sms.handler.IRelayHandler;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -14,18 +16,13 @@ import java.util.Map;
 
 @Component
 @Slf4j
+@RequiredArgsConstructor
 public class RelayAggregator implements IRelayAggregator {
 
-  private RelayAggregatorConfig relayAggregatorConfig;
-  private IRelayController relayController;
+  private final RelayAggregatorConfig relayAggregatorConfig;
+  private final IRelayHandler relayHandler;
 
-  private Map<String, List<Boolean>> currentState = new HashMap<>();
-
-  public RelayAggregator(RelayAggregatorConfig relayAggregatorConfig,
-      IRelayController relayController) {
-    this.relayAggregatorConfig = relayAggregatorConfig;
-    this.relayController = relayController;
-  }
+  private final Map<String, List<Boolean>> currentState = new HashMap<>();
 
   @Scheduled(cron = "${relay-aggregator.schedule}")
   public void cleanCurrentState() {
@@ -36,7 +33,7 @@ public class RelayAggregator implements IRelayAggregator {
   public PinState turnOnRelay(Pin controlPin) {
     Integer n = relayAggregatorConfig.getPinAggregates().get(controlPin.getName());
     if (n == null) {
-      relayController.turnOnRelay(controlPin);
+      relayHandler.turnOnRelay(controlPin);
       log.info("delegated turnOnRelay: {}", controlPin.getName());
     } else {
       List<Boolean> pinStates = currentState
@@ -44,7 +41,7 @@ public class RelayAggregator implements IRelayAggregator {
       pinStates.add(true);
       log.info("aggregating turnOnRelay: {}  size {}", controlPin.getName(), pinStates.size());
       if (pinStates.size() == n) {
-        relayController.turnOnRelay(controlPin);
+        relayHandler.turnOnRelay(controlPin);
         log.info("aggregated delegation turnOnRelay: {}", controlPin.getName());
       }
     }
@@ -55,7 +52,7 @@ public class RelayAggregator implements IRelayAggregator {
   public PinState turnOffRelay(Pin controlPin) {
     Integer n = relayAggregatorConfig.getPinAggregates().get(controlPin.getName());
     if (n == null) {
-      relayController.turnOffRelay(controlPin);
+      relayHandler.turnOffRelay(controlPin);
       log.info("delegated turnOffRelay: {}", controlPin.getName());
       return PinState.LOW;
     } else {
@@ -66,11 +63,11 @@ public class RelayAggregator implements IRelayAggregator {
       if (pinStates.size() == n) {
         boolean or = pinStates.stream().reduce(false, (a, b) -> a || b);
         if (!or) {
-          relayController.turnOffRelay(controlPin);
+          relayHandler.turnOffRelay(controlPin);
           log.info("aggregated delegation turnOffRelay: {}", controlPin.getName());
           return PinState.LOW;
         } else {
-          relayController.turnOnRelay(controlPin);
+          relayHandler.turnOnRelay(controlPin);
           log.info("aggregated delegation turnOnRelay: {}", controlPin.getName());
           return PinState.HIGH;
         }
@@ -84,7 +81,7 @@ public class RelayAggregator implements IRelayAggregator {
     Integer n = relayAggregatorConfig.getPinAggregates().get(controlPin.getName());
     if (n == null) {
       log.info("delegated getPinState: {}", controlPin.getName());
-      return relayController.getPinState(controlPin);
+      return relayHandler.getPinState(controlPin);
     } else {
       List<Boolean> pinStates = currentState.get(controlPin.getName());
       if (pinStates != null && pinStates.size() == n) {

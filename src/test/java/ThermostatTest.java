@@ -3,7 +3,7 @@ import com.pi4j.io.gpio.PinState;
 import com.pi4j.io.gpio.RaspiPin;
 import org.junit.jupiter.api.BeforeEach;
 import org.tcontrol.service.models.SensorValue;
-import org.tcontrol.sms.IRelayController;
+import org.tcontrol.sms.handler.IRelayHandler;
 import org.tcontrol.sms.ITemperatureMonitor;
 import org.tcontrol.sms.ITimer;
 import org.tcontrol.sms.Thermostat;
@@ -27,7 +27,7 @@ public class ThermostatTest {
     private Thermostat thermostat;
     private ThermostatConfig thermostatConfig;
     private ITemperatureMonitor temperatureMonitor;
-    private IRelayController relayController;
+    private IRelayHandler relayHandler;
     private ITimer timer;
 
     @BeforeEach
@@ -59,7 +59,7 @@ public class ThermostatTest {
             }
         };
 
-        relayController = new IRelayController() {
+        relayHandler = new IRelayHandler() {
             PinState currentPinState = PinState.LOW;
 
             @Override
@@ -86,7 +86,7 @@ public class ThermostatTest {
         thermostat = new Thermostat(
                 thermostatConfig,
                 temperatureMonitor,
-                relayController,
+                relayHandler,
                 timer,
             "termo"
        );
@@ -119,7 +119,7 @@ public class ThermostatTest {
 
         thermostat.checkTemperature();
         assertTrue(thermostat.isHeatingOn());
-        assertTrue(relayController.getPinState(heatingPin).isHigh());
+        assertTrue(relayHandler.getPinState(heatingPin).isHigh());
 
         SensorValue v = temperatureMonitor.getSensorValueMap().get(SENSOR_CODE);
         v.setSensorCode(SENSOR_CODE);
@@ -127,31 +127,31 @@ public class ThermostatTest {
 
         thermostat.checkTemperature();
         assertTrue(thermostat.isHeatingOn());
-        assertTrue(relayController.getPinState(heatingPin).isHigh());
+        assertTrue(relayHandler.getPinState(heatingPin).isHigh());
 
         v.setValue(16.6);
 
         thermostat.checkTemperature();
         assertFalse(thermostat.isHeatingOn());
-        assertFalse(relayController.getPinState(heatingPin).isHigh());
+        assertFalse(relayHandler.getPinState(heatingPin).isHigh());
 
         when(timer.getCurrentTime()).thenReturn(LocalDateTime.of(LocalDate.now(), LocalTime.of(4, 0)));
         v.setValue(16.2);
         thermostat.checkTemperature();
         assertFalse(thermostat.isHeatingOn());
-        assertFalse(relayController.getPinState(heatingPin).isHigh());
+        assertFalse(relayHandler.getPinState(heatingPin).isHigh());
 
         when(timer.getCurrentTime()).thenReturn(LocalDateTime.of(LocalDate.now(), LocalTime.of(5, 0)));
         v.setValue(15.6);
         thermostat.checkTemperature();
         assertFalse(thermostat.isHeatingOn());
-        assertFalse(relayController.getPinState(heatingPin).isHigh());
+        assertFalse(relayHandler.getPinState(heatingPin).isHigh());
 
         when(timer.getCurrentTime()).thenReturn(LocalDateTime.of(LocalDate.now(), LocalTime.of(5, 30)));
         v.setValue(15.5);
         thermostat.checkTemperature();
         assertTrue(thermostat.isHeatingOn());
-        assertTrue(relayController.getPinState(heatingPin).isHigh());
+        assertTrue(relayHandler.getPinState(heatingPin).isHigh());
 
         when(timer.getCurrentTime()).thenReturn(LocalDateTime.of(LocalDate.now(), LocalTime.of(7, 0)));
         v.setValue(15.5);
@@ -162,53 +162,53 @@ public class ThermostatTest {
         v.setValue(11.5);
         thermostat.checkTemperature();
         assertTrue(thermostat.isHeatingOn());
-        assertTrue(relayController.getPinState(heatingPin).isHigh());
+        assertTrue(relayHandler.getPinState(heatingPin).isHigh());
 
         when(timer.getCurrentTime()).thenReturn(LocalDateTime.of(LocalDate.now(), LocalTime.of(18, 0)));
         v.setValue(12.8);
         thermostat.checkTemperature();
         assertFalse(thermostat.isHeatingOn());
-        assertFalse(relayController.getPinState(heatingPin).isHigh());
+        assertFalse(relayHandler.getPinState(heatingPin).isHigh());
 
         when(timer.getCurrentTime()).thenReturn(LocalDateTime.of(LocalDate.now(), LocalTime.of(23, 0)));
         v.setValue(12.1);
         thermostat.checkTemperature();
         assertFalse(thermostat.isHeatingOn());
-        assertFalse(relayController.getPinState(heatingPin).isHigh());
+        assertFalse(relayHandler.getPinState(heatingPin).isHigh());
 
         when(timer.getCurrentTime()).thenReturn(LocalDateTime.of(LocalDate.now(), LocalTime.of(23, 1)));
         v.setValue(12.12);
         thermostat.checkTemperature();
         assertTrue(thermostat.isHeatingOn());
-        assertTrue(relayController.getPinState(heatingPin).isHigh());
+        assertTrue(relayHandler.getPinState(heatingPin).isHigh());
 
         when(timer.getCurrentTime()).thenReturn(LocalDateTime.of(LocalDate.now(), LocalTime.of(0, 10)));
         v.setValue(12.1);
         thermostat.checkTemperature();
         assertEquals(16.0, thermostat.getMediumT(), 0.01);
         assertTrue(thermostat.isHeatingOn());
-        assertTrue(relayController.getPinState(heatingPin).isHigh());
+        assertTrue(relayHandler.getPinState(heatingPin).isHigh());
 
         when(timer.getCurrentTime()).thenReturn(LocalDateTime.of(LocalDate.now(), LocalTime.of(6, 50)));
         v.setValue(15.2);
         thermostat.checkTemperature();
         assertEquals(16.0, thermostat.getMediumT(), 0.01);
         assertTrue(thermostat.isHeatingOn());
-        assertTrue(relayController.getPinState(heatingPin).isHigh());
+        assertTrue(relayHandler.getPinState(heatingPin).isHigh());
 
         when(timer.getCurrentTime()).thenReturn(LocalDateTime.of(LocalDate.now(), LocalTime.of(7, 0)));
         v.setValue(15.3);
         thermostat.checkTemperature();
         assertEquals(12.0, thermostat.getMediumT(), 0.01);
         assertFalse(thermostat.isHeatingOn());
-        assertFalse(relayController.getPinState(heatingPin).isHigh());
+        assertFalse(relayHandler.getPinState(heatingPin).isHigh());
 
         when(timer.getCurrentTime()).thenReturn(LocalDateTime.of(LocalDate.now(), LocalTime.of(7, 10)));
         v.setValue(15.3);
         thermostat.checkTemperature();
         assertEquals(12.0, thermostat.getMediumT(), 0.01);
         assertFalse(thermostat.isHeatingOn());
-        assertFalse(relayController.getPinState(heatingPin).isHigh());
+        assertFalse(relayHandler.getPinState(heatingPin).isHigh());
     }
 
     @Test
@@ -219,18 +219,18 @@ public class ThermostatTest {
 
         thermostat.checkTemperature();
         assertTrue(thermostat.isHeatingOn());
-        assertTrue(relayController.getPinState(heatingPin).isHigh());
+        assertTrue(relayHandler.getPinState(heatingPin).isHigh());
 
         thermostat.changeOn(false);
-        assertFalse(relayController.getPinState(heatingPin).isHigh());
+        assertFalse(relayHandler.getPinState(heatingPin).isHigh());
 
         thermostat.checkTemperature();
-        assertFalse(relayController.getPinState(heatingPin).isHigh());
+        assertFalse(relayHandler.getPinState(heatingPin).isHigh());
 
         thermostat.changeOn(true);
-        assertFalse(relayController.getPinState(heatingPin).isHigh());
+        assertFalse(relayHandler.getPinState(heatingPin).isHigh());
 
         thermostat.checkTemperature();
-        assertTrue(relayController.getPinState(heatingPin).isHigh());
+        assertTrue(relayHandler.getPinState(heatingPin).isHigh());
     }
 }

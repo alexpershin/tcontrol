@@ -1,4 +1,4 @@
-package org.tcontrol.sms;
+package org.tcontrol.sms.handler.impl;
 
 import com.pi4j.io.gpio.*;
 import com.pi4j.io.gpio.event.GpioPinListenerDigital;
@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.tcontrol.service.IPinFactory;
+import org.tcontrol.sms.IThermostat;
 import org.tcontrol.sms.config.props.ButtonConfig;
 
 import javax.annotation.PostConstruct;
@@ -14,7 +15,7 @@ import javax.annotation.PostConstruct;
 @Service
 @Slf4j
 @RequiredArgsConstructor
-public class ButtonGasOnOffController {
+public class ButtonGasOnOffHandler {
 
     private final ButtonConfig buttonConfig;
     private final IThermostat thermostatGas;

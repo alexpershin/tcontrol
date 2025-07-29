@@ -1,7 +1,7 @@
 package org.tcontrol.controller;
 
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 import org.tcontrol.controller.dto.*;
 import org.tcontrol.service.SensorServiceException;
 import org.tcontrol.service.SensorService;
@@ -15,9 +15,6 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RestController;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import org.springframework.web.server.ResponseStatusException;
@@ -36,6 +33,7 @@ import static java.net.HttpURLConnection.HTTP_OK;
 
 @Slf4j
 @RestController
+@RequestMapping("tcontrol")
 @RequiredArgsConstructor
 public class SensorController {
     private final SensorService sensorService;

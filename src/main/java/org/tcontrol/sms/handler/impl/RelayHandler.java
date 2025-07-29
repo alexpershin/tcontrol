@@ -15,6 +15,7 @@ import javax.annotation.PostConstruct;
 import java.sql.Timestamp;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @Slf4j
@@ -49,7 +50,7 @@ public class RelayHandler implements IRelayHandler {
 
         GpioPinDigitalOutput gpioPinDigitalOutput = pinFactory.getDigitalPin(controlPin);
 
-        return gpioPinDigitalOutput!=null?gpioPinDigitalOutput.getState():null;
+        return gpioPinDigitalOutput != null ? gpioPinDigitalOutput.getState() : null;
     }
 
     private PinState changeStateOfRelay(PinState pinState, Pin controlPin) {
@@ -67,26 +68,35 @@ public class RelayHandler implements IRelayHandler {
         log.info("{} state was: {} ", pin.getName(), pin.getState());
 
         SensorValue sensorValue = new SensorValue();
-        RelayPinsConfig.RelayPinConfig relayPinConfig=relayPinsConfig.getPins().stream().filter(p->p.getPin().equals(pin.getName())).findFirst().get();
-        sensorValue.setSensorId(relayPinConfig.getPinId());
-        sensorValue.setSensorCode(relayPinConfig.getName());
-        sensorValue.setPin(controlPin.getName());
-        sensorValue.setTimestamp(new Timestamp(System.currentTimeMillis()));
+        Optional<RelayPinsConfig.RelayPinConfig> relayPinConfigOptional =
+                relayPinsConfig.getPins().stream()
+                        .filter(p -> p.getPin().equals(controlPin.getName()))
+                        .findFirst();
+        if (relayPinConfigOptional.isPresent()) {
+            RelayPinsConfig.RelayPinConfig relayPinConfig = relayPinConfigOptional.get();
+            sensorValue.setSensorId(relayPinConfig.getPinId());
+            sensorValue.setSensorCode(relayPinConfig.getName());
+            sensorValue.setPin(controlPin.getName());
+            sensorValue.setTimestamp(new Timestamp(System.currentTimeMillis()));
 
-        // turn off/heatingOn gpio pin #17
-        if (pinState.isLow()) {
-            pin.low();
-            sensorValue.setValue(0.0);
-        } else if (pinState.isHigh()) {
-            pin.high();
-            sensorValue.setValue(1.0);
+            // turn off/heatingOn gpio pin #17
+            if (pinState.isLow()) {
+                pin.low();
+                sensorValue.setValue(0.0);
+            } else if (pinState.isHigh()) {
+                pin.high();
+                sensorValue.setValue(1.0);
+            }
+
+            List<SensorValue> values = Collections.singletonList(sensorValue);
+            csvStatisticSaver.write(values);
+            sensorLastDataSaver.write(values);
+
+            return pin.getState();
+        } else {
+            log.error("Configuration for pin: {} not found!", controlPin.getName());
+            return null;
         }
-
-        List<SensorValue> values = Collections.singletonList(sensorValue);
-        csvStatisticSaver.write(values);
-        sensorLastDataSaver.write(values);
-
-        return pin.getState();
     }
 
 }

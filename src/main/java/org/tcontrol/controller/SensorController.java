@@ -33,7 +33,7 @@ import static java.net.HttpURLConnection.HTTP_OK;
 
 @Slf4j
 @RestController
-@RequestMapping("tcontrol")
+@RequestMapping("tcontrol/api")
 @RequiredArgsConstructor
 public class SensorController {
     private final SensorService sensorService;

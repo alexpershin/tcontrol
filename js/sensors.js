@@ -31,7 +31,7 @@ function loadStubDataOnLoad() {
 }
 
 function loadDataFromServer() {
-    $.post("http://"+window.location.host+"/tcontrol/api/sensors",
+    $.post(window.location.protocol+"//"+window.location.host+"/tcontrol/api/sensors",
         function (sensorsJsonData) {
             console.log("sensors processing start");
             var sensors = sensorsJsonData.sensors;
@@ -49,7 +49,7 @@ function loadDataFromServer() {
 }
 
 function loadValuesFromServer() {
-    $.post("http://"+window.location.host+":/tcontrol/api/sensor_values",
+    $.post(window.location.protocol+"//"+window.location.host+":/tcontrol/api/sensor_values",
         function (valuesJsonData) {
             console.log('sensor values processing start');
             valuesMap = convertValuesJsonToMap(valuesJsonData.values)
@@ -200,9 +200,9 @@ function onOffSensorRenderer(sensorElementId, sensor) {
 
         let onOffUrl = "";
         if (value === "Off") {
-            onOffUrl = 'http://'+window.location.host+'/tcontrol/api/start_process';
+            onOffUrl = window.location.protocol+'//'+window.location.host+'/tcontrol/api/start_process';
         } else if (value === "On") {
-            onOffUrl = 'http://'+window.location.host+'/tcontrol/api/stop_process';
+            onOffUrl = window.location.protocol+'//'+window.location.host+'/tcontrol/api/stop_process';
         }
 
         $.ajax({

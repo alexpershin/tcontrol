@@ -2,9 +2,9 @@ import com.pi4j.io.gpio.Pin;
 import com.pi4j.io.gpio.RaspiPin;
 import org.junit.jupiter.api.BeforeEach;
 import org.mockito.Mockito;
-import org.tcontrol.sms.handler.IRelayHandler;
+import org.tcontrol.handler.IRelayHandler;
 import org.tcontrol.service.RelayAggregator;
-import org.tcontrol.sms.config.props.RelayAggregatorConfig;
+import org.tcontrol.config.props.RelayAggregatorConfig;
 
 import static org.mockito.Mockito.*;
 import org.junit.jupiter.api.Test;

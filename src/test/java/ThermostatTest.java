@@ -3,11 +3,11 @@ import com.pi4j.io.gpio.PinState;
 import com.pi4j.io.gpio.RaspiPin;
 import org.junit.jupiter.api.BeforeEach;
 import org.tcontrol.service.models.SensorValue;
-import org.tcontrol.sms.handler.IRelayHandler;
+import org.tcontrol.handler.IRelayHandler;
 import org.tcontrol.hardware.ITemperatureMonitor;
 import org.tcontrol.service.ITimer;
 import org.tcontrol.service.impl.Thermostat;
-import org.tcontrol.sms.config.props.ThermostatConfig;
+import org.tcontrol.config.props.ThermostatConfig;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;

@@ -3,17 +3,19 @@ import com.pi4j.io.gpio.PinState;
 import com.pi4j.io.gpio.RaspiPin;
 
 import org.junit.jupiter.api.BeforeEach;
-import org.tcontrol.sms.handler.IRelayHandler;
-import org.tcontrol.sms.handler.IVoltageHandler;
+import org.tcontrol.handler.IRelayHandler;
+import org.tcontrol.handler.IVoltageHandler;
+import org.tcontrol.handler.impl.VoltageHandler;
 import org.tcontrol.hardware.IVoltageMonitor;
-import org.tcontrol.sms.handler.impl.VoltageHandler;
-import org.tcontrol.sms.config.props.VoltageControllerConfig;
+import org.tcontrol.config.props.VoltageHandlerConfig;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.jupiter.api.Test;
 
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -31,7 +33,7 @@ public class VoltageHandlerTest {
 
     @BeforeEach
     public void before() {
-        VoltageControllerConfig voltageControllerConfig = new VoltageControllerConfig();
+        VoltageHandlerConfig voltageControllerConfig = new VoltageHandlerConfig();
         voltageControllerConfig.setValueId(SENSOR);
         voltageControllerConfig.setVoltageMin(11.5f);
         voltageControllerConfig.setVoltageMax(14.4f);

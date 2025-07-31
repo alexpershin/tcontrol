@@ -1,4 +1,4 @@
-package org.tcontrol.sms.handler.impl;
+package org.tcontrol.handler.impl;
 
 import com.pi4j.io.gpio.*;
 import com.pi4j.io.gpio.event.GpioPinListenerDigital;

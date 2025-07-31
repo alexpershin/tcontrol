@@ -1,4 +1,4 @@
-package org.tcontrol.sms.handler;
+package org.tcontrol.handler;
 
 public interface IOnOffHandler {
     boolean turnOnRelay();

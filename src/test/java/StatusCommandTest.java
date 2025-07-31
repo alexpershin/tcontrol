@@ -9,9 +9,9 @@ import org.tcontrol.hardware.IVoltageMonitor;
 import org.tcontrol.hardware.IVoltageMonitor.VoltageResult;
 import org.tcontrol.sms.commands.CommandResult;
 import org.tcontrol.sms.commands.StatusCommand;
-import org.tcontrol.sms.config.props.SensorConfig;
-import org.tcontrol.sms.config.props.SensorConfiguration;
-import org.tcontrol.sms.config.props.ThermostatConfig;
+import org.tcontrol.config.props.SensorConfig;
+import org.tcontrol.config.props.SensorConfiguration;
+import org.tcontrol.config.props.ThermostatConfig;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -22,7 +22,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.junit.jupiter.api.Test;
-import org.tcontrol.sms.handler.IRelayHandler;
+import org.tcontrol.handler.IRelayHandler;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;

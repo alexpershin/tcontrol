@@ -10,7 +10,7 @@ import org.tcontrol.sms.commands.HeatingOffCommand;
 import org.tcontrol.sms.commands.HeatingOnCommand;
 
 import org.junit.jupiter.api.Test;
-import org.tcontrol.sms.handler.IRelayHandler;
+import org.tcontrol.handler.IRelayHandler;
 
 import static org.junit.jupiter.api.Assertions.*;
 

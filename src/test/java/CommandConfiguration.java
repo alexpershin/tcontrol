@@ -8,10 +8,10 @@ import org.tcontrol.service.IThermostat;
 import org.tcontrol.service.ITimer;
 import org.tcontrol.service.impl.Thermostat;
 import org.tcontrol.service.models.SensorValue;
-import org.tcontrol.sms.config.props.SensorConfig;
-import org.tcontrol.sms.config.props.SensorConfiguration;
-import org.tcontrol.sms.config.props.ThermostatConfig;
-import org.tcontrol.sms.handler.IRelayHandler;
+import org.tcontrol.config.props.SensorConfig;
+import org.tcontrol.config.props.SensorConfiguration;
+import org.tcontrol.config.props.ThermostatConfig;
+import org.tcontrol.handler.IRelayHandler;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;

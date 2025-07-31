@@ -1,7 +1,7 @@
 import org.junit.jupiter.api.BeforeEach;
 import org.tcontrol.sms.SMSProcessor;
 import org.tcontrol.sms.commands.CommandExecutor;
-import org.tcontrol.sms.config.props.SMSConfig;
+import org.tcontrol.config.props.SMSConfig;
 
 import java.io.File;
 import java.io.IOException;

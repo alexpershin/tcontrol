@@ -1,4 +1,4 @@
-package org.tcontrol.sms.handler.impl;
+package org.tcontrol.handler.impl;
 
 import com.pi4j.io.gpio.*;
 import lombok.RequiredArgsConstructor;
@@ -12,7 +12,6 @@ import org.tcontrol.handler.IRelayHandler;
 import org.tcontrol.config.props.RelayPinsConfig;
 
 import javax.annotation.PostConstruct;
-import java.sql.Timestamp;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;

@@ -23,52 +23,52 @@ sensor-config:
   schedule: '0 0/1 * * * ?'
   sensors:
     - id: 0
-      code: 28-000002c7c3ee
+      code: '28-000002c7c3ee'
       name: house
       type: TEMPERATURE
       userName: коридор
       description:
       lowThreshold: 8.0
       highThreshold: 30.0
-      thresholdLag: 1.0
+      thresholdLag: 2.0
     - id: 1
-      code: 28-031701a152ff
+      code: '28-031701a152ff'
       name: street
       type: TEMPERATURE
       user-name: улица
       description: ''
       lowThreshold: 8.0
       highThreshold: 30.0
-      thresholdLag: 1.0
+      thresholdLag: 2.0
     - id: 2
-      code: 28-000002c7eed3
+      code: '28-000002c7eed3'
       name: basement
       type: TEMPERATURE
       userName: подвал
       description: ''
       lowThreshold: 8.0
       highThreshold: 30.0
-      thresholdLag: 1.0
+      thresholdLag: 2.0
     - id: 3
-      code: 28-0000058ddc1d
+      code: '28-0000058ddc1d'
       name: case
       type: TEMPERATURE
       userName: щит
       description: ''
       lowThreshold: 8.0
-      highThreshold: 30.0
-      thresholdLag: 1.0
+      highThreshold: 32.0
+      thresholdLag: 2.0
     - id: 4
-      code: 28-0417019b15ff
+      code: '28-0417019b15ff'
       name: veranda
       type: TEMPERATURE
       userName: веранда
       description: ''
-      lowThreshold: 8.0
+      lowThreshold: 4.0
       highThreshold: 30.0
       thresholdLag: 1.0
     - id: 5
-      code: 28-0317017a6aff
+      code: '28-0317017a6aff'
       name: my-room
       type: TEMPERATURE
       userName: моя комната
@@ -77,7 +77,7 @@ sensor-config:
       highThreshold: 30.0
       thresholdLag: 1.0
     - id: 6
-      code: 28-031701e06cff
+      code: '28-031701e06cff'
       name: hot-watter
       type: TEMPERATURE
       userName: горячая вода
@@ -87,15 +87,6 @@ sensor-config:
       thresholdLag: 1.0
     - id: 7
       code: '0'
-      name: electricity
-      type: VOLTAGE
-      userName: сеть
-      description: 'Электричество 220в'
-      lowThreshold: 180
-      highThreshold: 250
-      thresholdLag: 10
-    - id: 8
-      code: '1'
       name: battery
       type: VOLTAGE
       userName: батарея
@@ -103,6 +94,15 @@ sensor-config:
       lowThreshold: 11.5
       highThreshold: 15.0
       thresholdLag: 0.5
+    - id: 8
+      code: '1'
+      name: electricity
+      type: VOLTAGE
+      userName: сеть
+      description: 'Электричество 220в'
+      lowThreshold: 190
+      highThreshold: 250
+      thresholdLag: 10
 
 sms-config:
   inputFolder: /var/spool/gammu/inbox
@@ -188,8 +188,8 @@ thermostat-gas:
     - 'GPIO 4'
 
 thermostat-veranda:
-  tDay: 5.0
-  tNight: 5.0
+  tDay: 6.0
+  tNight: 6.0
   delta: 0.5
   nightBegin: 21:00:00
   nightEnd: 8:00:00
@@ -198,8 +198,8 @@ thermostat-veranda:
     - 'GPIO 2'
 
 thermostat-veranda-em:
-  tDay: 3.0
-  tNight: 3.0
+  tDay: 4.0
+  tNight: 4.0
   delta: 0.3
   nightBegin: 22:00:00
   nightEnd: 7:00:00

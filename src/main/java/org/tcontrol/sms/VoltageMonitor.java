@@ -132,10 +132,11 @@ public class VoltageMonitor implements IVoltageMonitor {
                 log.info(">" + input.getName() + ": " + value + " " + unit);
 
                 if (pin.isPresent()) {
+                    int code = pin.get().getCode();
                     Optional<SensorConfiguration> sensorConfigurationOptional =
                             sensorConfig.getSensors()
                                     .stream()
-                                    .filter(sensor -> sensor.getCode().equals(pin.get().getCode()))
+                                    .filter(sensor -> sensor.getCode().equals(Integer.valueOf(code).toString()))
                                     .findFirst();
                     if (sensorConfigurationOptional.isPresent()) {
                         SensorConfiguration sensorConfiguration = sensorConfigurationOptional.get();
@@ -145,7 +146,7 @@ public class VoltageMonitor implements IVoltageMonitor {
                                 System.currentTimeMillis(),
                                 value));
                     } else {
-                        log.error("Incorrect config: sensors not found by code:{}", pin.get().getCode());
+                        log.error("Incorrect config: sensors not found by code:{}", code);
                     }
                 } else {
                     log.error("Incorrect pin: {}", input.getPin().getAddress());

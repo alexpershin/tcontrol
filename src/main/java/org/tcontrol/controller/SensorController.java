@@ -152,8 +152,8 @@ public class SensorController {
     @PostMapping("/stop_process")
     @CrossOrigin(origins = {"http://localhost:8090", "http://localhost"})
     public ResponseEntity<StopProcessResult> stopProcess(StopProcessRequest processChangeRequest) throws InterruptedException {
-        log.info("stop process for sensor {}: {}", processChangeRequest.getSensorId(), processChangeRequest.getState().name());
-        Thread.sleep(5000);
+        log.info("stop process for sensor {}: {}", processChangeRequest.getSensorId(), processChangeRequest.getState());
+        Thread.sleep(1000);
         int result = sensorService.stopProcess(processChangeRequest.getSensorId());
         return new ResponseEntity<>(new StopProcessResult(result == -1 ? null : result, "ok"),
                 result == -1 ? HttpStatus.INTERNAL_SERVER_ERROR : HttpStatus.OK);

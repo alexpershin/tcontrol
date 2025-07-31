@@ -251,3 +251,6 @@ voltage-handler:
   relayPins:
     - 'GPIO 25'
 
+electric-heater-handler:
+  pin-id: 100
+  sensor-id: 9

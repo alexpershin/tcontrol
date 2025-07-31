@@ -1,8 +1,10 @@
 package org.tcontrol.service.impl;
 
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
+import org.tcontrol.handler.IOnOffHandler;
 import org.tcontrol.mappers.SensorMapper;
 import org.tcontrol.service.SensorService;
 import org.tcontrol.service.models.Sensor;
@@ -23,12 +25,14 @@ import java.util.stream.Collectors;
  */
 @Component
 @ConditionalOnProperty(value = "main-config.sensorsStub", havingValue = "false")
+@Slf4j
 @AllArgsConstructor
 public class SensorServiceImpl implements SensorService {
 
     protected final SensorConfig sensorConfig;
     protected final IStatisticsSaver sensorLastDataSaver;
     protected final SensorMapper sensorMapper;
+    protected final List<IOnOffHandler> onOffHandlers;
 
     @Override
     public Map<Integer, Sensor> getAllSensors() {
@@ -50,10 +54,10 @@ public class SensorServiceImpl implements SensorService {
                         .filter(sensor -> sensor.getCode().equals(sensorCode)).findFirst()
                 ).filter(Optional::isPresent)
                 .map(Optional::get)
-                .map(sc ->{
+                .map(sc -> {
                     SensorValue sensorValue = sensorLastDataSaver.currentValues().get(sc.getId());
                     return new SensorValue(sc.getId(), sc.getCode(), sensorValue.getTimestamp(),
-                        sensorValue.getValue());
+                            sensorValue.getValue());
                 })
                 .collect(Collectors.toList());
     }
@@ -73,14 +77,26 @@ public class SensorServiceImpl implements SensorService {
 
     @Override
     public int startProcess(int sensorId) {
-
-        return -1;
+        Optional<IOnOffHandler> onOffHandlerOptional
+                = onOffHandlers.stream().filter(h -> h.sensorId() == sensorId).findFirst();
+        if (onOffHandlerOptional.isPresent()) {
+            return onOffHandlerOptional.get().turnOnRelay() ? 1 : 0;
+        } else {
+            log.error("onOffHandler is not found by id: {}", sensorId);
+            return -1;
+        }
     }
 
     @Override
     public int stopProcess(int sensorId) {
-
-        return -1;
+        Optional<IOnOffHandler> onOffHandlerOptional
+                = onOffHandlers.stream().filter(h -> h.sensorId() == sensorId).findFirst();
+        if (onOffHandlerOptional.isPresent()) {
+            return onOffHandlerOptional.get().turnOffRelay() ? 1 : 0;
+        } else {
+            log.error("onOffHandler is not found by id: {}", sensorId);
+            return -1;
+        }
     }
 
 

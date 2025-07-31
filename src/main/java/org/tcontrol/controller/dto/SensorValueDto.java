@@ -12,6 +12,7 @@ import lombok.ToString;
 @Getter
 @Setter
 @NoArgsConstructor
+@ToString
 public class SensorValueDto {
 
     public enum SensorValueState {

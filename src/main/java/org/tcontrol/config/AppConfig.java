@@ -4,6 +4,8 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.EnableScheduling;
+import org.tcontrol.handler.IOnOffHandler;
+import org.tcontrol.handler.impl.OnOffHandler;
 import org.tcontrol.hardware.ITemperatureMonitor;
 import org.tcontrol.service.IThermostat;
 import org.tcontrol.service.ITimer;
@@ -100,6 +102,12 @@ public class AppConfig {
     }
 
     @Bean
+    @ConfigurationProperties(prefix = "electric-heater-handler")
+    public OnOfHandlerConfig onOfHandlerConfig() {
+        return new OnOfHandlerConfig();
+    }
+
+    @Bean
     public IThermostat thermostatElectro(
             final ThermostatConfig thermostatElectroConfig,
             final ITemperatureMonitor temperatureMonitor,
@@ -157,6 +165,15 @@ public class AppConfig {
             final ITimer timer) {
         return new Thermostat(thermostatHotWatterConfig, temperatureMonitor, relayHandler,
                 timer, "termo5(hot watter)");
+    }
+
+    @Bean
+    public IOnOffHandler electricHeatingOnOfHandler(
+            final OnOfHandlerConfig onOfHandlerConfig,
+            final RelayPinsConfig relayPinsConfig,
+            final IRelayHandler relayHandler
+    ){
+        return new OnOffHandler(onOfHandlerConfig, relayPinsConfig, relayHandler);
     }
 
 }

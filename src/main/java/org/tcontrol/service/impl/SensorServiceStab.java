@@ -11,10 +11,7 @@ import org.tcontrol.config.props.SensorConfiguration;
 
 import javax.annotation.PostConstruct;
 import java.sql.Timestamp;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -26,7 +23,7 @@ import java.util.stream.Stream;
 public class SensorServiceStab extends SensorServiceImpl {
 
     public SensorServiceStab(SensorConfig sensorConfig, IStatisticsSaver sensorLastDataSaver, SensorMapper sensorMapper) {
-        super(sensorConfig, sensorLastDataSaver, sensorMapper);
+        super(sensorConfig, sensorLastDataSaver, sensorMapper, new ArrayList<>());
     }
 
     @PostConstruct

@@ -142,8 +142,8 @@ public class SensorController {
     @PostMapping("/start_process")
     @CrossOrigin(origins = {"http://localhost:8090", "http://localhost"})
     public ResponseEntity<StartProcessResult> startProcess(StartProcessRequest processChangeRequest) throws InterruptedException {
-        log.info("start process for sensor {}: {}", processChangeRequest.getSensorId(), processChangeRequest.getState().name());
-        Thread.sleep(5000);
+        log.info("start process for sensor {}: {}", processChangeRequest.getSensorId(), processChangeRequest.getState());
+        Thread.sleep(1000);
         int result = sensorService.startProcess(processChangeRequest.getSensorId());
         return new ResponseEntity<>(new StartProcessResult(result == -1 ? null : result, "ok"),
                 result == -1 ? HttpStatus.INTERNAL_SERVER_ERROR : HttpStatus.OK);

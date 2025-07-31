@@ -4,4 +4,6 @@ public interface IOnOffHandler {
     boolean turnOnRelay();
 
     boolean turnOffRelay();
+
+    int sensorId();
 }

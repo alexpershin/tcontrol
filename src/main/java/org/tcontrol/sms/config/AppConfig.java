@@ -73,9 +73,9 @@ public class AppConfig {
     }
 
     @Bean
-    @ConfigurationProperties(prefix = "button-controller")
-    public ButtonConfig buttonConfig() {
-        return new ButtonConfig();
+    @ConfigurationProperties(prefix = "button-handler")
+    public ButtonHandlerConfig buttonConfig() {
+        return new ButtonHandlerConfig();
     }
 
     @Bean
@@ -91,9 +91,9 @@ public class AppConfig {
     }
 
     @Bean
-    @ConfigurationProperties(prefix = "voltage-controller")
-    public VoltageControllerConfig voltageControllerConfig() {
-        return new VoltageControllerConfig();
+    @ConfigurationProperties(prefix = "voltage-handler")
+    public VoltageHandlerConfig voltageControllerConfig() {
+        return new VoltageHandlerConfig();
     }
 
     @Bean

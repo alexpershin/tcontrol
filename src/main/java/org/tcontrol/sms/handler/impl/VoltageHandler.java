@@ -8,7 +8,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.tcontrol.sms.handler.IRelayHandler;
 import org.tcontrol.sms.IVoltageMonitor;
-import org.tcontrol.sms.config.props.VoltageControllerConfig;
+import org.tcontrol.sms.config.props.VoltageHandlerConfig;
 import org.tcontrol.sms.handler.IVoltageHandler;
 
 import javax.annotation.PostConstruct;
@@ -19,7 +19,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class VoltageHandler implements IVoltageHandler {
 
-  private final VoltageControllerConfig voltageControllerConfig;
+  private final VoltageHandlerConfig voltageHandlerConfig;
 
   private final IVoltageMonitor voltageMonitor;
 
@@ -41,7 +41,7 @@ public class VoltageHandler implements IVoltageHandler {
   }
 
   @Override
-  @Scheduled(cron = "${voltage-controller.schedule}")
+  @Scheduled(cron = "${voltage-handler.schedule}")
   public void checkVoltage() {
     log.info(name + "> checkVoltage");
     if (!enable) {
@@ -50,17 +50,17 @@ public class VoltageHandler implements IVoltageHandler {
     List<IVoltageMonitor.VoltageResult> voltageResults = voltageMonitor.getVoltageResults();
     if (voltageResults != null && !voltageResults.isEmpty()) {
       IVoltageMonitor.VoltageResult value
-            = voltageResults.get(voltageControllerConfig.getValueId());
+            = voltageResults.get(voltageHandlerConfig.getValueId());
 
       double currentVoltage =  value.getValue();
 
-      if (on && currentVoltage <= voltageControllerConfig.getVoltageMin()) {
+      if (on && currentVoltage <= voltageHandlerConfig.getVoltageMin()) {
         on = false;
-      } else if(!on && currentVoltage >= voltageControllerConfig.getVoltageMax()){
+      } else if(!on && currentVoltage >= voltageHandlerConfig.getVoltageMax()){
         on = true;
       }
 
-      voltageControllerConfig.relayPins().forEach(heatingPin -> {
+      voltageHandlerConfig.relayPins().forEach(heatingPin -> {
             PinState oldState = relayHandler.getPinState(heatingPin);
             if (oldState == null || oldState.isHigh() != on) {
               if (on) {
@@ -72,8 +72,8 @@ public class VoltageHandler implements IVoltageHandler {
           });
 
       log.info(name + "> Checked voltage between({},{}), current:{}, state:{}",
-              voltageControllerConfig.getVoltageMin(),
-              voltageControllerConfig.getVoltageMax(),
+              voltageHandlerConfig.getVoltageMin(),
+              voltageHandlerConfig.getVoltageMax(),
               currentVoltage, on);
     } else {
       log.error("Voltage values is null");

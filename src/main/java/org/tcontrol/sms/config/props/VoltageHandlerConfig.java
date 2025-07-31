@@ -12,7 +12,7 @@ import java.util.stream.Collectors;
 
 @Data
 @RequiredArgsConstructor
-public class VoltageControllerConfig {
+public class VoltageHandlerConfig {
 
   private float voltageMin;
   private float voltageMax;

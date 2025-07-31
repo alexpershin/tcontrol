@@ -7,7 +7,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.tcontrol.service.IPinFactory;
 import org.tcontrol.sms.IThermostat;
-import org.tcontrol.sms.config.props.ButtonConfig;
+import org.tcontrol.sms.config.props.ButtonHandlerConfig;
 
 import javax.annotation.PostConstruct;
 
@@ -17,7 +17,7 @@ import javax.annotation.PostConstruct;
 @RequiredArgsConstructor
 public class ButtonGasOnOffHandler {
 
-    private final ButtonConfig buttonConfig;
+    private final ButtonHandlerConfig buttonHandlerConfig;
     private final IThermostat thermostatGas;
     private final IPinFactory pinFactory;
 
@@ -41,7 +41,7 @@ public class ButtonGasOnOffHandler {
             };
 
             final GpioPinDigitalInput pin =
-                    gpio.provisionDigitalInputPin(buttonConfig.pin());
+                    gpio.provisionDigitalInputPin(buttonHandlerConfig.pin());
 
             pin.addListener(listener);
             log.info("Button listener added: " + pin.getPin().getName());

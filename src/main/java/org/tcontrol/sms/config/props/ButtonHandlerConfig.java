@@ -9,7 +9,7 @@ import javax.annotation.PostConstruct;
 
 @Data
 @RequiredArgsConstructor
-public class ButtonConfig {
+public class ButtonHandlerConfig {
 
   private String buttonPinId;
   private String buttonPinName;

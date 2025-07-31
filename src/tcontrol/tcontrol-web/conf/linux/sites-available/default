@@ -71,21 +71,21 @@ server {
 		proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
 	}
 
-	location /tcontrol/sensor_previous_values {
+	location /tcontrol/api/sensor_previous_values {
 		proxy_pass  http://127.0.0.1:8080/tcontrol/api/sensor_previous_values;
 		proxy_set_header Host $host;
 		proxy_set_header X-Real-IP $remote_addr;
 		proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
 	}
 
-	location /tcontrol/start_process {
+	location /tcontrol/api/start_process {
 		proxy_pass  http://127.0.0.1:8080/tcontrol/api/start_process;
 		proxy_set_header Host $host;
 		proxy_set_header X-Real-IP $remote_addr;
 		proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
 	}
 
-	location /tcontrol/stop_process {
+	location /tcontrol/api/stop_process {
 		proxy_pass  http://127.0.0.1:8080/tcontrol/api/stop_process;
 		proxy_set_header Host $host;
 		proxy_set_header X-Real-IP $remote_addr;

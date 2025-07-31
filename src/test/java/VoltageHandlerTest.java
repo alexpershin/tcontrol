@@ -5,7 +5,7 @@ import com.pi4j.io.gpio.RaspiPin;
 import org.junit.jupiter.api.BeforeEach;
 import org.tcontrol.sms.handler.IRelayHandler;
 import org.tcontrol.sms.handler.IVoltageHandler;
-import org.tcontrol.sms.IVoltageMonitor;
+import org.tcontrol.hardware.IVoltageMonitor;
 import org.tcontrol.sms.handler.impl.VoltageHandler;
 import org.tcontrol.sms.config.props.VoltageControllerConfig;
 
@@ -13,7 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.jupiter.api.Test;
-import static org.junit.jupiter.api.Assertions.*;
+
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 

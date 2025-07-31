@@ -9,7 +9,7 @@ import org.tcontrol.service.models.Sensor;
 import org.tcontrol.service.models.SensorValue;
 import org.tcontrol.service.models.User;
 import org.tcontrol.service.IStatisticsSaver;
-import org.tcontrol.sms.config.props.SensorConfig;
+import org.tcontrol.config.props.SensorConfig;
 
 import java.sql.Timestamp;
 import java.util.Date;

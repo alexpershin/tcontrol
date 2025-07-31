@@ -1,10 +1,12 @@
 import com.pi4j.io.gpio.Pin;
 import com.pi4j.io.gpio.PinState;
 import org.junit.jupiter.api.BeforeEach;
+import org.tcontrol.hardware.ITemperatureMonitor;
+import org.tcontrol.service.ITimer;
+import org.tcontrol.service.impl.Thermostat;
 import org.tcontrol.service.models.SensorValue;
-import org.tcontrol.sms.*;
-import org.tcontrol.sms.IVoltageMonitor;
-import org.tcontrol.sms.IVoltageMonitor.VoltageResult;
+import org.tcontrol.hardware.IVoltageMonitor;
+import org.tcontrol.hardware.IVoltageMonitor.VoltageResult;
 import org.tcontrol.sms.commands.CommandResult;
 import org.tcontrol.sms.commands.StatusCommand;
 import org.tcontrol.sms.config.props.SensorConfig;

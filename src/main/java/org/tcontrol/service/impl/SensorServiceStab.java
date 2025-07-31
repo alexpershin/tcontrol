@@ -6,8 +6,8 @@ import org.tcontrol.service.IStatisticsSaver;
 import org.tcontrol.service.models.Sensor;
 import org.tcontrol.service.models.SensorValue;
 import org.springframework.stereotype.Component;
-import org.tcontrol.sms.config.props.SensorConfig;
-import org.tcontrol.sms.config.props.SensorConfiguration;
+import org.tcontrol.config.props.SensorConfig;
+import org.tcontrol.config.props.SensorConfiguration;
 
 import javax.annotation.PostConstruct;
 import java.sql.Timestamp;

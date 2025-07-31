@@ -1,0 +1,9 @@
+package org.tcontrol.hardware;
+
+import org.tcontrol.service.models.SensorValue;
+
+import java.util.Map;
+
+public interface ITemperatureMonitor {
+    Map<String, SensorValue> getSensorValueMap();
+}

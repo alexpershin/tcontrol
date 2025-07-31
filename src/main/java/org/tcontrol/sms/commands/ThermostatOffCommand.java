@@ -4,10 +4,10 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
-import org.tcontrol.sms.handler.IRelayHandler;
+import org.tcontrol.handler.IRelayHandler;
 import org.tcontrol.sms.ISMSCommand;
-import org.tcontrol.sms.IThermostat;
-import org.tcontrol.sms.config.props.ThermostatConfig;
+import org.tcontrol.service.IThermostat;
+import org.tcontrol.config.props.ThermostatConfig;
 
 @Component
 @Slf4j

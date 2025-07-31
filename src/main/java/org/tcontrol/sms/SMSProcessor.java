@@ -8,7 +8,7 @@ import org.springframework.stereotype.Component;
 import org.tcontrol.sms.commands.CommandExecutor;
 import org.tcontrol.sms.commands.CommandResult;
 import org.tcontrol.sms.commands.STATUS;
-import org.tcontrol.sms.config.props.SMSConfig;
+import org.tcontrol.config.props.SMSConfig;
 
 import java.io.IOException;
 import java.nio.charset.Charset;

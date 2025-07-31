@@ -3,6 +3,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.support.AnnotationConfigContextLoader;
+import org.tcontrol.service.IThermostat;
 import org.tcontrol.sms.*;
 import org.tcontrol.sms.commands.CommandResult;
 import org.tcontrol.sms.commands.HeatingOffCommand;

@@ -3,8 +3,11 @@ import com.pi4j.io.gpio.PinState;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.tcontrol.hardware.ITemperatureMonitor;
+import org.tcontrol.service.IThermostat;
+import org.tcontrol.service.ITimer;
+import org.tcontrol.service.impl.Thermostat;
 import org.tcontrol.service.models.SensorValue;
-import org.tcontrol.sms.*;
 import org.tcontrol.sms.config.props.SensorConfig;
 import org.tcontrol.sms.config.props.SensorConfiguration;
 import org.tcontrol.sms.config.props.ThermostatConfig;
@@ -102,9 +105,9 @@ public class CommandConfiguration {
   @Bean
   @Qualifier("thermostatElectro")
   public IThermostat thermostat(ThermostatConfig thermostatConfig,
-      ITemperatureMonitor temperatureMonitor,
-      IRelayHandler relayHandler,
-      ITimer timer) {
+                                ITemperatureMonitor temperatureMonitor,
+                                IRelayHandler relayHandler,
+                                ITimer timer) {
     return new Thermostat(
         thermostatConfig,
         temperatureMonitor,

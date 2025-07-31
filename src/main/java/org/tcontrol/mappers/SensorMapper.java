@@ -3,7 +3,7 @@ package org.tcontrol.mappers;
 import org.mapstruct.Mapper;
 import org.mapstruct.ReportingPolicy;
 import org.tcontrol.service.models.Sensor;
-import org.tcontrol.sms.config.props.SensorConfiguration;
+import org.tcontrol.config.props.SensorConfiguration;
 
 @Mapper(componentModel = "spring",
         unmappedTargetPolicy = ReportingPolicy.IGNORE)

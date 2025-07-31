@@ -72,7 +72,7 @@ public class SensorServiceStab extends SensorServiceImpl {
 
         sensorConfig.setSensors(sensors);
 
-        final Timestamp timestamp = new Timestamp(new Date().getTime());
+        final long timestamp = System.currentTimeMillis();
         List<SensorValue> sensorValues = Arrays.asList(
                 new SensorValue(1, "s1", timestamp, 25.5),
                 new SensorValue(2, "s2", timestamp, -22.6),

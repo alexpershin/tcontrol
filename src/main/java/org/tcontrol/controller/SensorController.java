@@ -20,10 +20,8 @@ import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import org.springframework.web.server.ResponseStatusException;
 
 import javax.annotation.PostConstruct;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
+import java.sql.Timestamp;
+import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -99,6 +97,7 @@ public class SensorController {
     public SensorValuesResult getSensorValues() throws SensorServiceException {
         log.info("get values");
         SensorValuesResult result = new SensorValuesResult();
+        result.setTime(System.currentTimeMillis());
         List<SensorValue> values = sensorService.getCurrentValues(CURRENT_USER_ID, null);
         List<SensorValueDto> webValues = convertSensorValuesToWeb(values);
         result.setValues(webValues.toArray(new SensorValueDto[]{}));
@@ -196,7 +195,7 @@ public class SensorController {
 
             SensorValueDto webValue = new SensorValueDto(
                     value.getSensorId(),
-                    value.getTimestamp().getTime(),
+                    value.getTimestamp(),
                     value.getValue(),
                     calculateSate(value, sensor),
                     value.getGradient()

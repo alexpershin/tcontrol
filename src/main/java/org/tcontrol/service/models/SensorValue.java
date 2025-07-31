@@ -19,7 +19,7 @@ public class SensorValue {
     private int sensorId;
     private String pin;
     private String sensorCode;
-    private Timestamp timestamp;
+    private long timestamp;
     private double value;
     private Double gradient;
     /**
@@ -32,7 +32,7 @@ public class SensorValue {
      */
     private SensorState state;
 
-    public SensorValue(int sensorId, String sensorCode, Timestamp timestamp,
+    public SensorValue(int sensorId, String sensorCode, Long timestamp,
             double value) {
         this.sensorId = sensorId;
         this.sensorCode = sensorCode;
@@ -43,7 +43,7 @@ public class SensorValue {
     public SensorValue(int sensorId, long time,
             double value) {
         this.sensorId = sensorId;
-        this.timestamp = new Timestamp(time);
+        this.timestamp = time;
         this.value = value;
     }
 
@@ -54,7 +54,7 @@ public class SensorValue {
     public SensorValue(String sensorCode, long time,
                        double value) {
         this.sensorCode = sensorCode;
-        this.timestamp = new Timestamp(time);
+        this.timestamp = time;
         this.value = value;
     }
 
@@ -62,7 +62,7 @@ public class SensorValue {
                        double value) {
         this.sensorId = sensorId;
         this.sensorCode = sensorCode;
-        this.timestamp = new Timestamp(time);
+        this.timestamp = time;
         this.value = value;
     }
 

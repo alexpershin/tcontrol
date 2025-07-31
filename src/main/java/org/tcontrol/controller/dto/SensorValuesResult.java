@@ -11,4 +11,5 @@ import lombok.Setter;
 public class SensorValuesResult {
 
     private SensorValueDto[] values;
+    private long time;
 }

@@ -77,7 +77,7 @@ public class RelayHandler implements IRelayHandler {
             sensorValue.setSensorId(relayPinConfig.getPinId());
             sensorValue.setSensorCode(relayPinConfig.getName());
             sensorValue.setPin(controlPin.getName());
-            sensorValue.setTimestamp(new Timestamp(System.currentTimeMillis()));
+            sensorValue.setTimestamp(System.currentTimeMillis());
 
             // turn off/heatingOn gpio pin #17
             if (pinState.isLow()) {

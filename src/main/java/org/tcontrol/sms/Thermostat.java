@@ -2,6 +2,7 @@ package org.tcontrol.sms;
 
 import com.pi4j.io.gpio.PinState;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.tcontrol.service.models.SensorValue;
@@ -14,6 +15,7 @@ import java.time.LocalTime;
 import java.util.List;
 
 @Slf4j
+@RequiredArgsConstructor
 public class Thermostat implements IThermostat {
 
     private final ThermostatConfig thermostatConfig;
@@ -37,20 +39,6 @@ public class Thermostat implements IThermostat {
     float mediumT;
 
     private boolean firstTime = true;
-
-    public Thermostat(ThermostatConfig thermostatConfig,
-                      ITemperatureMonitor temperatureMonitor,
-                      IRelayHandler relayHandler,
-                      ITimer timer,
-                      String name
-    ) {
-        this.thermostatConfig = thermostatConfig;
-        this.temperatureMonitor = temperatureMonitor;
-        this.relayHandler = relayHandler;
-        this.timer = timer;
-        this.name = name;
-    }
-
 
     @Override
     @Scheduled(cron = "${thermostat.schedule}")

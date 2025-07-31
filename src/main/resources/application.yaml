@@ -85,6 +85,24 @@ sensor-config:
       lowThreshold: 8.0
       highThreshold: 30.0
       thresholdLag: 1.0
+    - id: 7
+      code: '0'
+      name: electricity
+      type: VOLTAGE
+      userName: сеть
+      description: 'Электричество 220в'
+      lowThreshold: 180
+      highThreshold: 250
+      thresholdLag: 10
+    - id: 8
+      code: '1'
+      name: battery
+      type: VOLTAGE
+      userName: батарея
+      description: 'Батарея 12в'
+      lowThreshold: 11.5
+      highThreshold: 15.0
+      thresholdLag: 0.5
 
 sms-config:
   inputFolder: /var/spool/gammu/inbox
@@ -151,10 +169,10 @@ thermostat-electro:
 voltage-monitor:
   schedule: '0/30 * * * * ?'
   pins:
-    - id: 0
+    - code: 0
       ratio: 0.021788
       unit: V
-    - id: 1
+    - code: 1
       ratio: 0.33190
       unit: V
 

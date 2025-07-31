@@ -44,15 +44,17 @@ public class SensorServiceImpl implements SensorService {
 
     @Override
     public List<SensorValue> getCurrentValues(int userId, java.sql.Date date) {
-        Timestamp timestamp = new Timestamp(new Date().getTime());
         return sensorLastDataSaver.currentValues().values().stream()
                 .map(SensorValue::getSensorCode)
                 .map(sensorCode -> sensorConfig.getSensors().stream()
                         .filter(sensor -> sensor.getCode().equals(sensorCode)).findFirst()
                 ).filter(Optional::isPresent)
                 .map(Optional::get)
-                .map(sc -> new SensorValue(sc.getId(), sc.getCode(), timestamp,
-                        sensorLastDataSaver.currentValues().get(sc.getId()).getValue()))
+                .map(sc ->{
+                    SensorValue sensorValue = sensorLastDataSaver.currentValues().get(sc.getId());
+                    return new SensorValue(sc.getId(), sc.getCode(), sensorValue.getTimestamp(),
+                        sensorValue.getValue());
+                })
                 .collect(Collectors.toList());
     }
 

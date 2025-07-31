@@ -15,7 +15,7 @@ public class VoltageMonitorConfig {
     @RequiredArgsConstructor
     public static class PinConfiguration
     {
-        private int id;
+        private int code;
         private double ratio;
         private int precision;
         private String unit;

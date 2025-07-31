@@ -41,6 +41,11 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
+import org.tcontrol.service.IStatisticsSaver;
+import org.tcontrol.service.impl.CSVStatisticSaver;
+import org.tcontrol.service.models.SensorValue;
+import org.tcontrol.sms.config.props.SensorConfig;
+import org.tcontrol.sms.config.props.SensorConfiguration;
 import org.tcontrol.sms.config.props.VoltageMonitorConfig;
 import org.tcontrol.sms.config.props.VoltageMonitorConfig.PinConfiguration;
 
@@ -64,6 +69,12 @@ public class VoltageMonitor implements IVoltageMonitor {
     private AdcGpioProvider provider;
 
     private GpioPinAnalogInput[] inputs;
+
+    private final CSVStatisticSaver csvWriter;
+
+    private final IStatisticsSaver sensorLastDataSaver;
+
+    private final SensorConfig sensorConfig;
 
     private List<VoltageResult> voltageResults = new ArrayList<>();
 
@@ -104,11 +115,12 @@ public class VoltageMonitor implements IVoltageMonitor {
         log.info("MCP3008 ADC:");
         if (provider != null) {
             voltageResults.clear();
+            List<SensorValue> values = new ArrayList<>();
             // Print current analog input conversion values from each input channel
             for (GpioPinAnalogInput input : inputs) {
                 Optional<PinConfiguration> pin =
                         voltageMonitorConfig.getPins().stream()
-                                .filter(p -> p.getId() == input.getPin().getAddress()).findFirst();
+                                .filter(p -> p.getCode() == input.getPin().getAddress()).findFirst();
                 double ratio = pin.map(PinConfiguration::getRatio).orElse(1.0);
                 String unit = pin.isPresent() ? pin.get().getUnit() : "";
                 double value = input.getValue() * ratio * 10;
@@ -118,7 +130,30 @@ public class VoltageMonitor implements IVoltageMonitor {
                         RoundingMode.HALF_UP).doubleValue() / 10;
                 voltageResults.add(new VoltageResult(input.getName(), value, unit));
                 log.info(">" + input.getName() + ": " + value + " " + unit);
+
+                if (pin.isPresent()) {
+                    Optional<SensorConfiguration> sensorConfigurationOptional =
+                            sensorConfig.getSensors()
+                                    .stream()
+                                    .filter(sensor -> sensor.getCode().equals(pin.get().getCode()))
+                                    .findFirst();
+                    if (sensorConfigurationOptional.isPresent()) {
+                        SensorConfiguration sensorConfiguration = sensorConfigurationOptional.get();
+                        values.add(new SensorValue(
+                                sensorConfiguration.getId(),
+                                sensorConfiguration.getCode(),
+                                System.currentTimeMillis(),
+                                value));
+                    } else {
+                        log.error("Incorrect config: sensors not found by code:{}", pin.get().getCode());
+                    }
+                } else {
+                    log.error("Incorrect pin: {}", input.getPin().getAddress());
+                }
+
             }
+            csvWriter.write(values);
+            sensorLastDataSaver.write(values);
         }
     }
 

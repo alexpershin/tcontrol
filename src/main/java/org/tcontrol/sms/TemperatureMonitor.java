@@ -24,7 +24,7 @@ public class TemperatureMonitor implements ITemperatureMonitor {
 
     private final ITemperatureReader temperatureReader;
 
-    private final SensorConfig config;
+    private final SensorConfig sensorConfig;
 
     private final CSVStatisticSaver csvWriter;
 
@@ -35,7 +35,7 @@ public class TemperatureMonitor implements ITemperatureMonitor {
         log.info("Reading temperature sensors...");
 
         int successCount = 0;
-        List<SensorConfiguration> sensors = config.getSensors();
+        List<SensorConfiguration> sensors = sensorConfig.getSensors();
         List<SensorValue> values = new ArrayList<>();
         for (SensorConfiguration sensor : sensors) {
             try {
@@ -52,7 +52,6 @@ public class TemperatureMonitor implements ITemperatureMonitor {
             }
         }
         csvWriter.write(values);
-
         sensorLastDataSaver.write(values);
 
         log.info("Reading temperature completed(read {} sensors)", successCount);

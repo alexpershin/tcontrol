@@ -171,9 +171,10 @@ public class AppConfig {
     public IOnOffHandler electricHeatingOnOfHandler(
             final OnOfHandlerConfig onOfHandlerConfig,
             final RelayPinsConfig relayPinsConfig,
-            final IRelayHandler relayHandler
+            final IRelayHandler relayHandler,
+            final IThermostat thermostatElectro
     ){
-        return new OnOffHandler(onOfHandlerConfig, relayPinsConfig, relayHandler);
+        return new OnOffHandler(onOfHandlerConfig, relayPinsConfig, relayHandler, thermostatElectro);
     }
 
 }

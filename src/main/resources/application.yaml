@@ -104,7 +104,7 @@ sensor-config:
       highThreshold: 250
       thresholdLag: 10
     - id: 9
-      code: '1'
+      code: '100'
       name: electricHeater
       type: ON_OFF
       userName: "Электрокотел"

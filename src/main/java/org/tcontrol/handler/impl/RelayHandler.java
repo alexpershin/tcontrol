@@ -91,6 +91,7 @@ public class RelayHandler implements IRelayHandler {
             csvStatisticSaver.write(values);
             sensorLastDataSaver.write(values);
 
+            log.info("Now {} state is: {} ", pin.getName(), pin.getState());
             return pin.getState();
         } else {
             log.error("Configuration for pin: {} not found!", controlPin.getName());

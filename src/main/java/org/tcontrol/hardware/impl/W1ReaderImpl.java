@@ -1,4 +1,4 @@
-package org.tcontrol.service.impl;
+package org.tcontrol.hardware.impl;
 
 import com.pi4j.component.temperature.TemperatureSensor;
 import com.pi4j.component.temperature.impl.TmpDS18B20DeviceType;
@@ -7,7 +7,7 @@ import com.pi4j.io.w1.W1Master;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
-import org.tcontrol.service.W1Reader;
+import org.tcontrol.hardware.W1Reader;
 
 import javax.annotation.PostConstruct;
 import java.io.IOException;

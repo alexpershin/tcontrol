@@ -1,4 +1,4 @@
-package org.tcontrol.service;
+package org.tcontrol.hardware;
 
 public interface W1Reader {
     void read();

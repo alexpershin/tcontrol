@@ -1,5 +1,6 @@
 package org.tcontrol.config.props;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 
@@ -13,6 +14,7 @@ public class RelayPinsConfig {
 
     @Data
     @RequiredArgsConstructor
+    @AllArgsConstructor
     public static class RelayPinConfig {
         private int pinId;
         private String pin;

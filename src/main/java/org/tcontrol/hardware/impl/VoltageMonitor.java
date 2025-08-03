@@ -137,7 +137,7 @@ public class VoltageMonitor implements IVoltageMonitor {
                     Optional<SensorConfiguration> sensorConfigurationOptional =
                             sensorConfig.getSensors()
                                     .stream()
-                                    .filter(sensor -> sensor.getCode().equals(Integer.valueOf(code).toString()))
+                                    .filter(sensor -> sensor.getCode().equals(String.valueOf(code)))
                                     .findFirst();
                     if (sensorConfigurationOptional.isPresent()) {
                         SensorConfiguration sensorConfiguration = sensorConfigurationOptional.get();
@@ -156,6 +156,8 @@ public class VoltageMonitor implements IVoltageMonitor {
             }
             csvWriter.write(values);
             sensorLastDataSaver.write(values);
+        } else {
+            log.error("Voltage provader was not initialized");
         }
     }
 

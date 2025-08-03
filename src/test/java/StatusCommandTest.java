@@ -16,10 +16,7 @@ import org.tcontrol.config.props.ThermostatConfig;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import org.junit.jupiter.api.Test;
 import org.tcontrol.handler.IRelayHandler;
@@ -51,41 +48,49 @@ public class StatusCommandTest {
 
   @BeforeEach
   public void before() {
-    thermostatConfig = new ThermostatConfig();
+    thermostatConfig = ThermostatConfig.builder().build();
     thermostatConfig.setDelta(0.5f);
     thermostatConfig.setNightBegin(60 * 60 * 23);
     thermostatConfig.setNightEnd(60 * 60 * 7);
     thermostatConfig.setSensor(SENSOR_CODE);
     thermostatConfig.setTDay(12.0f);
     thermostatConfig.setTNight(16.0f);
+    thermostatConfig.setRelayPins(new ArrayList<>());
     thermostatConfig.getRelayPins().add(GPIO_00);
+    thermostatConfig.postConstruct();
 
-    thermostatConfig2 = new ThermostatConfig();
+    thermostatConfig2 =  ThermostatConfig.builder().build();
     thermostatConfig2.setDelta(0.5f);
     thermostatConfig2.setNightBegin(60 * 60 * 23);
     thermostatConfig2.setNightEnd(60 * 60 * 7);
     thermostatConfig2.setSensor(SENSOR_CODE);
     thermostatConfig2.setTDay(18.0f);
     thermostatConfig2.setTNight(20.0f);
+    thermostatConfig2.setRelayPins(new ArrayList<>());
     thermostatConfig2.getRelayPins().add(GPIO_01);
+    thermostatConfig2.postConstruct();
 
-    thermostatConfig3 = new ThermostatConfig();
+    thermostatConfig3 =  ThermostatConfig.builder().build();
     thermostatConfig3.setDelta(0.5f);
     thermostatConfig3.setNightBegin(60 * 60 * 23);
     thermostatConfig3.setNightEnd(60 * 60 * 7);
     thermostatConfig3.setSensor(SENSOR_CODE);
     thermostatConfig3.setTDay(17.0f);
     thermostatConfig3.setTNight(18.0f);
+    thermostatConfig3.setRelayPins(new ArrayList<>());
     thermostatConfig3.getRelayPins().add(GPIO_02);
+    thermostatConfig3.postConstruct();
 
-    thermostatConfig4 = new ThermostatConfig();
+    thermostatConfig4 =  ThermostatConfig.builder().build();
     thermostatConfig4.setDelta(0.5f);
     thermostatConfig4.setNightBegin(60 * 60 * 23);
     thermostatConfig4.setNightEnd(60 * 60 * 7);
     thermostatConfig4.setSensor(SENSOR_CODE);
     thermostatConfig4.setTDay(17.0f);
     thermostatConfig4.setTNight(18.0f);
+    thermostatConfig4.setRelayPins(new ArrayList<>());
     thermostatConfig4.getRelayPins().add(GPIO_03);
+    thermostatConfig4.postConstruct();
 
     temperatureMonitor = new ITemperatureMonitor() {
 
@@ -145,6 +150,7 @@ public class StatusCommandTest {
         timer,
         "termo1"
     );
+    thermostat1.postConstruct();
 
     thermostat2 = new Thermostat(
         thermostatConfig2,
@@ -153,6 +159,7 @@ public class StatusCommandTest {
         timer,
         "termo2"
     );
+    thermostat2.postConstruct();
 
     thermostat3 = new Thermostat(
         thermostatConfig3,
@@ -161,6 +168,7 @@ public class StatusCommandTest {
         timer,
         "termo3"
     );
+    thermostat3.postConstruct();
 
     thermostat4 = new Thermostat(
         thermostatConfig4,
@@ -169,6 +177,7 @@ public class StatusCommandTest {
         timer,
         "termo4"
     );
+    thermostat4.postConstruct();
 
     sensorConfig = new SensorConfig();
 
@@ -178,7 +187,7 @@ public class StatusCommandTest {
 
     sensorConfig.setSensors(Collections.singletonList(sensorConfiguration));
 
-    final IVoltageMonitor voltageMonitor = ()-> List.of(new VoltageResult("socket", 220.1, "V"));
+    final IVoltageMonitor voltageMonitor = ()-> Collections.singletonList(new VoltageResult("socket", 220.1, "V"));
 
     statusCommand = new StatusCommand(temperatureMonitor, sensorConfig,
             relayHandler, thermostat1, thermostat2, thermostat3, thermostat4, voltageMonitor);

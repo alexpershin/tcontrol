@@ -126,7 +126,7 @@ public interface SensorService {
      */
     List<SensorValue> getPrevSensorValues(final int userId, Date date, final int sensorId);
 
-    int startProcess(int sensorId);
+    int startHeating(int sensorId, float temperature) ;
 
-    int stopProcess(int sensorId);
+    int stopHeating(int sensorId) ;
 }

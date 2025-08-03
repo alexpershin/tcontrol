@@ -38,37 +38,37 @@ public class AppConfig {
     @Bean
     @ConfigurationProperties(prefix = "thermostat-electro")
     public ThermostatConfig thermostatElectroConfig() {
-        return new ThermostatConfig();
+        return ThermostatConfig.builder().build();
     }
 
     @Bean
     @ConfigurationProperties(prefix = "thermostat-gas")
     public ThermostatConfig thermostatGasConfig() {
-        return new ThermostatConfig();
+        return ThermostatConfig.builder().build();
     }
 
     @Bean
     @ConfigurationProperties(prefix = "thermostat-veranda")
     public ThermostatConfig thermostatVerandaConfig() {
-        return new ThermostatConfig();
+        return ThermostatConfig.builder().build();
     }
 
     @Bean
     @ConfigurationProperties(prefix = "thermostat-veranda-em")
     public ThermostatConfig thermostatVerandaEmConfig() {
-        return new ThermostatConfig();
+        return ThermostatConfig.builder().build();
     }
 
     @Bean
     @ConfigurationProperties(prefix = "thermostat-my-room")
     public ThermostatConfig thermostatMyRoomConfig() {
-        return new ThermostatConfig();
+        return ThermostatConfig.builder().build();
     }
 
     @Bean
     @ConfigurationProperties(prefix = "thermostat-hot-watter")
     public ThermostatConfig thermostatHotWatterConfig() {
-        return new ThermostatConfig();
+        return ThermostatConfig.builder().build();
     }
 
     @Bean

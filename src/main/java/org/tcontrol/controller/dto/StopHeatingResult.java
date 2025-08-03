@@ -10,7 +10,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @AllArgsConstructor
-public class StopProcessRequest {
-    private int sensorId;
-    private SensorValueDto.SensorValueState state;
+public class StopHeatingResult {
+    private Integer value;
+    private String status;
 }

@@ -1,5 +1,7 @@
 package org.tcontrol.service;
 
+import org.tcontrol.service.impl.Thermostat;
+
 import java.util.List;
 
 public interface IThermostat {
@@ -12,9 +14,13 @@ public interface IThermostat {
 
   float getMediumT();
 
-  void changeOn(boolean v);
+  Thermostat on(Float temperature);
+
+  Thermostat off();
 
   List<String> getHeatingPins();
 
   String getName();
+
+  String getSensorCode();
 }

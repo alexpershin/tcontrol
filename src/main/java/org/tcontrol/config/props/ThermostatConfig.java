@@ -2,7 +2,9 @@ package org.tcontrol.config.props;
 
 import com.pi4j.io.gpio.Pin;
 import com.pi4j.io.gpio.RaspiPin;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 
 import javax.annotation.PostConstruct;
@@ -13,7 +15,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Data
-@RequiredArgsConstructor
+@Builder(toBuilder = true)
 public class ThermostatConfig {
 
   private float tDay;
@@ -22,7 +24,7 @@ public class ThermostatConfig {
   private int nightBegin;
   private int nightEnd;
   private String sensor;
-  private List<String> relayPins =  new ArrayList<>();
+  private List<String> relayPins;
 
   @PostConstruct
   public void postConstruct() {

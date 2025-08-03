@@ -14,7 +14,7 @@ import org.tcontrol.handler.IRelayHandler;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-@ContextConfiguration(classes=CommandConfiguration.class, loader= AnnotationConfigContextLoader.class)
+@ContextConfiguration(classes = CommandConfiguration.class, loader = AnnotationConfigContextLoader.class)
 @SpringBootTest
 public class HeatingOnOffCommandsTest {
     @Autowired
@@ -24,48 +24,40 @@ public class HeatingOnOffCommandsTest {
     private IRelayHandler relayHandler;
 
     @Test
-    public void thermostatWasOnTest(){
-        HeatingOnCommand heatingOnCommand =
-                new HeatingOnCommand(relayHandler, thermostat);
-        ISMSCommand heatingOffCommand =
-                new HeatingOffCommand(relayHandler, thermostat, heatingOnCommand);
+    public void thermostatWasOnTest() {
+        HeatingOnCommand heatingOnCommand = new HeatingOnCommand(thermostat);
+        ISMSCommand heatingOffCommand = new HeatingOffCommand(thermostat);
 
-        thermostat.changeOn(true);
         assertTrue(thermostat.isOn());
+        assertFalse(thermostat.isHeatingOn());
 
         CommandResult result = heatingOnCommand.run();
         assertNotNull(result);
+        assertTrue(thermostat.isOn());
+        assertFalse(thermostat.isHeatingOn());
 
-        assertFalse(thermostat.isOn());
-
-        result = heatingOffCommand.run();
-        assertNotNull(result);
+        thermostat.checkTemperature();
 
         assertTrue(thermostat.isOn());
+        assertTrue(thermostat.isHeatingOn());
 
-        thermostat.changeOn(false);
+        heatingOffCommand.run();
+        assertFalse(thermostat.isOn());
     }
 
     @Test
-    public void thermostatWasOffTest(){
+    public void thermostatWasOffTest() {
 
-        HeatingOnCommand heatingOnCommand =
-                new HeatingOnCommand(relayHandler, thermostat);
+        HeatingOnCommand heatingOnCommand = new HeatingOnCommand(thermostat);
 
-        ISMSCommand heatingOffCommand =
-                new HeatingOffCommand(relayHandler, thermostat, heatingOnCommand);
+        thermostat.off();
+        thermostat.checkTemperature();
 
-        thermostat.changeOn(false);
         assertFalse(thermostat.isOn());
 
         CommandResult result = heatingOnCommand.run();
         assertNotNull(result);
 
-        assertFalse(thermostat.isOn());
-
-        result = heatingOffCommand.run();
-        assertNotNull(result);
-
-        assertFalse(thermostat.isOn());
+        assertTrue(thermostat.isOn());
     }
 }

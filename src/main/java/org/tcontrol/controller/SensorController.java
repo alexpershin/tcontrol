@@ -18,9 +18,9 @@ import org.springframework.http.ResponseEntity;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import org.springframework.web.server.ResponseStatusException;
+import org.springframework.web.bind.annotation.RequestBody;
 
 import javax.annotation.PostConstruct;
-import java.sql.Timestamp;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -141,21 +141,35 @@ public class SensorController {
 
     @PostMapping("/start_process")
     @CrossOrigin(origins = {"http://localhost:8090", "http://localhost"})
-    public ResponseEntity<StartProcessResult> startProcess(StartProcessRequest processChangeRequest) throws InterruptedException {
-        log.info("start process for sensor {}: {}", processChangeRequest.getSensorId(), processChangeRequest.getState());
+    @Operation(summary = "Старт отопления",
+            description = "Старт отопления",
+            responses = { @ApiResponse(responseCode = "" + HTTP_BAD_REQUEST, content = @Content(mediaType = "application/json"))
+            },
+            requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
+                    description = "Тело запроса для старта отопления", required = true)
+    )
+    public ResponseEntity<StartHeatingResult> startProcess(@RequestBody final StartHeatingRequest processChangeRequest) throws InterruptedException {
+        log.info("start process for sensor {}: {}", processChangeRequest.getSensorId(), processChangeRequest.getNewValue());
         Thread.sleep(1000);
-        int result = sensorService.startProcess(processChangeRequest.getSensorId());
-        return new ResponseEntity<>(new StartProcessResult(result == -1 ? null : result, "ok"),
+        int result = sensorService.startHeating(processChangeRequest.getSensorId(), processChangeRequest.getNewValue());
+        return new ResponseEntity<>(new StartHeatingResult(result == -1 ? null : result, "ok"),
                 result == -1 ? HttpStatus.INTERNAL_SERVER_ERROR : HttpStatus.OK);
     }
 
     @PostMapping("/stop_process")
     @CrossOrigin(origins = {"http://localhost:8090", "http://localhost"})
-    public ResponseEntity<StopProcessResult> stopProcess(StopProcessRequest processChangeRequest) throws InterruptedException {
-        log.info("stop process for sensor {}: {}", processChangeRequest.getSensorId(), processChangeRequest.getState());
+    @Operation(summary = "Останов отопления",
+            description = "Останов отопления",
+            responses = { @ApiResponse(responseCode = "" + HTTP_BAD_REQUEST, content = @Content(mediaType = "application/json"))
+            },
+            requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
+                    description = "Тело запроса для останова отопления", required = true)
+    )
+    public ResponseEntity<StopHeatingResult> stopProcess(@RequestBody final StopHeatingRequest processChangeRequest) throws InterruptedException {
+        log.info("stop process for sensor {}", processChangeRequest.getSensorId());
         Thread.sleep(1000);
-        int result = sensorService.stopProcess(processChangeRequest.getSensorId());
-        return new ResponseEntity<>(new StopProcessResult(result == -1 ? null : result, "ok"),
+        int result = sensorService.stopHeating(processChangeRequest.getSensorId());
+        return new ResponseEntity<>(new StopHeatingResult(result == -1 ? null : result, "ok"),
                 result == -1 ? HttpStatus.INTERNAL_SERVER_ERROR : HttpStatus.OK);
     }
 

@@ -9,7 +9,9 @@ import org.tcontrol.config.props.RelayPinsConfig;
 import org.tcontrol.handler.IOnOffHandler;
 import org.tcontrol.handler.IRelayHandler;
 import org.tcontrol.service.IThermostat;
+import org.tcontrol.service.SensorServiceException;
 
+import java.text.MessageFormat;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -29,7 +31,7 @@ public class OnOffHandler implements IOnOffHandler {
                 .filter(Objects::nonNull)
                 .map(PinState::isHigh).map(e->{
                     if(e){
-                        thermostat.changeOn(false);
+                        thermostat.off();
                     }
                     return e;
                 })
@@ -43,7 +45,7 @@ public class OnOffHandler implements IOnOffHandler {
                 .map(PinState::isHigh)
                 .map(e->{
                     if(e){
-                        thermostat.changeOn(true);
+                        thermostat.off();
                     }
                     return e;
                 })
@@ -57,7 +59,7 @@ public class OnOffHandler implements IOnOffHandler {
                 .map(RelayPinsConfig.RelayPinConfig::getPin)
                 .findFirst()
                 .map(RaspiPin::getPinByName)
-                .orElse(null);
+                .orElseThrow(()->new SensorServiceException(MessageFormat.format("Pin config not found by id: {0}", onOfHandlerConfig.getPinId())));
     }
 
     @Override

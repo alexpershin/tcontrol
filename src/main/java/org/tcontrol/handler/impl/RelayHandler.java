@@ -4,6 +4,8 @@ import com.pi4j.io.gpio.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.tcontrol.config.props.SensorConfig;
+import org.tcontrol.config.props.SensorConfiguration;
 import org.tcontrol.service.IPinFactory;
 import org.tcontrol.service.IStatisticsSaver;
 import org.tcontrol.service.models.SensorValue;
@@ -28,6 +30,8 @@ public class RelayHandler implements IRelayHandler {
     private final IPinFactory pinFactory;
 
     private final RelayPinsConfig relayPinsConfig;
+
+    private final SensorConfig sensorConfig;
 
     @PostConstruct
     void init() {
@@ -70,11 +74,20 @@ public class RelayHandler implements IRelayHandler {
         Optional<RelayPinsConfig.RelayPinConfig> relayPinConfigOptional =
                 relayPinsConfig.getPins().stream()
                         .filter(p -> p.getPin().equals(controlPin.getName()))
-                        .findFirst();
+                        .findAny();
+
         if (relayPinConfigOptional.isPresent()) {
             RelayPinsConfig.RelayPinConfig relayPinConfig = relayPinConfigOptional.get();
-            sensorValue.setSensorId(relayPinConfig.getPinId());
-            sensorValue.setSensorCode(relayPinConfig.getName());
+            Optional<SensorConfiguration> sensorConfigurationOptional =
+                    sensorConfig.getSensors()
+                            .stream()
+                            .filter(sensor -> sensor.getCode().equals(String.valueOf(relayPinConfig.getPinId())))
+                            .findAny();
+
+            sensorValue.setSensorId(sensorConfigurationOptional.map(SensorConfiguration::getId)
+                    .orElseGet(relayPinConfig::getPinId));
+
+            sensorValue.setSensorCode(String.valueOf(relayPinConfig.getPinId()));
             sensorValue.setPin(controlPin.getName());
             sensorValue.setTimestamp(System.currentTimeMillis());
 

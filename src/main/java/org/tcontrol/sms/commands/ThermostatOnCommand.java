@@ -7,6 +7,8 @@ import org.springframework.stereotype.Component;
 import org.tcontrol.sms.ISMSCommand;
 import org.tcontrol.service.IThermostat;
 
+import static org.tcontrol.service.impl.Thermostat.TEMPERATURE_MAX_ON;
+
 @Component
 @Slf4j
 @Qualifier("thermostatOnCommand")
@@ -18,9 +20,9 @@ public class ThermostatOnCommand implements ISMSCommand {
     @Override
     public CommandResult run() {
 
-        thermostatElectro.changeOn(true);
+        thermostatElectro.on(TEMPERATURE_MAX_ON);
 
         log.info("Executed");
-        return new CommandResult(STATUS.OK, "Termostat is on");
+        return new CommandResult(STATUS.OK, "Thermostat is on");
     }
 }

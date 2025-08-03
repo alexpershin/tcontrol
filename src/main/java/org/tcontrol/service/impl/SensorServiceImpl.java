@@ -4,17 +4,18 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
-import org.tcontrol.handler.IOnOffHandler;
+import org.tcontrol.config.props.RelayPinsConfig;
 import org.tcontrol.mappers.SensorMapper;
+import org.tcontrol.service.IThermostat;
 import org.tcontrol.service.SensorService;
+import org.tcontrol.service.SensorServiceException;
 import org.tcontrol.service.models.Sensor;
 import org.tcontrol.service.models.SensorValue;
 import org.tcontrol.service.models.User;
 import org.tcontrol.service.IStatisticsSaver;
 import org.tcontrol.config.props.SensorConfig;
 
-import java.sql.Timestamp;
-import java.util.Date;
+import java.text.MessageFormat;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -30,9 +31,10 @@ import java.util.stream.Collectors;
 public class SensorServiceImpl implements SensorService {
 
     protected final SensorConfig sensorConfig;
+    private final RelayPinsConfig relayPinsConfig;
     protected final IStatisticsSaver sensorLastDataSaver;
     protected final SensorMapper sensorMapper;
-    protected final List<IOnOffHandler> onOffHandlers;
+    protected final List<IThermostat> thermostats;
 
     @Override
     public Map<Integer, Sensor> getAllSensors() {
@@ -76,29 +78,33 @@ public class SensorServiceImpl implements SensorService {
     }
 
     @Override
-    public int startProcess(int sensorId) {
-        Optional<IOnOffHandler> onOffHandlerOptional
-                = onOffHandlers.stream().filter(h -> h.sensorId() == sensorId).findFirst();
-        if (onOffHandlerOptional.isPresent()) {
-            return onOffHandlerOptional.get().turnOnRelay() ? 1 : 0;
-        } else {
-            log.error("onOffHandler is not found by id: {}", sensorId);
-            return -1;
-        }
+    public int startHeating(int sensorId, float temperature) throws SensorServiceException {
+        thermostat(sensorId).on(temperature).checkTemperature();
+        return 1;
     }
 
     @Override
-    public int stopProcess(int sensorId) {
-        Optional<IOnOffHandler> onOffHandlerOptional
-                = onOffHandlers.stream().filter(h -> h.sensorId() == sensorId).findFirst();
-        if (onOffHandlerOptional.isPresent()) {
-            return onOffHandlerOptional.get().turnOffRelay() ? 1 : 0;
-        } else {
-            log.error("onOffHandler is not found by id: {}", sensorId);
-            return -1;
-        }
+    public int stopHeating(int sensorId) throws SensorServiceException {
+        thermostat(sensorId).off().checkTemperature();
+        return 1;
     }
 
+    private IThermostat thermostat(int sensorId) {
+        return sensorConfig.getSensors()
+                .stream()
+                .filter(sensor -> sensor.getId() == sensorId)
+                .findFirst().map(sc -> relayPinsConfig.getPins().stream()
+                        .filter(r -> String.valueOf(r.getPinId()).equals(sc.getCode()))
+                        .findFirst()
+                        .orElseThrow(() -> new SensorServiceException(MessageFormat.format("Relay pin not found by sensorCode: {0}", sc.getCode())))
+                )
+                .map(r -> thermostats.stream()
+                        .filter(t -> t.getHeatingPins().contains(r.getPin()))
+                        .findFirst()
+                        .orElseThrow(() -> new SensorServiceException(MessageFormat.format("Thermostat not found by pin: {0}", r.getPin())))
+                )
+                .orElseThrow(() -> new SensorServiceException(MessageFormat.format("SensorConfig not found by sensorId: {0}", sensorId)));
+    }
 
     @Override
     public void addValues(List<SensorValue> values) {

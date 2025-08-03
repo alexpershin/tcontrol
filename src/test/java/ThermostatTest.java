@@ -12,10 +12,12 @@ import org.tcontrol.config.props.ThermostatConfig;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
 import org.junit.jupiter.api.Test;
+
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -32,13 +34,14 @@ public class ThermostatTest {
 
     @BeforeEach
     public void before() {
-        thermostatConfig = new ThermostatConfig();
+        thermostatConfig = ThermostatConfig.builder().build();
         thermostatConfig.setDelta(0.5f);
         thermostatConfig.setNightBegin(60 * 60 * 23);
         thermostatConfig.setNightEnd(60 * 60 * 7);
         thermostatConfig.setSensor(SENSOR_CODE);
         thermostatConfig.setTDay(12.0f);
         thermostatConfig.setTNight(16.0f);
+        thermostatConfig.setRelayPins(new ArrayList<>());
         thermostatConfig.getRelayPins().add(GPIO_00);
 
         temperatureMonitor = new ITemperatureMonitor() {
@@ -88,8 +91,9 @@ public class ThermostatTest {
                 temperatureMonitor,
                 relayHandler,
                 timer,
-            "termo"
-       );
+                "termo"
+        );
+        thermostat.postConstruct();
 
     }
 
@@ -221,15 +225,14 @@ public class ThermostatTest {
         assertTrue(thermostat.isHeatingOn());
         assertTrue(relayHandler.getPinState(heatingPin).isHigh());
 
-        thermostat.changeOn(false);
-        assertFalse(relayHandler.getPinState(heatingPin).isHigh());
+        thermostat.on(40.0f);
+        assertTrue(relayHandler.getPinState(heatingPin).isHigh());
 
+        thermostat.on(10.0f);
         thermostat.checkTemperature();
         assertFalse(relayHandler.getPinState(heatingPin).isHigh());
 
-        thermostat.changeOn(true);
-        assertFalse(relayHandler.getPinState(heatingPin).isHigh());
-
+        thermostat.off();
         thermostat.checkTemperature();
         assertTrue(relayHandler.getPinState(heatingPin).isHigh());
     }

@@ -16,6 +16,7 @@ import org.tcontrol.handler.IRelayHandler;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -28,26 +29,28 @@ public class CommandConfiguration {
 
   @Bean
   public ThermostatConfig thermostatConfig() {
-    ThermostatConfig thermostatConfig = new ThermostatConfig();
+    ThermostatConfig thermostatConfig = ThermostatConfig.builder().build();
     thermostatConfig.setDelta(0.5f);
     thermostatConfig.setNightBegin(60 * 60 * 23);
     thermostatConfig.setNightEnd(60 * 60 * 7);
     thermostatConfig.setSensor(SENSOR_CODE);
     thermostatConfig.setTDay(12.0f);
     thermostatConfig.setTNight(16.0f);
+    thermostatConfig.setRelayPins(new ArrayList<>());
     thermostatConfig.getRelayPins().add(GPIO_00);
     return thermostatConfig;
   }
 
   @Bean
   public ThermostatConfig thermostatConfig2() {
-    ThermostatConfig thermostatConfig = new ThermostatConfig();
+    ThermostatConfig thermostatConfig = ThermostatConfig.builder().build();
     thermostatConfig.setDelta(0.5f);
     thermostatConfig.setNightBegin(60 * 60 * 23);
     thermostatConfig.setNightEnd(60 * 60 * 7);
     thermostatConfig.setSensor(SENSOR_CODE);
     thermostatConfig.setTDay(18.0f);
     thermostatConfig.setTNight(20.0f);
+    thermostatConfig.setRelayPins(new ArrayList<>());
     thermostatConfig.getRelayPins().add(GPIO_00);
     return thermostatConfig;
   }

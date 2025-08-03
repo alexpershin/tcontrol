@@ -11,6 +11,8 @@ import org.tcontrol.config.props.ButtonHandlerConfig;
 
 import javax.annotation.PostConstruct;
 
+import static org.tcontrol.service.impl.Thermostat.TEMPERATURE_MAX_ON;
+
 @Service
 @Slf4j
 @RequiredArgsConstructor
@@ -18,24 +20,24 @@ public class ButtonGasOnOffHandler {
 
     private final ButtonHandlerConfig buttonHandlerConfig;
     private final IThermostat thermostatGas;
-    private final IPinFactory pinFactory;
-
-    private GpioController gpio;
 
     @PostConstruct
     public void init() {
         try {
-            gpio = GpioFactory.getInstance();
+            GpioController gpio = GpioFactory.getInstance();
 
             GpioPinListenerDigital listener = event -> {
                 PinState value = event.getState();
 
                 // display output
-                log.info("BUTTON state: " + value.isHigh());
+                log.info("BUTTON state: {}", value.isHigh());
                 if(value.isLow()){
-                    boolean thetmostatNewState = !thermostatGas.isOn();
-                    log.info("Thermostat new state: " + thetmostatNewState);
-                    thermostatGas.changeOn(thetmostatNewState);
+                    boolean thermostatNewState = !thermostatGas.isOn();
+                    log.info("Thermostat new state: {}", thermostatNewState);
+                    if(thermostatNewState)
+                        thermostatGas.on(TEMPERATURE_MAX_ON);
+                    else
+                        thermostatGas.off();
                 }
             };
 
@@ -43,7 +45,7 @@ public class ButtonGasOnOffHandler {
                     gpio.provisionDigitalInputPin(buttonHandlerConfig.pin());
 
             pin.addListener(listener);
-            log.info("Button listener added: " + pin.getPin().getName());
+            log.info("Button listener added: {}", pin.getPin().getName());
         } catch (Throwable e) {
             log.error("", e);
         }

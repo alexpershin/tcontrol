@@ -205,10 +205,16 @@ function onOffSensorRenderer(sensorElementId, sensor) {
             onOffUrl = window.location.protocol+'//'+window.location.host+'/tcontrol/api/stop_process';
         }
 
+        var onOffRequest = {
+            sensorId: sensor.sensorId,
+            newValue: 28.0,
+        }
+
         $.ajax({
             type: 'POST',
             dataType: 'json',
-            data: {sensorId: sensor.sensorId},
+            contentType: 'application/json',
+            data: JSON.stringify(onOffRequest),
             url: onOffUrl,
             beforeSend: function () {
                 $('body').append('<div id="requestOverlay" class="request-overlay"></div>'); /*Create overlay on demand*/

@@ -1,9 +1,9 @@
-package org.tcontrol.service.impl;
+package org.tcontrol.hardware.impl;
 
 import com.pi4j.io.gpio.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import org.tcontrol.service.IPinFactory;
+import org.tcontrol.hardware.IPinFactory;
 
 import javax.annotation.PostConstruct;
 import java.util.HashMap;

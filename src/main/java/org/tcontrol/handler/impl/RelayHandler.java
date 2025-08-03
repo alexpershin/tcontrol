@@ -6,7 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.tcontrol.config.props.SensorConfig;
 import org.tcontrol.config.props.SensorConfiguration;
-import org.tcontrol.service.IPinFactory;
+import org.tcontrol.hardware.IPinFactory;
 import org.tcontrol.service.IStatisticsSaver;
 import org.tcontrol.service.models.SensorValue;
 import org.tcontrol.service.impl.CSVStatisticSaver;

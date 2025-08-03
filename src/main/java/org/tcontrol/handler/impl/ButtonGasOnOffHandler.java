@@ -5,7 +5,6 @@ import com.pi4j.io.gpio.event.GpioPinListenerDigital;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import org.tcontrol.service.IPinFactory;
 import org.tcontrol.service.IThermostat;
 import org.tcontrol.config.props.ButtonHandlerConfig;
 

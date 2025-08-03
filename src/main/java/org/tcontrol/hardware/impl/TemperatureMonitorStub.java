@@ -22,8 +22,6 @@ import java.util.*;
 public class TemperatureMonitorStub implements ITemperatureMonitor {
     final private Map<String, SensorValue> sensorValueMap = new HashMap<>();
 
-    private final ITemperatureReader temperatureReader;
-
     private final SensorConfig sensorConfig;
 
     private final CSVStatisticSaver csvWriter;

@@ -222,11 +222,14 @@ public class ThermostatTest {
         Pin heatingPin = RaspiPin.getPinByName(thermostatConfig.getRelayPins().get(0));
 
         thermostat.checkTemperature();
+        assertEquals(16.0, thermostat.getMediumT());
         assertTrue(thermostat.isHeatingOn());
         assertTrue(relayHandler.getPinState(heatingPin).isHigh());
 
         thermostat.on(40.0f);
+        thermostat.checkTemperature();
         assertTrue(relayHandler.getPinState(heatingPin).isHigh());
+        assertEquals(40.0, thermostat.getMediumT());
 
         thermostat.on(10.0f);
         thermostat.checkTemperature();
@@ -235,5 +238,17 @@ public class ThermostatTest {
         thermostat.off();
         thermostat.checkTemperature();
         assertTrue(relayHandler.getPinState(heatingPin).isHigh());
+        assertEquals(16.0, thermostat.getMediumT());
+
+        thermostat.on(40.0f);
+        thermostat.checkTemperature();
+        assertTrue(relayHandler.getPinState(heatingPin).isHigh());
+        assertEquals(40.0, thermostat.getMediumT());
+
+        thermostat.off();
+        thermostat.checkTemperature();
+        assertTrue(relayHandler.getPinState(heatingPin).isHigh());
+        assertEquals(16.0, thermostat.getMediumT());
+
     }
 }

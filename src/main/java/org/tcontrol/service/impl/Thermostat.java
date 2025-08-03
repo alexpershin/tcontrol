@@ -105,7 +105,7 @@ public class Thermostat implements IThermostat {
     @Override
     public Thermostat off() {
         this.on = false;
-        thermostatCurrentConfig = thermostatConfig;
+        thermostatCurrentConfig = thermostatConfig.toBuilder().build();
         log.info("{}> thermostat is back OFF", name);
         return this;
     }

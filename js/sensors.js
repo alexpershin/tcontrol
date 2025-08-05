@@ -1,6 +1,7 @@
 function renderSensorsOnLoad() {
     //loadStubDataOnLoad();
     loadDataFromServer();
+    setupDialogs()
 }
 
 function loadStubDataOnLoad() {
@@ -191,73 +192,32 @@ function voltageSensorRenderer(sensorElementId, value) {
 function onOffSensorRenderer(sensorElementId, sensor) {
     r = onOffSensorBackgroundCalc(sensor);
 
-    let sensorElement = $(sensorElementId + ' .sensor_item_body .sensor_value');
-    sensorElement.text(r.status);
+    const sensorElement = $(sensorElementId + ' .sensor_item_body .sensor_value')
+
+    const startHeatingDialog = document.getElementById('start-heating');
+
+    sensorElement.text(r.status)
     sensorElement.click(function (ev) {
+        var applyBtn = document.getElementById('start-heating-apply-btn');
 
-        let value = ev.target.textContent;
-        console.log('on start: ' + value);
+        //remove previous listeners
+        const clone = applyBtn.cloneNode(true);
+        applyBtn.parentNode.replaceChild(clone, applyBtn);
+        applyBtn = document.getElementById('start-heating-apply-btn');
 
-        const startHeatingDialog = document.getElementById('start-heating');
-        const closeBtn = document.getElementById('start-heating-close-btn');
-        closeBtn.addEventListener('click', () => {
-              startHeatingDialog.close();
-        });
-
-        const applyBtn = document.getElementById('start-heating-apply-btn');
         applyBtn.addEventListener('click', () => {
-
-                const popUpElement = document.getElementById("pop-up");
-                popUpElement.show();
-
-                const startHeatingDialogInput = document.getElementById("start-heating-input");
-
-                let onOffUrl = window.location.protocol
-                    +'//'+window.location.host
-                    +'/tcontrol/api/start_process';
-
-               var onOffRequest = {
-                    sensorId: sensor.sensorId,
-                    newValue: startHeatingDialogInput.value
-                }
-
-                startHeatingDialog.close();
-
-                $.ajax({
-                    type: 'POST',
-                    dataType: 'json',
-                    contentType: 'application/json',
-                    data: JSON.stringify(onOffRequest),
-                    url: onOffUrl,
-                    beforeSend: function () {
-                        $('body').append('<div id="requestOverlay" class="request-overlay"></div>'); /*Create overlay on demand*/
-                        $("#requestOverlay").show();/*Show overlay*/
-                        $("#loader").show();
-                    },
-                    success: function (data) {
-                        console.log('on finish: ' + data.value);
-                        sensor.value = data.value;
-                        r = onOffSensorBackgroundCalc(sensor);
-                        sensorElement.text(r.status);
-                        sensorBody = $(sensorElementId + ' .sensor_item_body');
-                        sensorBody.css('background', r.background);
-                    },
-                    error: function (jqXhr, textStatus, errorThrown) {
-                        alert("Error try again later: " + textStatus)
-                    },
-                    complete: function () {
-                        $("#requestOverlay").remove();/*Remove overlay*/
-                        $("#loader").hide();
-                        popUpElement.close();
-                        startHeatingDialog.close();
-                    }
-                });
+             startHeating(sensorElementId, sensor)
         });
-        startHeatingDialog.showModal();
+        let value = ev.target.textContent
+        console.log('on start: ' + value)
+        startHeatingDialog.showModal()
     })
+
     sensorBody = $(sensorElementId + ' .sensor_item_body');
     sensorBody.css('background', r.background);
     sensorBody.css('border-radius', 57.5);
+
+
 }
 
 function onOffSensorBackgroundCalc(value) {
@@ -322,6 +282,64 @@ function alertSensorStatusBackgroundCalc(value) {
         status: statusText,
         background: background
     };
+}
+
+function setupDialogs(){
+    const startHeatingDialog = document.getElementById('start-heating');
+    const closeBtn = document.getElementById('start-heating-close-btn');
+    closeBtn.addEventListener('click', () => {
+        startHeatingDialog.close()
+    });
+}
+
+function startHeating(sensorElementId, sensor){
+                    const sensorElement = $(sensorElementId + ' .sensor_item_body .sensor_value')
+                    const startHeatingDialog = document.getElementById('start-heating');
+                    const popUpElement = document.getElementById("pop-up");
+                    popUpElement.show();
+
+                    const startHeatingDialogInput = document.getElementById("start-heating-input");
+
+                    let onOffUrl = window.location.protocol
+                        +'//'+window.location.host
+                        +'/tcontrol/api/start_process';
+
+                   var onOffRequest = {
+                        sensorId: sensor.sensorId,
+                        newValue: startHeatingDialogInput.value
+                    }
+
+                    startHeatingDialog.close();
+
+                    $.ajax({
+                        type: 'POST',
+                        dataType: 'json',
+                        contentType: 'application/json',
+                        data: JSON.stringify(onOffRequest),
+                        url: onOffUrl,
+                        beforeSend: function () {
+                            $('body').append('<div id="requestOverlay" class="request-overlay"></div>'); /*Create overlay on demand*/
+                            $("#requestOverlay").show();/*Show overlay*/
+                            $("#loader").show();
+                        },
+                        success: function (data) {
+                            console.log('on finish: ' + data.value);
+                            sensor.value = data.value;
+                            r = onOffSensorBackgroundCalc(sensor);
+                            sensorElement.text(r.status);
+                            sensorBody = $(sensorElementId + ' .sensor_item_body');
+                            sensorBody.css('background', r.background);
+                        },
+                        error: function (jqXhr, textStatus, errorThrown) {
+                            alert("Error try again later: " + textStatus)
+                        },
+                        complete: function () {
+                            $("#requestOverlay").remove();/*Remove overlay*/
+                            $("#loader").hide();
+                            popUpElement.close();
+                            startHeatingDialog.close();
+                        }
+                    });
 }
 
 

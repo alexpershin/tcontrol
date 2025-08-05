@@ -92,3 +92,38 @@
     text-align: center;
     background: rgba(200,200,200,0.5) no-repeat center; /*.gif file or just div with message etc. however you like*/
 }
+
+#start-heating {
+    /* Basic modal styling */
+    border: 1px solid #ccc;
+    padding: 20px;
+    position: fixed; /* or absolute */
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 1000;
+    border-radius: 20px;
+    margin-left: 0px;
+    margin-top: -25px;
+    background-color: lightgray;
+    font:normal 16px/16px Arial;
+}
+
+.dialog-button{
+    font:normal 16px/16px Arial;
+    padding-block: 5px;
+    border-radius: 10px;
+    float: right;
+    margin-left: 10px;
+}
+.dialog-input{
+    font:normal 16px/16px Arial;
+    padding-block: 5px;
+    border-radius: 5px;
+    margin-left: 10px;
+}
+
+#start-heating::backdrop {
+    /* Darken the background when modal is open */
+    background-color: rgba(0, 0, 0, 0.5);
+}

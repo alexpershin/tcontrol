@@ -143,7 +143,7 @@ public class SensorController {
     @CrossOrigin(origins = {"http://localhost:8090", "http://localhost"})
     @Operation(summary = "Старт отопления",
             description = "Старт отопления",
-            responses = { @ApiResponse(responseCode = "" + HTTP_BAD_REQUEST, content = @Content(mediaType = "application/json"))
+            responses = {@ApiResponse(responseCode = "" + HTTP_BAD_REQUEST, content = @Content(mediaType = "application/json"))
             },
             requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
                     description = "Тело запроса для старта отопления", required = true)
@@ -152,15 +152,14 @@ public class SensorController {
         log.info("start process for sensor {}: {}", processChangeRequest.getSensorId(), processChangeRequest.getNewValue());
         Thread.sleep(1000);
         int result = sensorService.startHeating(processChangeRequest.getSensorId(), processChangeRequest.getNewValue());
-        return new ResponseEntity<>(new StartHeatingResult(result == -1 ? null : result, "ok"),
-                result == -1 ? HttpStatus.INTERNAL_SERVER_ERROR : HttpStatus.OK);
+        return new ResponseEntity<>(new StartHeatingResult(result, "ok"), HttpStatus.OK);
     }
 
     @PostMapping("/stop_process")
     @CrossOrigin(origins = {"http://localhost:8090", "http://localhost"})
     @Operation(summary = "Останов отопления",
             description = "Останов отопления",
-            responses = { @ApiResponse(responseCode = "" + HTTP_BAD_REQUEST, content = @Content(mediaType = "application/json"))
+            responses = {@ApiResponse(responseCode = "" + HTTP_BAD_REQUEST, content = @Content(mediaType = "application/json"))
             },
             requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
                     description = "Тело запроса для останова отопления", required = true)

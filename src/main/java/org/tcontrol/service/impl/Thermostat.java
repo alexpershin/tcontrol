@@ -53,7 +53,7 @@ public class Thermostat implements IThermostat {
 
     @Override
     @Scheduled(cron = "${thermostat.schedule}")
-    public void checkTemperature() {
+    public boolean checkTemperature() {
         log.info(name + "> checkTemperature");
 
         mediumT = night() ? thermostatCurrentConfig.getTNight() : thermostatCurrentConfig.getTDay();
@@ -89,6 +89,7 @@ public class Thermostat implements IThermostat {
             else log.error("temperature sensor value is null");
         }
         firstTime = false;
+        return heatingOn;
     }
 
     @Override

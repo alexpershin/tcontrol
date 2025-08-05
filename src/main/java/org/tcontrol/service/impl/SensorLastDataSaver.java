@@ -50,4 +50,10 @@ public class SensorLastDataSaver implements IStatisticsSaver {
         LinkedList<SensorValue> sensorValues = cache.get(sensorId);
         return sensorValues != null ? sensorValues : new LinkedList<>();
     }
+
+    @Override
+    public SensorValue lastValue(int sensorId) {
+        LinkedList<SensorValue> sensorValues = cache.get(sensorId);
+        return sensorValues != null ? sensorValues.peekLast() : null;
+    }
 }

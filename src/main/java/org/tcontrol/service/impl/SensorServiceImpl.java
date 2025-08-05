@@ -79,14 +79,13 @@ public class SensorServiceImpl implements SensorService {
 
     @Override
     public int startHeating(int sensorId, float temperature) throws SensorServiceException {
-        thermostat(sensorId).on(temperature).checkTemperature();
-        return 1;
+        return thermostat(sensorId).on(temperature).checkTemperature() ? 1 : 0;
     }
 
     @Override
     public int stopHeating(int sensorId) throws SensorServiceException {
         thermostat(sensorId).off().checkTemperature();
-        return 1;
+        return 0;
     }
 
     private IThermostat thermostat(int sensorId) {

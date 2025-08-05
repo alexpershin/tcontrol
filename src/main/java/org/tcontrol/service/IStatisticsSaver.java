@@ -12,4 +12,6 @@ public interface IStatisticsSaver {
     Map<Integer, SensorValue> currentValues();
 
     LinkedList<SensorValue> lastValues(int sensorId);
+
+    SensorValue lastValue(int sensorId);
 }

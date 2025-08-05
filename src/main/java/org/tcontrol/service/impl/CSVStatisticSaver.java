@@ -3,6 +3,7 @@ package org.tcontrol.service.impl;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
+import org.apache.commons.lang3.NotImplementedException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.tcontrol.service.IStatisticsSaver;
@@ -49,5 +50,10 @@ public class CSVStatisticSaver implements IStatisticsSaver {
     @Override
     public LinkedList<SensorValue> lastValues(int sensorId) {
         return new LinkedList<>();
+    }
+
+    @Override
+    public SensorValue lastValue(int sensorId) {
+        throw new NotImplementedException();
     }
 }

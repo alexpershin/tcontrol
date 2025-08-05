@@ -13,7 +13,7 @@ springdoc:
 
 main-config:
   sensorValuesBufferSize: 20
-  sensorsStub: true
+  sensorsStub: false
 
 w1DevicesPath: /sys/bus/w1/devices
 
@@ -109,6 +109,12 @@ sensor-config:
       type: ON_OFF
       userName: "Электрокотел"
       description: 'Электрокотел в прихожей'
+    - id: 10
+      code: '101'
+      name: gasHeater
+      type: ON_OFF
+      userName: "Газовый котел"
+      description: 'Газовый котел'
 
 sms-config:
   inputFolder: /var/spool/gammu/inbox

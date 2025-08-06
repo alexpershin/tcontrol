@@ -33,9 +33,9 @@
     <dialog id="pop-up">Включается отопление</dialog>
 
     <dialog id="start-heating">
-        <h4>Введите целевую температуру</h4>
+        <div id="start-heating-dialog-title" class="dialog-title"></div>
         <div class="start-heating-form-group">
-            <label for="start-heating-input" class="col-form-label">Температура:</label>
+            <label for="start-heating-input" class="dialog-input">Целевая температура:</label>
             <input
                     id="start-heating-input"
                     type="number"
@@ -44,8 +44,8 @@
                     min="6" max="30" value="20">
             <br><br>
         </div>
-        <button id="start-heating-apply-btn" class="start-heating-apply-btn">Применить</button>
-        <button id="start-heating-close-btn" class="start-heating-close-btn">Закрыть</button>
+        <button id="start-heating-apply-btn" class="dialog-button">Применить</button>
+        <button id="start-heating-close-btn" class="dialog-button">Закрыть</button>
     </dialog>
 
     <body class="page_body">

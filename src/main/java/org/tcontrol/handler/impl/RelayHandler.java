@@ -35,7 +35,7 @@ public class RelayHandler implements IRelayHandler {
 
     @PostConstruct
     void init() {
-        log.info("Initializing relay controller...");
+        log.info("Initializing relay handler...");
     }
 
     @Override

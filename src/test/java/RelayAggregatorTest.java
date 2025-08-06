@@ -48,6 +48,17 @@ public class RelayAggregatorTest {
     relayAggregator.turnOnRelay(pin);
     relayAggregator.turnOnRelay(pin);
     Mockito.verify(relayHandler).turnOnRelay(pin);
+    Mockito.verify(relayHandler, times(1)).turnOnRelay(pin);
+  }
+
+  @Test
+  public void testAllOff() {
+    Pin pin = RaspiPin.getPinByName(GPIO_0);
+    relayAggregator.turnOffRelay(pin);
+    relayAggregator.turnOffRelay(pin);
+    relayAggregator.turnOffRelay(pin);
+    Mockito.verify(relayHandler, times(0)).turnOnRelay(pin);
+    Mockito.verify(relayHandler, times(1)).turnOffRelay(pin);
   }
 
   @Test

@@ -104,8 +104,7 @@ function layoutSensors(sensorsJsonData) {
         clone.appendTo('.sensor_items');
         sensorElementId = clone.attr('id') + value.id;
         clone.attr("id", sensorElementId);
-        sensorTitle =
-            $('#' + sensorElementId + ' #sensor_title');
+        sensorTitle = $('#' + sensorElementId + ' #sensor_title');
         sensorTitle.text(value.name);
         //clone.show();
     });
@@ -193,31 +192,34 @@ function onOffSensorRenderer(sensorElementId, sensor) {
     r = onOffSensorBackgroundCalc(sensor);
 
     const sensorElement = $(sensorElementId + ' .sensor_item_body .sensor_value')
+    const sensorBody = $(sensorElementId + ' .sensor_item_body')
 
     const startHeatingDialog = document.getElementById('start-heating');
 
     sensorElement.text(r.status)
-    sensorElement.click(function (ev) {
+
+    sensorBody.click(function (ev) {
         var applyBtn = document.getElementById('start-heating-apply-btn');
 
         //remove previous listeners
         const clone = applyBtn.cloneNode(true);
         applyBtn.parentNode.replaceChild(clone, applyBtn);
         applyBtn = document.getElementById('start-heating-apply-btn');
+        const titleComponent = document.getElementById('start-heating-dialog-title');
+        const sensorTitle = $(sensorElementId + ' #sensor_title');
+        titleComponent.textContent = sensorTitle.text()
 
         applyBtn.addEventListener('click', () => {
              startHeating(sensorElementId, sensor)
         });
         let value = ev.target.textContent
         console.log('on start: ' + value)
+        startHeatingDialog.style.visibility='visible'
         startHeatingDialog.showModal()
     })
 
-    sensorBody = $(sensorElementId + ' .sensor_item_body');
     sensorBody.css('background', r.background);
     sensorBody.css('border-radius', 57.5);
-
-
 }
 
 function onOffSensorBackgroundCalc(value) {
@@ -288,6 +290,7 @@ function setupDialogs(){
     const startHeatingDialog = document.getElementById('start-heating');
     const closeBtn = document.getElementById('start-heating-close-btn');
     closeBtn.addEventListener('click', () => {
+        startHeatingDialog.style.visibility='hidden'
         startHeatingDialog.close()
     });
 }

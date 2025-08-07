@@ -46,8 +46,9 @@
     text-align:center;
     font:normal 32px/32px Arial;
     color:black;
-    margin: 32px 0 0 0;
+    margin: 16px 0 0 0;
 }
+
 .sensor_item .sensor_caption {
     text-align:center;
     font:normal 16px/16px Arial; 
@@ -64,6 +65,17 @@
     width: 70px;
     height: 70px;
     animation: spin 1s linear infinite;
+}
+
+.sensor-loader {
+    z-index: 9999;
+    border: 3px solid #f3f3f3;
+    border-radius: 50%;
+    border-top: 3px solid #444444;
+    width: 12px;
+    height: 12px;
+    animation: spin 1s linear infinite;
+    visibility: hidden;
 }
 
 .center {

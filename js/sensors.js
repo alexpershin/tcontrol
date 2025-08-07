@@ -232,7 +232,10 @@ function onOffSensorRenderer(sensorElementId, sensor) {
         titleComponent.textContent = sensorTitle.text()
 
         applyBtn.addEventListener('click', () => {
-             startHeating(sensorElementId, sensor)
+            startHeatingDialogInput = document.getElementById("start-heating-input")
+             if(validateSensorTemperature(startHeatingDialogInput)){
+                   startHeating(sensorElementId, sensor)
+             }
         });
         let value = ev.target.textContent
         console.log('on start: ' + value)
@@ -374,6 +377,14 @@ function startHeating(sensorElementId, sensor){
             startHeatingDialog.close();
         }
     });
+}
+
+function validateSensorTemperature(input){
+    if(input.value<4 || input.value>30){
+        alert("Тепература должна быть в диапазоне: [4;30]")
+        return false
+    }
+    return true
 }
 
 

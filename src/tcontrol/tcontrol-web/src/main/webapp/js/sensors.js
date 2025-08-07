@@ -31,21 +31,43 @@ function loadStubDataOnLoad() {
     renderSensorValues(sensorMap, valuesJsonData);
 }
 
+function showGlobalLoader(){
+     $('body').append('<div id="requestOverlay" class="request-overlay"></div>'); /*Create overlay on demand*/
+     $("#requestOverlay").show();/*Show overlay*/
+     $("#loader").show();
+}
+
+function hideGlobalLoader(){
+    $("#requestOverlay").remove();/*Remove overlay*/
+    $("#loader").hide();
+}
+
 function loadDataFromServer() {
-    $.post(window.location.protocol+"//"+window.location.host+"/tcontrol/api/sensors",
-        function (sensorsJsonData) {
+   $.ajax({
+        type: 'POST',
+        dataType: 'json',
+        contentType: 'application/json',
+        url: window.location.protocol+"//"+window.location.host+"/tcontrol/api/sensors",
+        beforeSend: function () {
+            showGlobalLoader()
+        },
+        success: function (sensorsJsonData) {
             console.log("sensors processing start");
             var sensors = sensorsJsonData.sensors;
             sensorMap = convertSensorsJsonToMap(sensors);
             console.log("sensors loaded: " + sensorMap.length);
             layoutSensors(sensors);
             loadValuesFromServer();
-        }, 'json').done(function () {
-        console.log("sensors loaded");
-    }).fail(function (jqXHR, textStatus) {
-        showAlert("Sensors loading failed!", jqXHR, textStatus);
-    }).always(function () {
-        console.log("sensors loading complete");
+
+        },
+        error: function (jqXhr, textStatus, errorThrown) {
+            hideGlobalLoader()
+            showAlert("Sensors loading failed!", jqXHR, textStatus);
+        },
+        complete: function () {
+            hideGlobalLoader()
+            console.log("sensors loading complete");
+        }
     });
 }
 
@@ -295,54 +317,63 @@ function setupDialogs(){
     });
 }
 
+function showSensorLoader(sensorElementId){
+   $(sensorElementId + ' .sensor_item_body .sensor-loader').css('visibility', 'visible')
+   $('.sensor_item').find('.sensor_item_body').css('pointer-events', 'none')
+}
+
+function hideSensorLoader(sensorElementId){
+   $(sensorElementId + ' .sensor_item_body .sensor-loader').css('visibility', 'hidden')
+   $('.sensor_item').find('.sensor_item_body').css('pointer-events', 'all')
+}
+
 function startHeating(sensorElementId, sensor){
-                    const sensorElement = $(sensorElementId + ' .sensor_item_body .sensor_value')
-                    const startHeatingDialog = document.getElementById('start-heating');
-                    const popUpElement = document.getElementById("pop-up");
-                    popUpElement.show();
+    const sensorElement = $(sensorElementId + ' .sensor_item_body .sensor_value')
+    const startHeatingDialog = document.getElementById('start-heating');
+    const popUpElement = document.getElementById("pop-up");
+    popUpElement.show();
 
-                    const startHeatingDialogInput = document.getElementById("start-heating-input");
+    const startHeatingDialogInput = document.getElementById("start-heating-input");
 
-                    let onOffUrl = window.location.protocol
-                        +'//'+window.location.host
-                        +'/tcontrol/api/start_process';
+    let onOffUrl = window.location.protocol
+        +'//'+window.location.host
+        +'/tcontrol/api/start_process';
 
-                   var onOffRequest = {
-                        sensorId: sensor.sensorId,
-                        newValue: startHeatingDialogInput.value
-                    }
+   var onOffRequest = {
+        sensorId: sensor.sensorId,
+        newValue: startHeatingDialogInput.value
+    }
 
-                    startHeatingDialog.close();
+    startHeatingDialog.close();
 
-                    $.ajax({
-                        type: 'POST',
-                        dataType: 'json',
-                        contentType: 'application/json',
-                        data: JSON.stringify(onOffRequest),
-                        url: onOffUrl,
-                        beforeSend: function () {
-                            $('body').append('<div id="requestOverlay" class="request-overlay"></div>'); /*Create overlay on demand*/
-                            $("#requestOverlay").show();/*Show overlay*/
-                            $("#loader").show();
-                        },
-                        success: function (data) {
-                            console.log('on finish: ' + data.value);
-                            sensor.value = data.value;
-                            r = onOffSensorBackgroundCalc(sensor);
-                            sensorElement.text(r.status);
-                            sensorBody = $(sensorElementId + ' .sensor_item_body');
-                            sensorBody.css('background', r.background);
-                        },
-                        error: function (jqXhr, textStatus, errorThrown) {
-                            alert("Error try again later: " + textStatus)
-                        },
-                        complete: function () {
-                            $("#requestOverlay").remove();/*Remove overlay*/
-                            $("#loader").hide();
-                            popUpElement.close();
-                            startHeatingDialog.close();
-                        }
-                    });
+    $.ajax({
+        type: 'POST',
+        dataType: 'json',
+        contentType: 'application/json',
+        data: JSON.stringify(onOffRequest),
+        url: onOffUrl,
+        beforeSend: function () {
+            showSensorLoader(sensorElementId)
+        },
+        success: function (data) {
+            console.log('on finish: ' + data.value);
+            sensor.value = data.value;
+            sensorElement.text(r.status);
+            const sensorBody = $(sensorElementId + ' .sensor_item_body')
+            sensorBody.css('background', onOffSensorBackgroundCalc(sensor));
+        },
+        error: function (jqXhr, textStatus, errorThrown) {
+            hideSensorLoader(sensorElementId)
+            popUpElement.close();
+            startHeatingDialog.close();
+            alert("Error try again later: " + textStatus)
+        },
+        complete: function () {
+            hideSensorLoader(sensorElementId)
+            popUpElement.close();
+            startHeatingDialog.close();
+        }
+    });
 }
 
 

@@ -215,45 +215,26 @@ function onOffSensorRenderer(sensorElementId, sensor) {
 
     const sensorElement = $(sensorElementId + ' .sensor_item_body .sensor_value')
     const sensorBody = $(sensorElementId + ' .sensor_item_body')
-
-    const startHeatingDialog = document.getElementById('start-heating');
-
     sensorElement.text(r.status)
 
     sensorBody.click(function (ev) {
-        var applyBtn = document.getElementById('start-heating-apply-btn');
 
-        //remove previous listeners
-        const clone = applyBtn.cloneNode(true);
-        applyBtn.parentNode.replaceChild(clone, applyBtn);
-        applyBtn = document.getElementById('start-heating-apply-btn');
-        const titleComponent = document.getElementById('start-heating-dialog-title');
-        const sensorTitle = $(sensorElementId + ' #sensor_title');
-        titleComponent.textContent = sensorTitle.text()
-
-        applyBtn.addEventListener('click', () => {
-            startHeatingDialogInput = document.getElementById("start-heating-input")
-             if(validateSensorTemperature(startHeatingDialogInput)){
-                   startHeating(sensorElementId, sensor)
-             }
-        });
-        let value = ev.target.textContent
-        console.log('on start: ' + value)
+        const currentTemperatureURL =
+            window.location.protocol
+            + "//" + window.location.host
+            + ":/tcontrol/api/thermostat_current_temperature?sensorId="
+            + sensor.sensorId
 
         $.ajax({
                 type: 'POST',
                 dataType: 'json',
                 contentType: 'application/json',
-                url: window.location.protocol+"//"+window.location.host+":/tcontrol/api/thermostat_current_temperature?sensorId="+sensor.sensorId,
+                url: currentTemperatureURL,
                 beforeSend: function () {
                     showSensorLoader(sensorElementId)
                 },
                 success: function (value) {
-                    console.log('current temperature: ' + value);
-                    const startHeatingDialogInput = document.getElementById("start-heating-input")
-                    startHeatingDialogInput.value = value
-                    startHeatingDialog.style.visibility='visible'
-                    startHeatingDialog.showModal()
+                     startHeatingDialog(sensorElementId, sensor, value)
                 },
                 error: function (jqXhr, textStatus, errorThrown) {
                     hideSensorLoader(sensorElementId)
@@ -263,12 +244,35 @@ function onOffSensorRenderer(sensorElementId, sensor) {
                     hideSensorLoader(sensorElementId)
                 }
             });
-
-
     })
 
     sensorBody.css('background', r.background);
     sensorBody.css('border-radius', 57.5);
+}
+
+function startHeatingDialog(sensorElementId, sensor, currentTemperature){
+    const startHeatingDialog = document.getElementById('start-heating');
+
+    var applyBtn = document.getElementById('start-heating-apply-btn');
+    //remove previous listeners
+    const clone = applyBtn.cloneNode(true);
+    applyBtn.parentNode.replaceChild(clone, applyBtn);
+
+    applyBtn = document.getElementById('start-heating-apply-btn');
+    const titleComponent = document.getElementById('start-heating-dialog-title');
+    titleComponent.textContent = $(sensorElementId + ' #sensor_title').text()
+    const startHeatingDialogInput = document.getElementById("start-heating-input")
+
+    applyBtn.addEventListener('click', () => {
+         if(validateSensorTemperature(startHeatingDialogInput)){
+               startHeating(sensorElementId, sensor)
+         }
+    });
+    console.log('current temperature: ' + currentTemperature);
+
+    startHeatingDialogInput.value = currentTemperature
+    startHeatingDialog.style.visibility='visible'
+    startHeatingDialog.showModal()
 }
 
 function onOffSensorBackgroundCalc(value) {

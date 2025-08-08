@@ -239,8 +239,32 @@ function onOffSensorRenderer(sensorElementId, sensor) {
         });
         let value = ev.target.textContent
         console.log('on start: ' + value)
-        startHeatingDialog.style.visibility='visible'
-        startHeatingDialog.showModal()
+
+        $.ajax({
+                type: 'POST',
+                dataType: 'json',
+                contentType: 'application/json',
+                url: window.location.protocol+"//"+window.location.host+":/tcontrol/api/thermostat_current_temperature?sensorId="+sensor.sensorId,
+                beforeSend: function () {
+                    showSensorLoader(sensorElementId)
+                },
+                success: function (value) {
+                    console.log('current temperature: ' + value);
+                    const startHeatingDialogInput = document.getElementById("start-heating-input")
+                    startHeatingDialogInput.value = value
+                    startHeatingDialog.style.visibility='visible'
+                    startHeatingDialog.showModal()
+                },
+                error: function (jqXhr, textStatus, errorThrown) {
+                    hideSensorLoader(sensorElementId)
+                    alert("Error try again later: " + textStatus)
+                },
+                complete: function () {
+                    hideSensorLoader(sensorElementId)
+                }
+            });
+
+
     })
 
     sensorBody.css('background', r.background);

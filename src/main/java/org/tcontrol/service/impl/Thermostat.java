@@ -18,6 +18,8 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
 
+import static java.lang.Float.max;
+
 @Slf4j
 @RequiredArgsConstructor
 public class Thermostat implements IThermostat {
@@ -101,6 +103,11 @@ public class Thermostat implements IThermostat {
         }
         log.info("{}> thermostat is ON: {}", name, temperature);
         return this;
+    }
+
+    @Override
+    public float currentTemperature(){
+         return max(thermostatCurrentConfig.getTDay(), thermostatCurrentConfig.getTNight());
     }
 
     @Override

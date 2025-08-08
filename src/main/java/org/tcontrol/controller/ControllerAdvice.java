@@ -61,8 +61,7 @@ public class ControllerAdvice implements ResponseBodyAdvice<Object> {
      * @param ex - ошибка
      * @return - возвращаемый ответ
      */
-    @ExceptionHandler({
-            SensorServiceException.class})
+    @ExceptionHandler({SensorServiceException.class})
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public ResponseEntity<Object> handleNotFoundException(Exception ex) {
         return ResponseEntity
@@ -70,5 +69,12 @@ public class ControllerAdvice implements ResponseBodyAdvice<Object> {
                 .body(ex.getMessage());
     }
 
+    @ExceptionHandler({IllegalArgumentException.class})
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    public ResponseEntity<Object> handleIllegalArgumentException(Exception ex) {
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .body(ex.getMessage());
+    }
 
 }

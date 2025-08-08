@@ -88,6 +88,12 @@ public class SensorServiceImpl implements SensorService {
         return 0;
     }
 
+    @Override
+    public float thermostatCurrentTemperature(int sensorId) {
+        log.info("Getting thermostat current temperature for sensor:{}", sensorId);
+        return thermostat(sensorId).currentTemperature();
+    }
+
     private IThermostat thermostat(int sensorId) {
         return sensorConfig.getSensors()
                 .stream()

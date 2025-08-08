@@ -16,6 +16,8 @@ public interface IThermostat {
 
   Thermostat on(Float temperature);
 
+  float currentTemperature();
+
   Thermostat off();
 
   List<String> getHeatingPins();

@@ -62,8 +62,9 @@ public class SensorController {
                     @ApiResponse(responseCode = "" + HTTP_BAD_REQUEST,
                             content = @Content(mediaType = "application/json"))})
 
-    public SensorValueDto.SensorsResult getSensors() {
+    public SensorValueDto.SensorsResult getSensors() throws InterruptedException {
         log.info("get sensors");
+        Thread.sleep(1000);
         SensorValueDto.SensorsResult result = new SensorValueDto.SensorsResult();
         Collection<Sensor> sensors;
         try {
@@ -123,10 +124,10 @@ public class SensorController {
                     @ApiResponse(responseCode = "" + HTTP_BAD_REQUEST,
                             content = @Content(mediaType = "application/json"))
             },
-            parameters = {@Parameter(name = "campaignName", description = "Параметр для поиска кампаний по шаблону наименования",
+            parameters = {@Parameter(name = "sensorId", description = "Идентификатор сенсора",
                     in = ParameterIn.QUERY,
                     content = @Content(mediaType = "application/json",
-                            schema = @Schema(maxLength = 255, example = "Кредит"))
+                            schema = @Schema(maxLength = 4, example = "1"))
             )}
     )
     public SensorValuesResult getSensorPrevValues(@RequestParam(name = "sensorId") Integer sensorId) throws SensorServiceException {
@@ -138,21 +139,41 @@ public class SensorController {
         return result;
     }
 
-
     @PostMapping("/start_process")
     @CrossOrigin(origins = {"http://localhost:8090", "http://localhost"})
     @Operation(summary = "Старт отопления",
             description = "Старт отопления",
             responses = {@ApiResponse(responseCode = "" + HTTP_BAD_REQUEST, content = @Content(mediaType = "application/json"))
             },
-            requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
-                    description = "Тело запроса для старта отопления", required = true)
+            parameters = {@Parameter(name = "sensorId", description = "Идентификатор сенсора",
+                    in = ParameterIn.QUERY,
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(maxLength = 4, example = "1"))
+            )}
     )
     public ResponseEntity<StartHeatingResult> startProcess(@RequestBody final StartHeatingRequest processChangeRequest) throws InterruptedException {
         log.info("start process for sensor {}: {}", processChangeRequest.getSensorId(), processChangeRequest.getNewValue());
         Thread.sleep(1000);
         int result = sensorService.startHeating(processChangeRequest.getSensorId(), processChangeRequest.getNewValue());
         return new ResponseEntity<>(new StartHeatingResult(result, "ok"), HttpStatus.OK);
+    }
+
+    @PostMapping("/")
+    @CrossOrigin(origins = {"http://localhost:8090", "http://localhost"})
+    @Operation(summary = "Текущая температура",
+            description = "Текущая температура",
+            responses = {@ApiResponse(responseCode = "" + HTTP_BAD_REQUEST, content = @Content(mediaType = "application/json"))
+            },
+            requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
+                    description = "Тело запроса для старта отопления", required = true)
+    )
+    public ResponseEntity<Float> thermostatCurrentTemperature(@RequestParam(name = "sensorId") Integer sensorId) throws InterruptedException {
+        log.info("current temperature for sensor: {}", sensorId);
+        if (sensorId == null || sensorId < 0) {
+            throw new IllegalArgumentException("sensorId has to be not null and positive number");
+        }
+        float result = sensorService.thermostatCurrentTemperature(sensorId);
+        return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
     @PostMapping("/stop_process")

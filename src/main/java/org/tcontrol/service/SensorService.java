@@ -129,4 +129,11 @@ public interface SensorService {
     int startHeating(int sensorId, float temperature) ;
 
     int stopHeating(int sensorId) ;
+
+    /**
+     * Получение текущей температуры термостата для отображения на фронте.
+     * @param sensorId сенсор
+     * @return temperature;
+     */
+    float thermostatCurrentTemperature(int sensorId);
 }

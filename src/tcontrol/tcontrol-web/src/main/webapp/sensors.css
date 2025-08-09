@@ -19,7 +19,7 @@
 .sensor_item{
     display:none;
     float: left;
-    margin :10px 12px 20px 12px; 
+    margin :25px 12px 20px 12px;
 }
 
 .sensor_items .sensor_item .sensor_item_body {
@@ -33,12 +33,39 @@
     line-height: 95px; /*height - 1.5gradient.height - 2 border*/
 }
 
+.sensor_indicator_panel{
+    height: 30px;
+    justify-content: space-around;
+    display: flex;
+}
+
+.sensor-loader {
+    z-index: 9999;
+    border: 3px solid #f3f3f3;
+    border-radius: 50%;
+    border-top: 3px solid #444444;
+    width: 16px;
+    height: 16px;
+    margin-left: 2px;
+    animation: spin 1s linear infinite;
+    visibility: hidden;
+}
 
 .sensor_item_body .sensor_gradient{
     text-align:right;
     font:normal 10px/10px Arial; 
     color:red;
+    width: 2em;
     margin-right: 10px;
+    margin-top: 2px;
+}
+
+.sensor_item_body .sensor_time{
+    text-align:center;
+    font:normal 10px/10px Arial;
+    color:blue;
+    width: 4em;
+    margin-left: 10px;
     margin-top: 2px;
 }
 
@@ -65,17 +92,6 @@
     width: 70px;
     height: 70px;
     animation: spin 1s linear infinite;
-}
-
-.sensor-loader {
-    z-index: 9999;
-    border: 3px solid #f3f3f3;
-    border-radius: 50%;
-    border-top: 3px solid #444444;
-    width: 12px;
-    height: 12px;
-    animation: spin 1s linear infinite;
-    visibility: hidden;
 }
 
 .center {

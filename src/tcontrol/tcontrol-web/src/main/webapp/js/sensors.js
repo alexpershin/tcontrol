@@ -60,7 +60,7 @@ function loadDataFromServer() {
             loadValuesFromServer();
 
         },
-        error: function (jqXhr, textStatus, errorThrown) {
+        error: function (jqXHR, textStatus, errorThrown) {
             hideGlobalLoader()
             showAlert("Sensors loading failed!", jqXHR, textStatus);
         },
@@ -249,7 +249,7 @@ function onOffSensorRenderer(sensorElementId, sensor) {
                 success: function (value) {
                      startHeatingDialog(sensorElementId, sensor, value)
                 },
-                error: function (jqXhr, textStatus, errorThrown) {
+                error: function (jqXHR, textStatus, errorThrown) {
                     hideSensorLoader(sensorElementId)
                     alert("Error try again later: " + textStatus)
                 },
@@ -406,7 +406,7 @@ function startHeating(sensorElementId, sensor){
             const sensorBody = $(sensorElementId + ' .sensor_item_body')
             sensorBody.css('background', onOffSensorBackgroundCalc(sensor));
         },
-        error: function (jqXhr, textStatus, errorThrown) {
+        error: function (jqXHR, textStatus, errorThrown) {
             hideSensorLoader(sensorElementId)
             popUpElement.close();
             startHeatingDialog.close();

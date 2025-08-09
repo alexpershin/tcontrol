@@ -158,7 +158,7 @@ public class SensorController {
         return new ResponseEntity<>(new StartHeatingResult(result, "ok"), HttpStatus.OK);
     }
 
-    @PostMapping("/")
+    @PostMapping("/thermostat_current_temperature")
     @CrossOrigin(origins = {"http://localhost:8090", "http://localhost"})
     @Operation(summary = "Текущая температура",
             description = "Текущая температура",

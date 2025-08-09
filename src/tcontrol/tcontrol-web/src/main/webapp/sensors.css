@@ -19,7 +19,7 @@
 .sensor_item{
     display:none;
     float: left;
-    margin :25px 12px 20px 12px;
+    margin :25px 25px 20px 25px;
 }
 
 .sensor_items .sensor_item .sensor_item_body {

@@ -225,11 +225,10 @@ function voltageSensorRenderer(sensorElementId, value) {
 }
 
 function onOffSensorRenderer(sensorElementId, sensor) {
-    r = onOffSensorBackgroundCalc(sensor);
+    const backgroundCalcResult = onOffSensorBackgroundCalc(sensor);
 
     const sensorElement = $(sensorElementId + ' .sensor_item_body .sensor_value')
     const sensorBody = $(sensorElementId + ' .sensor_item_body')
-    sensorElement.text(r.status)
 
     sensorBody.click(function (ev) {
 
@@ -260,7 +259,8 @@ function onOffSensorRenderer(sensorElementId, sensor) {
             });
     })
 
-    sensorBody.css('background', r.background);
+    sensorBody.css('background', backgroundCalcResult.background);
+    sensorElement.text(backgroundCalcResult.status)
     sensorBody.css('border-radius', 57.5);
 }
 
@@ -403,9 +403,11 @@ function startHeating(sensorElementId, sensor){
         success: function (data) {
             console.log('on finish: ' + data.value);
             sensor.value = data.value;
-            sensorElement.text(r.status);
+            const backgroundCalcResult = onOffSensorBackgroundCalc(sensor)
+            sensorElement.text(backgroundCalcResult.status);
             const sensorBody = $(sensorElementId + ' .sensor_item_body')
-            sensorBody.css('background', onOffSensorBackgroundCalc(sensor));
+            sensorBody.css('background', backgroundCalcResult.background);
+
         },
         error: function (jqXHR, textStatus, errorThrown) {
             hideSensorLoader(sensorElementId)

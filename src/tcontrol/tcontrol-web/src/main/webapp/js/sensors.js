@@ -139,19 +139,6 @@ function renderSensorValues(sensorsMap, valuesMap) {
         sensorValue = valuesMap[sensorId];
         sensorElementId = '#sensor_element' + sensorId;
         renderSensor(sensorElementId, sensor, sensorValue??{sensorId: sensorId, value: 0.0, state: 'UNDEFINED'},);
-        const dateObject = new Date(sensorValue.timestamp);
-
-        const options = {
-          hour12: false, // Set to false to use 24-hour format
-          hour: '2-digit',
-          minute: '2-digit',
-          second: '2-digit' // Optional: include seconds if desired
-        };
-
-        const timeWithoutAmPm = dateObject.toLocaleTimeString('en-US', options);
-
-        $(sensorElementId +' .sensor_item_body .sensor_indicator_panel .sensor_time').text (timeWithoutAmPm)
-
         $(sensorElementId).show();
     }
 }
@@ -165,6 +152,20 @@ function renderSensor(sensorElementId, sensor, value) {
         onOffSensorRenderer(sensorElementId, value);
     } else if (sensor.type === 'ALARM') {
         alertSensorRenderer(sensorElementId, value);
+    }
+    if (typeof value.timestamp !== 'undefined'){
+        const dateObject = new Date(sensorValue.timestamp);
+
+        const options = {
+            hour12: false, // Set to false to use 24-hour format
+            hour: '2-digit',
+            minute: '2-digit',
+            second: '2-digit' // Optional: include seconds if desired
+        };
+
+        const timeWithoutAmPm = dateObject.toLocaleTimeString('en-US', options);
+
+        $(sensorElementId +' .sensor_item_body .sensor_indicator_panel .sensor_time').text (timeWithoutAmPm)
     }
 }
 

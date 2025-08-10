@@ -7,36 +7,29 @@
         <script src="js/jquery/jquery-2.1.1.js" type="text/javascript"></script>
         <script src="js/jquery/jquery-dateFormat.js" type="text/javascript"></script>
         <script src="js/sensors.js" type="text/javascript"></script>
+        <script src="//cdn.jsdelivr.net/npm/eruda"></script>
+        <script>eruda.init();</script>
         <link rel="stylesheet" type="text/css" href="sensors.css" media="screen" />
-        <script>
-            $(function() {
-                $("#includedContent").load("sensors-body.html",function() {
-                    renderSensorsOnLoad();
-                });
-            });
-        </script>
+        <link rel="stylesheet" type="text/css" href="sensors-body.css" media="screen" />
+        <link rel="stylesheet" type="text/css" href="start-heating.css" media="screen" />
     </head>
-
-    <dialog id="pop-up">Включается отопление</dialog>
-
-    <dialog id="start-heating">
-        <div id="start-heating-dialog-title" class="dialog-title"></div>
-        <div class="start-heating-form-group">
-            <label for="start-heating-input" class="dialog-input">Целевая температура:</label>
-            <input
-                    id="start-heating-input"
-                    type="number"
-                    name="start-heating-input"
-                    class="start-heating-input"
-                    min="6" max="30" value="20" maxlength="2" pattern="\d*">
-            <br><br>
-        </div>
-        <button id="start-heating-apply-btn" class="dialog-button">Применить</button>
-        <button id="start-heating-close-btn" class="dialog-button">Закрыть</button>
-    </dialog>
 
     <body class="page_body">
         <div id="includedContent"></div>
-        <div id="loader" class="center"></div>
+        <div id="loader" class="loader-center"></div>
     </body>
+
+    <div id="start-heating-dialog-placeholder"></div>
+
+    <script>
+        $(function(){
+              $("#start-heating-dialog-placeholder").load("start-heating.html");
+        });
+        $(function() {
+               $("#includedContent").load("sensors-body.html",function() {
+                    renderSensorsOnLoad();
+               })
+        })
+    </script>
+
 </html>

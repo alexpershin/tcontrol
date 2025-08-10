@@ -10,80 +10,6 @@
 .refreshed{height:32px;color: darkgrey; float: right;
             font:normal 10px/10px Verdana; text-align: right;}
 
-.sensor_pane{float: left}
-
-.sensor_items{
-    margin-top: 20px;
-}
-
-.sensor_item{
-    display:none;
-    float: left;
-    margin :25px 25px 20px 25px;
-}
-
-.sensor_items .sensor_item .sensor_item_body {
-    width:115px; height:115px; 
-    margin:0 auto 0px auto; 
-    text-align:center; 
-    border-radius: 20px; 
-    border: 2px solid;
-    border-color: darkgrey;
-    float: left;
-    line-height: 95px; /*height - 1.5gradient.height - 2 border*/
-}
-
-.sensor_indicator_panel{
-    height: 30px;
-    justify-content: space-around;
-    display: flex;
-}
-
-.sensor-loader {
-    z-index: 9999;
-    border: 3px solid #f3f3f3;
-    border-radius: 50%;
-    border-top: 3px solid #444444;
-    width: 16px;
-    height: 16px;
-    margin-left: 2px;
-    animation: spin 1s linear infinite;
-    visibility: hidden;
-}
-
-.sensor_item_body .sensor_gradient{
-    text-align:right;
-    font:normal 10px/10px Arial; 
-    color:red;
-    width: 2em;
-    margin-right: 10px;
-    margin-top: 2px;
-}
-
-.sensor_item_body .sensor_time{
-    text-align:center;
-    font:normal 10px/10px Arial;
-    color:blue;
-    width: 4em;
-    margin-left: 10px;
-    margin-top: 2px;
-}
-
-.sensor_item_body .sensor_value{
-    text-align:center;
-    font:normal 32px/32px Arial;
-    color:black;
-    margin: 16px 0 0 0;
-}
-
-.sensor_item .sensor_caption {
-    text-align:center;
-    font:normal 16px/16px Arial; 
-    color:black; 
-    height:25px;
-    margin:0 0 -5px 0;
-}
-
 #loader {
     z-index: 9999;
     border: 12px solid #f3f3f3;
@@ -94,7 +20,7 @@
     animation: spin 1s linear infinite;
 }
 
-.center {
+.loader-center {
     position: absolute;
     top: 0;
     bottom: 0;
@@ -119,46 +45,4 @@
     display: block;
     text-align: center;
     background: rgba(200,200,200,0.5) no-repeat center; /*.gif file or just div with message etc. however you like*/
-}
-
-#start-heating {
-    /* modal dialog styling */
-    border: 1px solid #ccc;
-    padding: 20px;
-    position: fixed; /* or absolute */
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    z-index: 1000;
-    border-radius: 20px;
-    margin-left: 0px;
-    margin-top: -25px;
-    background-color: lightgray;
-    font:normal 16px/16px Arial;
-    visibility: hidden;
-}
-
-.dialog-button{
-    font:normal 16px/16px Arial;
-    padding-block: 5px;
-    border-radius: 10px;
-    float: right;
-    margin-left: 10px;
-}
-.start-heating-input{
-    font:bold 16px/16px Arial;
-    padding-block: 5px;
-    border-radius: 5px;
-    margin-left: 10px;
-}
-
-.dialog-title{
-    text-align: center;
-    margin-bottom: 5px;
-    font:bold 16px/16px Arial;
-}
-
-#start-heating::backdrop {
-    /* Darken the background when modal is open */
-    background-color: rgba(0, 0, 0, 0.5);
 }

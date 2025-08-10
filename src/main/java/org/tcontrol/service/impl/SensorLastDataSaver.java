@@ -6,12 +6,7 @@ import org.springframework.stereotype.Component;
 import org.tcontrol.service.IStatisticsSaver;
 import org.tcontrol.service.models.SensorValue;
 
-import java.util.Deque;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Component
@@ -39,10 +34,26 @@ public class SensorLastDataSaver implements IStatisticsSaver {
 
     @Override
     public Map<Integer, SensorValue> currentValues() {
-        return cache.values().stream()
-                .map(Deque::peekLast)
-                .filter(Objects::nonNull)
-                .collect(Collectors.toMap(SensorValue::getSensorId, sv -> sv));
+
+        return cache.values().stream().map(values -> {
+            SensorValue lastValue = values.getLast();
+            Iterator<SensorValue> it = values.descendingIterator();
+            while (it.hasNext()) {
+                SensorValue sv = it.next();
+                long deltaT = lastValue.getTimestamp() - sv.getTimestamp();
+                if (deltaT >= 15 * 60 * 1000 && deltaT <= 20 * 60 * 1000) {// 15-20мин
+                    double gradient = lastValue.getValue() - sv.getValue();
+                    lastValue.setGradient(gradient);
+                    break;
+                }
+            }
+            return lastValue;
+        }).collect(Collectors.toMap(SensorValue::getSensorId, sv -> sv));
+        /** return cache.values().stream()
+         .map(Deque::peekLast)
+         .filter(Objects::nonNull)
+         .collect(Collectors.toMap(SensorValue::getSensorId, sv -> sv));
+         */
     }
 
     @Override

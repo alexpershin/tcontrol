@@ -14,6 +14,7 @@ import org.tcontrol.service.models.SensorValue;
 
 import javax.annotation.PostConstruct;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -29,15 +30,17 @@ public class TemperatureMonitorStub implements ITemperatureMonitor {
     private final IStatisticsSaver sensorLastDataSaver;
 
     @PostConstruct
-    public void postconstruct(){
+    public void postconstruct() {
         int successCount = 0;
         List<SensorConfiguration> sensors = sensorConfig.getSensors();
         List<SensorValue> values = new ArrayList<>();
         long timestamp = System.currentTimeMillis();
         List<SensorValue> sensorValues = Arrays.asList(
                 new SensorValue(0, "0", timestamp, 0.0),
+                new SensorValue(1, "1", timestamp - 900001, 24.1),
                 new SensorValue(1, "1", timestamp, 25.5),
-                new SensorValue(2, "2", timestamp, -22.6),
+                new SensorValue(2, "2", timestamp-900002, -22.6),
+                new SensorValue(2, "2", timestamp, -23.6),
                 new SensorValue(3, "3", timestamp, +2.4),
                 new SensorValue(4, "4", timestamp, -11.4),
                 new SensorValue(5, "5", timestamp, +23.7),
@@ -49,15 +52,18 @@ public class TemperatureMonitorStub implements ITemperatureMonitor {
         for (SensorConfiguration sensor : sensors) {
             int sensorId = sensor.getId();
             String sensorCode = sensor.getCode();
-            SensorValue value = sensorValues.get(sensorId);
-            value.setSensorCode(sensorCode);
-            value.setSensorId(sensorId);
+            List<SensorValue> sensorValuesTransformed = sensorValues.stream()
+                    .filter(s -> s.getSensorId() == sensorId).map(s -> {
+                        s.setSensorCode(sensorCode);
+                        return s;
+                    }).collect(Collectors.toList());
+            SensorValue value = sensorValuesTransformed.get(sensorValuesTransformed.size() - 1);
             sensorValueMap.put(sensorCode, value);
             values.add(value);
             successCount++;
         }
         csvWriter.write(values);
-        sensorLastDataSaver.write(values);
+        sensorLastDataSaver.write(sensorValues);
 
         log.info("Reading temperature completed(read {} sensors)", successCount);
     }

@@ -70,6 +70,87 @@ public class SensorLastDataSaverTest {
     }
 
     @Test
+    public void testGradient() {
+        List<SensorValue> values = Arrays.asList(
+                new SensorValue(1, "abc1", 1L, 1.0),
+                new SensorValue(2, "abc2", 100000L, 1.0),
+                new SensorValue(2, "abc2", 300000L, 3.0),
+                new SensorValue(2, "abc2", 1000000L, 4.0)
+        );
+        sensorLastDataSaver.write(values);
+        assertEquals(sensorLastDataSaver.currentValues().size(), 2);
+        assertEquals(sensorLastDataSaver.currentValues().get(1).getValue(), 1.0);
+        assertEquals(sensorLastDataSaver.currentValues().get(2).getValue(), 4.0);
+        assertEquals(sensorLastDataSaver.currentValues().get(1).getGradient(), null);
+        assertEquals(sensorLastDataSaver.currentValues().get(2).getGradient(), 3.0);
+    }
+
+    @Test
+    public void testGradient2() {
+        List<SensorValue> values = Arrays.asList(
+                new SensorValue(1, "abc1", 1L, 1.0),
+                new SensorValue(2, "abc2", 20L, 1.0),
+                new SensorValue(2, "abc2", 300000L, 3.0),
+                new SensorValue(2, "abc2", 1000000L, 4.0)
+        );
+        sensorLastDataSaver.write(values);
+        assertEquals(sensorLastDataSaver.currentValues().size(), 2);
+        assertEquals(sensorLastDataSaver.currentValues().get(1).getValue(), 1.0);
+        assertEquals(sensorLastDataSaver.currentValues().get(2).getValue(), 4.0);
+        assertEquals(sensorLastDataSaver.currentValues().get(1).getGradient(), null);
+        assertEquals(sensorLastDataSaver.currentValues().get(2).getGradient(), 3.0);
+    }
+
+    @Test
+    public void testGradient3() {
+        List<SensorValue> values = Arrays.asList(
+                new SensorValue(1, "abc1", 1L, 1.0),
+                new SensorValue(2, "abc2", 20L, 1.0),
+                new SensorValue(2, "abc2", 100000L, 3.0),
+                new SensorValue(2, "abc2", 1200020L, 4.0)
+        );
+        sensorLastDataSaver.write(values);
+        assertEquals(sensorLastDataSaver.currentValues().size(), 2);
+        assertEquals(sensorLastDataSaver.currentValues().get(1).getValue(), 1.0);
+        assertEquals(sensorLastDataSaver.currentValues().get(2).getValue(), 4.0);
+        assertEquals(sensorLastDataSaver.currentValues().get(1).getGradient(), null);
+        assertEquals(sensorLastDataSaver.currentValues().get(2).getGradient(), 1.0);
+    }
+
+
+    @Test
+    public void testGradient4() {
+        List<SensorValue> values = Arrays.asList(
+                new SensorValue(1, "abc1", 1L, 1.0),
+                new SensorValue(2, "abc2", 20L, 1.0),
+                new SensorValue(2, "abc2", 100000L, 3.0),
+                new SensorValue(2, "abc2", 1300000L, 4.0)
+        );
+        sensorLastDataSaver.write(values);
+        assertEquals(sensorLastDataSaver.currentValues().size(), 2);
+        assertEquals(sensorLastDataSaver.currentValues().get(1).getValue(), 1.0);
+        assertEquals(sensorLastDataSaver.currentValues().get(2).getValue(), 4.0);
+        assertEquals(sensorLastDataSaver.currentValues().get(1).getGradient(), null);
+        assertEquals(sensorLastDataSaver.currentValues().get(2).getGradient(), 1.0);
+    }
+
+    @Test
+    public void testGradient5() {
+        List<SensorValue> values = Arrays.asList(
+                new SensorValue(1, "abc1", 1L, 1.0),
+                new SensorValue(2, "abc2", 20L, 1.0),
+                new SensorValue(2, "abc2", 100000L, 3.0),
+                new SensorValue(2, "abc2", 1300001L, 4.0)
+        );
+        sensorLastDataSaver.write(values);
+        assertEquals(sensorLastDataSaver.currentValues().size(), 2);
+        assertEquals(sensorLastDataSaver.currentValues().get(1).getValue(), 1.0);
+        assertEquals(sensorLastDataSaver.currentValues().get(2).getValue(), 4.0);
+        assertEquals(sensorLastDataSaver.currentValues().get(1).getGradient(), null);
+        assertEquals(sensorLastDataSaver.currentValues().get(2).getGradient(), null);
+    }
+
+    @Test
     public void emptyTest() {
         assertEquals(sensorLastDataSaver.lastValues(1).size(), 0);
     }

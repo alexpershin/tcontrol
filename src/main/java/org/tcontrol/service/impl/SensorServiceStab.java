@@ -1,8 +1,6 @@
 package org.tcontrol.service.impl;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.context.ApplicationContext;
 import org.tcontrol.config.props.RelayPinsConfig;
 import org.tcontrol.mappers.SensorMapper;
 import org.tcontrol.service.IStatisticsSaver;

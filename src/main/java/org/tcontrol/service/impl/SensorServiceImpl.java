@@ -58,8 +58,9 @@ public class SensorServiceImpl implements SensorService {
                 .map(Optional::get)
                 .map(sc -> {
                     SensorValue sensorValue = sensorLastDataSaver.currentValues().get(sc.getId());
-                    return new SensorValue(sc.getId(), sc.getCode(), sensorValue.getTimestamp(),
-                            sensorValue.getValue());
+                    SensorValue sensorValueClone = new SensorValue(sc.getId(), sc.getCode(), sensorValue.getTimestamp(), sensorValue.getValue());
+                    sensorValueClone.setGradient(sensorValue.getGradient());
+                    return sensorValueClone;
                 })
                 .collect(Collectors.toList());
     }

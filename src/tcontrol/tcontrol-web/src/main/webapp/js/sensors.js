@@ -138,7 +138,7 @@ function renderSensorValues(sensorsMap, valuesMap) {
         const sensorId = sensor.id
         sensorValue = valuesMap[sensorId];
         sensorElementId = '#sensor_element' + sensorId;
-        renderSensor(sensorElementId, sensor, sensorValue??{sensorId: sensorId, value: 0.0, state: 'UNDEFINED'},);
+        renderSensor(sensorElementId, sensor, sensorValue??{sensorId: sensorId, value: undefined, state: 'UNDEFINED'},);
         $(sensorElementId).show();
     }
 }
@@ -218,14 +218,14 @@ function sensorBackgroundCalc(value) {
 }
 
 function voltageSensorRenderer(sensorElementId, value) {
-    var resValue = value.value + ' V';
+    var resValue = value.value ?? '--' + ' V';
     $(sensorElementId + ' .sensor_item_body .sensor_value').text(resValue);
     sensorBody = $(sensorElementId + ' .sensor_item_body');
     sensorBody.css('background', sensorBackgroundCalc(value));
 }
 
-function onOffSensorRenderer(sensorElementId, sensor) {
-    const backgroundCalcResult = onOffSensorBackgroundCalc(sensor);
+function onOffSensorRenderer(sensorElementId, sensorValue) {
+    const backgroundCalcResult = onOffSensorBackgroundCalc(sensorValue);
 
     const sensorElement = $(sensorElementId + ' .sensor_item_body .sensor_value')
     const sensorBody = $(sensorElementId + ' .sensor_item_body')
@@ -236,7 +236,7 @@ function onOffSensorRenderer(sensorElementId, sensor) {
             window.location.protocol
             + "//" + window.location.host
             + ":/tcontrol/api/thermostat_current_temperature?sensorId="
-            + sensor.sensorId
+            + sensorValue.sensorId
 
         $.ajax({
                 type: 'POST',
@@ -246,8 +246,8 @@ function onOffSensorRenderer(sensorElementId, sensor) {
                 beforeSend: function () {
                     showSensorLoader(sensorElementId)
                 },
-                success: function (value) {
-                     startHeatingDialog(sensorElementId, sensor, value)
+                success: function (currentTemperature) {
+                     startHeatingDialog(sensorElementId, sensorValue, currentTemperature)
                 },
                 error: function (jqXHR, textStatus, errorThrown) {
                     hideSensorLoader(sensorElementId)
@@ -264,7 +264,7 @@ function onOffSensorRenderer(sensorElementId, sensor) {
     sensorBody.css('border-radius', 57.5);
 }
 
-function startHeatingDialog(sensorElementId, sensor, currentTemperature){
+function startHeatingDialog(sensorElementId, sensorValue, currentTemperature){
     const startHeatingDialog = document.getElementById('start-heating');
 
     var applyBtn = document.getElementById('start-heating-apply-btn');
@@ -279,7 +279,7 @@ function startHeatingDialog(sensorElementId, sensor, currentTemperature){
 
     applyBtn.addEventListener('click', () => {
          if(validateSensorTemperature(startHeatingDialogInput)){
-               startHeating(sensorElementId, sensor)
+               startHeating(sensorElementId, sensorValue)
          }
     });
     console.log('current temperature: ' + currentTemperature);
@@ -298,6 +298,9 @@ function onOffSensorBackgroundCalc(value) {
     } else if (Number(value.value) === 1.0) {
         statusText = 'On';
         background = STATE_BACKGROUND.get('ON');
+    } else{
+        statusText = '--';
+        background = STATE_BACKGROUND.get('UNDEFINED');
     }
     return {
         status: statusText,
@@ -372,7 +375,7 @@ function hideSensorLoader(sensorElementId){
    $('.sensor_item').find('.sensor_item_body').css('pointer-events', 'all')
 }
 
-function startHeating(sensorElementId, sensor){
+function startHeating(sensorElementId, sensorValue){
     const sensorElement = $(sensorElementId + ' .sensor_item_body .sensor_value')
     const startHeatingDialog = document.getElementById('start-heating');
     const popUpElement = document.getElementById("pop-up");
@@ -385,7 +388,7 @@ function startHeating(sensorElementId, sensor){
         +'/tcontrol/api/start_process';
 
    var onOffRequest = {
-        sensorId: sensor.sensorId,
+        sensorId: sensorValue.sensorId,
         newValue: startHeatingDialogInput.value
     }
 
@@ -402,8 +405,8 @@ function startHeating(sensorElementId, sensor){
         },
         success: function (data) {
             console.log('on finish: ' + data.value);
-            sensor.value = data.value;
-            const backgroundCalcResult = onOffSensorBackgroundCalc(sensor)
+            sensorValue.value = data.value;
+            const backgroundCalcResult = onOffSensorBackgroundCalc(sensorValue)
             sensorElement.text(backgroundCalcResult.status);
             const sensorBody = $(sensorElementId + ' .sensor_item_body')
             sensorBody.css('background', backgroundCalcResult.background);

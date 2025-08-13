@@ -4,6 +4,7 @@ function renderSensorsOnLoad() {
     setupDialogs()
 }
 
+window.renderSensorsOnLoad = renderSensorsOnLoad;
 
 function loadStubDataOnLoad() {
 //Stub data and rendering test

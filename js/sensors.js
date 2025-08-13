@@ -140,7 +140,11 @@ function renderSensorValues(sensorsMap, valuesMap) {
         const sensorId = sensor.id
         sensorValue = valuesMap[sensorId];
         sensorElementId = '#sensor_element' + sensorId;
-        renderSensor(sensorElementId, sensor, sensorValue??{sensorId: sensorId, value: undefined, state: 'UNDEFINED'},);
+        renderSensor(
+            sensorElementId,
+            sensor,
+            sensorValue ? sensorValue : {sensorId: sensorId, value: undefined, state: 'UNDEFINED'},
+        );
         $(sensorElementId).show();
     }
 }
@@ -220,7 +224,7 @@ function sensorBackgroundCalc(value) {
 }
 
 function voltageSensorRenderer(sensorElementId, value) {
-    var resValue = value.value ?? '--' + ' V';
+    var resValue = value.value ? value.value : '--' + ' V';
     $(sensorElementId + ' .sensor_item_body .sensor_value').text(resValue);
     sensorBody = $(sensorElementId + ' .sensor_item_body');
     sensorBody.css('background', sensorBackgroundCalc(value));

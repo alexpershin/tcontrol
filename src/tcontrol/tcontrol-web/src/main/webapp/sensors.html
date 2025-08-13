@@ -27,7 +27,14 @@
         });
         $(function() {
                $("#includedContent").load("sensors-body.html", function() {
-                    $.getScript("js/sensors.js", function(){ renderSensorsOnLoad();});
+                    $.getScript("js/sensors.js")
+                        .done( function(script, textStatus){
+                                console.log("Loading sensors.js: "+textStatus);
+                                renderSensorsOnLoad();
+                        })
+                        .fail(function( jqxhr, settings, exception ) {
+                             console.log("error: " + exception);
+                        });
                })
         })
     </script>

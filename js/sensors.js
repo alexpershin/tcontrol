@@ -4,6 +4,7 @@ function renderSensorsOnLoad() {
     setupDialogs()
 }
 
+
 function loadStubDataOnLoad() {
 //Stub data and rendering test
     var sensorsJsonData = [
@@ -196,7 +197,7 @@ function calcGradientValueAndColor(gradient) {
 }
 
 var STATE_BACKGROUND = (function () {
-    var private = {
+    const states = {
         'NORMAL': 'linear-gradient(to bottom, lightgreen, greenyellow)',
         'ALERT': 'linear-gradient(to bottom, orange, red)',
         'WARNING': 'linear-gradient(to bottom, yellow, orange)',
@@ -208,7 +209,7 @@ var STATE_BACKGROUND = (function () {
     };
     return {
         get: function (name) {
-            return private[name];
+            return states[name];
         }
     };
 })();

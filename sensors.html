@@ -6,7 +6,7 @@
         <meta charset="UTF-8">
         <script src="js/jquery/jquery-2.1.1.js" type="text/javascript"></script>
         <script src="js/jquery/jquery-dateFormat.js" type="text/javascript"></script>
-        <script src="js/sensors.js" type="text/javascript"></script>
+        <script src="js/sensors.js" type="module"></script>
         <script src="//cdn.jsdelivr.net/npm/eruda"></script>
         <script>eruda.init();</script>
         <link rel="stylesheet" type="text/css" href="sensors.css" media="screen" />
@@ -26,8 +26,8 @@
               $("#start-heating-dialog-placeholder").load("start-heating.html");
         });
         $(function() {
-               $("#includedContent").load("sensors-body.html",function() {
-                    renderSensorsOnLoad();
+               $("#includedContent").load("sensors-body.html", function() {
+                    $.getScript("js/sensors.js", function(){ renderSensorsOnLoad();});
                })
         })
     </script>

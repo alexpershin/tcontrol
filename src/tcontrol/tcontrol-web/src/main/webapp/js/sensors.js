@@ -224,7 +224,7 @@ function sensorBackgroundCalc(value) {
 }
 
 function voltageSensorRenderer(sensorElementId, value) {
-    var resValue = value.value ? value.value : '--' + ' V';
+    var resValue = value.value ? value.value + ' V' : '--' ;
     $(sensorElementId + ' .sensor_item_body .sensor_value').text(resValue);
     sensorBody = $(sensorElementId + ' .sensor_item_body');
     sensorBody.css('background', sensorBackgroundCalc(value));
@@ -291,8 +291,21 @@ function startHeatingDialog(sensorElementId, sensorValue, currentTemperature){
     console.log('current temperature: ' + currentTemperature);
 
     startHeatingDialogInput.value = currentTemperature
+
+    showHeatingDialog()
+}
+
+function showHeatingDialog(){
+    const startHeatingDialog = document.getElementById('start-heating');
     startHeatingDialog.style.visibility='visible'
-    startHeatingDialog.showModal()
+    document.getElementById('overlay').style.visibility='visible'
+    startHeatingDialog.show()
+}
+
+function closeHeatingDialog(){
+    const startHeatingDialog = document.getElementById('start-heating');
+    startHeatingDialog.style.visibility='hidden'
+    document.getElementById('overlay').style.visibility='hidden'
 }
 
 function onOffSensorBackgroundCalc(value) {
@@ -366,8 +379,7 @@ function setupDialogs(){
     const startHeatingDialog = document.getElementById('start-heating');
     const closeBtn = document.getElementById('start-heating-close-btn');
     closeBtn.addEventListener('click', () => {
-        startHeatingDialog.style.visibility='hidden'
-        startHeatingDialog.close()
+        closeHeatingDialog()
     });
 }
 
@@ -385,7 +397,7 @@ function startHeating(sensorElementId, sensorValue){
     const sensorElement = $(sensorElementId + ' .sensor_item_body .sensor_value')
     const startHeatingDialog = document.getElementById('start-heating');
     const popUpElement = document.getElementById("pop-up");
-    popUpElement.show();
+    popUpElement.style.visibility='visible';
 
     const startHeatingDialogInput = document.getElementById("start-heating-input");
 
@@ -398,7 +410,7 @@ function startHeating(sensorElementId, sensorValue){
         newValue: startHeatingDialogInput.value
     }
 
-    startHeatingDialog.close();
+    closeHeatingDialog()
 
     $.ajax({
         type: 'POST',
@@ -416,18 +428,19 @@ function startHeating(sensorElementId, sensorValue){
             sensorElement.text(backgroundCalcResult.status);
             const sensorBody = $(sensorElementId + ' .sensor_item_body')
             sensorBody.css('background', backgroundCalcResult.background);
-
         },
         error: function (jqXHR, textStatus, errorThrown) {
             hideSensorLoader(sensorElementId)
-            popUpElement.close();
-            startHeatingDialog.close();
+//            popUpElement.close();
+            popUpElement.style.visibility='hidden'
+            closeHeatingDialog()
             alert("Error try again later: " + textStatus)
         },
         complete: function () {
             hideSensorLoader(sensorElementId)
-            popUpElement.close();
-            startHeatingDialog.close();
+//            popUpElement.close();
+            popUpElement.style.visibility='hidden'
+            closeHeatingDialog()
         }
     });
 }

@@ -17,6 +17,7 @@
     <body class="page_body">
         <div id="includedContent"></div>
         <div id="loader" class="loader-center"></div>
+        <div id="overlay" class="overlay"></div>
     </body>
 
     <div id="start-heating-dialog-placeholder"></div>
@@ -33,7 +34,7 @@
                                 renderSensorsOnLoad();
                         })
                         .fail(function( jqxhr, settings, exception ) {
-                             console.log("error: " + exception);
+                             console.error("Exception thrown while loading module sensors.js", exception);
                         });
                })
         })

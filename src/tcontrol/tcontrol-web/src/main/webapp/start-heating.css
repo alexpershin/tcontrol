@@ -48,3 +48,8 @@
     /* Darken the background when modal is open */
     background-color: rgba(0, 0, 0, 0.5);
 }
+
+.pop-up{
+    visibility: hidden;
+    display: block;
+}

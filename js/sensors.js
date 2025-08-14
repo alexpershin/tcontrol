@@ -296,15 +296,12 @@ function startHeatingDialog(sensorElementId, sensorValue, currentTemperature){
 }
 
 function showHeatingDialog(){
-    const startHeatingDialog = document.getElementById('start-heating');
-    startHeatingDialog.style.visibility='visible'
+    document.getElementById('start-heating').style.visibility='visible'
     document.getElementById('overlay').style.visibility='visible'
-    startHeatingDialog.show()
 }
 
 function closeHeatingDialog(){
-    const startHeatingDialog = document.getElementById('start-heating');
-    startHeatingDialog.style.visibility='hidden'
+    document.getElementById('start-heating').style.visibility='hidden'
     document.getElementById('overlay').style.visibility='hidden'
 }
 
@@ -396,6 +393,7 @@ function hideSensorLoader(sensorElementId){
 function startHeating(sensorElementId, sensorValue){
     const sensorElement = $(sensorElementId + ' .sensor_item_body .sensor_value')
     const startHeatingDialog = document.getElementById('start-heating');
+
     const popUpElement = document.getElementById("pop-up");
     popUpElement.style.visibility='visible';
 

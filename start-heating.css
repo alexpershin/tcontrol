@@ -19,6 +19,7 @@
     background-color: lightgray;
     font:normal 16px/16px Arial;
     visibility: hidden;
+    display: block;
 }
 
 .dialog-button{

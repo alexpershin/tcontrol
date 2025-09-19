@@ -7,9 +7,7 @@ import org.springframework.stereotype.Component;
 import org.tcontrol.sms.ISMSCommand;
 import org.tcontrol.service.IThermostat;
 
-@Component
 @Slf4j
-@Qualifier("thermostatOffCommand")
 @RequiredArgsConstructor
 public class ThermostatOffCommand implements ISMSCommand {
 

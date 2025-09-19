@@ -2,12 +2,9 @@ package org.tcontrol.hardware.impl;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.stereotype.Service;
 import org.tcontrol.config.props.SensorConfig;
 import org.tcontrol.config.props.SensorConfiguration;
 import org.tcontrol.hardware.ITemperatureMonitor;
-import org.tcontrol.hardware.ITemperatureReader;
 import org.tcontrol.service.IStatisticsSaver;
 import org.tcontrol.service.impl.CSVStatisticSaver;
 import org.tcontrol.service.models.SensorValue;
@@ -16,10 +13,8 @@ import javax.annotation.PostConstruct;
 import java.util.*;
 import java.util.stream.Collectors;
 
-@Service
 @Slf4j
 @RequiredArgsConstructor
-@ConditionalOnProperty(value = "main-config.sensorsStub", havingValue = "true")
 public class TemperatureMonitorStub implements ITemperatureMonitor {
     final private Map<String, SensorValue> sensorValueMap = new HashMap<>();
 
@@ -30,7 +25,7 @@ public class TemperatureMonitorStub implements ITemperatureMonitor {
     private final IStatisticsSaver sensorLastDataSaver;
 
     @PostConstruct
-    public void postconstruct() {
+    public void init() {
         int successCount = 0;
         List<SensorConfiguration> sensors = sensorConfig.getSensors();
         List<SensorValue> values = new ArrayList<>();

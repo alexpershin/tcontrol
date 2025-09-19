@@ -13,9 +13,10 @@ public class ButtonHandlerConfig {
 
   private String buttonPinId;
   private String buttonPinName;
+  private String thermostat;
 
   @PostConstruct
-  public void postConstruct() {
+  public void init() {
     if (pin() == null) {
       throw new IllegalArgumentException("pin '" + buttonPinId + "' doesn't exist");
     }

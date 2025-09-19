@@ -12,7 +12,6 @@ import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -32,16 +31,19 @@ import static java.net.HttpURLConnection.HTTP_OK;
 @Slf4j
 @RestController
 @RequestMapping("tcontrol/api")
-@RequiredArgsConstructor
 public class SensorController {
     private final SensorService sensorService;
 
     //Temp user
     private static final int CURRENT_USER_ID = 1;
 
+    public SensorController(SensorService sensorService) {
+        this.sensorService = sensorService;
+    }
+
     @PostConstruct
-    public void AfterBegin() {
-        log.debug("after begin");
+    public void init() {
+        log.debug("init");
     }
 
     /**

@@ -3,6 +3,7 @@ import com.pi4j.io.gpio.PinState;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.tcontrol.config.props.ThermostatsConfig;
 import org.tcontrol.hardware.ITemperatureMonitor;
 import org.tcontrol.service.IThermostat;
 import org.tcontrol.service.ITimer;
@@ -10,140 +11,142 @@ import org.tcontrol.service.impl.Thermostat;
 import org.tcontrol.service.models.SensorValue;
 import org.tcontrol.config.props.SensorConfig;
 import org.tcontrol.config.props.SensorConfiguration;
-import org.tcontrol.config.props.ThermostatConfig;
 import org.tcontrol.handler.IRelayHandler;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
+
+import static org.tcontrol.config.props.ThermostatsConfig.ThermostatConfig;
 
 @Configuration
 public class CommandConfiguration {
 
-  private static final String GPIO_00 = "GPIO_00";
-  private static final String SENSOR_CODE = "abc";
+    private static final String GPIO_00 = "GPIO_00";
+    private static final String SENSOR_CODE = "abc";
 
-  @Bean
-  public ThermostatConfig thermostatConfig() {
-    ThermostatConfig thermostatConfig = ThermostatConfig.builder().build();
-    thermostatConfig.setDelta(0.5f);
-    thermostatConfig.setNightBegin(60 * 60 * 23);
-    thermostatConfig.setNightEnd(60 * 60 * 7);
-    thermostatConfig.setSensor(SENSOR_CODE);
-    thermostatConfig.setTDay(12.0f);
-    thermostatConfig.setTNight(16.0f);
-    thermostatConfig.setRelayPins(new ArrayList<>());
-    thermostatConfig.getRelayPins().add(GPIO_00);
-    return thermostatConfig;
-  }
+    @Bean
+    public ThermostatConfig thermostatConfig() {
+        ThermostatConfig thermostatConfig = ThermostatConfig.builder().build();
+        thermostatConfig.setDelta(0.5f);
+        thermostatConfig.setNightBegin(60 * 60 * 23);
+        thermostatConfig.setNightEnd(60 * 60 * 7);
+        thermostatConfig.setSensor(SENSOR_CODE);
+        thermostatConfig.setTDay(12.0f);
+        thermostatConfig.setTNight(16.0f);
+        thermostatConfig.setRelayPins(new ArrayList<>());
+        thermostatConfig.getRelayPins().add(GPIO_00);
+        thermostatConfig.setName("elect");
+        return thermostatConfig;
+    }
 
-  @Bean
-  public ThermostatConfig thermostatConfig2() {
-    ThermostatConfig thermostatConfig = ThermostatConfig.builder().build();
-    thermostatConfig.setDelta(0.5f);
-    thermostatConfig.setNightBegin(60 * 60 * 23);
-    thermostatConfig.setNightEnd(60 * 60 * 7);
-    thermostatConfig.setSensor(SENSOR_CODE);
-    thermostatConfig.setTDay(18.0f);
-    thermostatConfig.setTNight(20.0f);
-    thermostatConfig.setRelayPins(new ArrayList<>());
-    thermostatConfig.getRelayPins().add(GPIO_00);
-    return thermostatConfig;
-  }
+    @Bean
+    public ThermostatConfig thermostatConfig2() {
+        ThermostatConfig thermostatConfig = ThermostatConfig.builder().build();
+        thermostatConfig.setDelta(0.5f);
+        thermostatConfig.setNightBegin(60 * 60 * 23);
+        thermostatConfig.setNightEnd(60 * 60 * 7);
+        thermostatConfig.setSensor(SENSOR_CODE);
+        thermostatConfig.setTDay(18.0f);
+        thermostatConfig.setTNight(20.0f);
+        thermostatConfig.setRelayPins(new ArrayList<>());
+        thermostatConfig.getRelayPins().add(GPIO_00);
+        thermostatConfig.setName("gast");
+        return thermostatConfig;
+    }
 
-  @Bean
-  public ITemperatureMonitor temperatureMonitor() {
-    return new ITemperatureMonitor() {
+    @Bean
+    public ThermostatsConfig thermostatsConfig(ThermostatConfig thermostatConfig, ThermostatConfig thermostatConfig2){
+        return new ThermostatsConfig(Arrays.asList(thermostatConfig, thermostatConfig2));
+    }
 
-      final Map<String, SensorValue> map = new HashMap<>();
+    @Bean
+    public ITemperatureMonitor temperatureMonitor() {
+        return new ITemperatureMonitor() {
 
-      {
-        SensorValue v = new SensorValue();
-        v.setSensorCode(SENSOR_CODE);
-        v.setValue(13.0);
-        map.put(SENSOR_CODE, v);
+            final Map<String, SensorValue> map = new HashMap<>();
 
-      }
+            {
+                SensorValue v = new SensorValue();
+                v.setSensorCode(SENSOR_CODE);
+                v.setValue(13.0);
+                map.put(SENSOR_CODE, v);
 
-      @Override
-      public Map<String, SensorValue> getSensorValueMap() {
-        return map;
-      }
-    };
-  }
+            }
 
-  @Bean
-  public IRelayHandler relayHandler() {
-    return new IRelayHandler() {
-      PinState currentPinState = PinState.LOW;
+            @Override
+            public Map<String, SensorValue> getSensorValueMap() {
+                return map;
+            }
+        };
+    }
 
-      @Override
-      public PinState turnOnRelay(Pin controlPin) {
-        currentPinState = PinState.HIGH;
-        return currentPinState;
-      }
+    @Bean
+    public IRelayHandler relayHandler() {
+        return new IRelayHandler() {
+            PinState currentPinState = PinState.LOW;
 
-      @Override
-      public PinState turnOffRelay(Pin controlPin) {
-        currentPinState = PinState.LOW;
-        return currentPinState;
-      }
+            @Override
+            public PinState turnOnRelay(Pin controlPin) {
+                currentPinState = PinState.HIGH;
+                return currentPinState;
+            }
 
-      @Override
-      public PinState getPinState(Pin controlPin) {
-        return currentPinState;
-      }
-    };
-  }
+            @Override
+            public PinState turnOffRelay(Pin controlPin) {
+                currentPinState = PinState.LOW;
+                return currentPinState;
+            }
 
-  @Bean
-  public ITimer timer() {
-    return () -> LocalDateTime.of(LocalDate.now(), LocalTime.of(12, 0));
-  }
+            @Override
+            public PinState getPinState(Pin controlPin) {
+                return currentPinState;
+            }
+        };
+    }
 
-  @Bean
-  @Qualifier("thermostatElectro")
-  public IThermostat thermostat(ThermostatConfig thermostatConfig,
-                                ITemperatureMonitor temperatureMonitor,
-                                IRelayHandler relayHandler,
-                                ITimer timer) {
-    return new Thermostat(
-        thermostatConfig,
-        temperatureMonitor,
-        relayHandler,
-        timer,
-        "elect"
-    );
-  }
+    @Bean
+    public ITimer timer() {
+        return () -> LocalDateTime.of(LocalDate.now(), LocalTime.of(12, 0));
+    }
 
-  @Bean
-  @Qualifier("thermostatGas")
-  public IThermostat thermostat2(ThermostatConfig thermostatConfig2,
-      ITemperatureMonitor temperatureMonitor,
-      IRelayHandler relayHandler,
-      ITimer timer) {
-    return new Thermostat(
-        thermostatConfig2,
-        temperatureMonitor,
-        relayHandler,
-        timer,
-        "gast"
-    );
-  }
+    @Bean
+    public Map<String, IThermostat> dynamicThermostats(ThermostatsConfig thermostatsConfig,
+                                                       ITemperatureMonitor temperatureMonitor,
+                                                       IRelayHandler relayHandler,
+                                                       ITimer timer) {
+        Map<String, IThermostat> thermostatMap = new HashMap<>();
 
-  @Bean
-  public SensorConfig sensorConfig() {
-    SensorConfig sensorConfig = new SensorConfig();
+        Thermostat t1 = new Thermostat("elect");
+        t1.setThermostatsConfig(thermostatsConfig);
+        t1.setTemperatureMonitor(temperatureMonitor);
+        t1.setRelayHandler(relayHandler);
+        t1.setTimer(timer);
+        t1.init();
 
-    SensorConfiguration sensorConfiguration = new SensorConfiguration();
-    sensorConfiguration.setName("дом");
-    sensorConfiguration.setCode(SENSOR_CODE);
+        Thermostat t2 = new Thermostat("gast");
+        t2.setThermostatsConfig(thermostatsConfig);
+        t2.setTemperatureMonitor(temperatureMonitor);
+        t2.setRelayHandler(relayHandler);
+        t2.setTimer(timer);
+        t2.init();
 
-    sensorConfig.setSensors(Collections.singletonList(sensorConfiguration));
-    return sensorConfig;
-  }
+        thermostatMap.put("elect", t1);
+        thermostatMap.put("gast", t2);
+
+        return thermostatMap;
+    }
+
+    @Bean
+    public SensorConfig sensorConfig() {
+        SensorConfig sensorConfig = new SensorConfig();
+
+        SensorConfiguration sensorConfiguration = new SensorConfiguration();
+        sensorConfiguration.setName("дом");
+        sensorConfiguration.setCode(SENSOR_CODE);
+
+        sensorConfig.setSensors(Collections.singletonList(sensorConfiguration));
+        return sensorConfig;
+    }
 }

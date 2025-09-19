@@ -2,12 +2,12 @@ import com.pi4j.io.gpio.Pin;
 import com.pi4j.io.gpio.PinState;
 import com.pi4j.io.gpio.RaspiPin;
 import org.junit.jupiter.api.BeforeEach;
+import org.tcontrol.config.props.ThermostatsConfig;
 import org.tcontrol.service.models.SensorValue;
 import org.tcontrol.handler.IRelayHandler;
 import org.tcontrol.hardware.ITemperatureMonitor;
 import org.tcontrol.service.ITimer;
 import org.tcontrol.service.impl.Thermostat;
-import org.tcontrol.config.props.ThermostatConfig;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -15,6 +15,7 @@ import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Collections;
 
 import org.junit.jupiter.api.Test;
 
@@ -27,14 +28,15 @@ public class ThermostatTest {
     private static final String GPIO_00 = "GPIO_00";
     private static final String SENSOR_CODE = "abc";
     private Thermostat thermostat;
-    private ThermostatConfig thermostatConfig;
+    private ThermostatsConfig.ThermostatConfig thermostatConfig;
+    private ThermostatsConfig thermostatsConfig;
     private ITemperatureMonitor temperatureMonitor;
     private IRelayHandler relayHandler;
     private ITimer timer;
 
     @BeforeEach
     public void before() {
-        thermostatConfig = ThermostatConfig.builder().build();
+        thermostatConfig = ThermostatsConfig.ThermostatConfig.builder().build();
         thermostatConfig.setDelta(0.5f);
         thermostatConfig.setNightBegin(60 * 60 * 23);
         thermostatConfig.setNightEnd(60 * 60 * 7);
@@ -43,6 +45,9 @@ public class ThermostatTest {
         thermostatConfig.setTNight(16.0f);
         thermostatConfig.setRelayPins(new ArrayList<>());
         thermostatConfig.getRelayPins().add(GPIO_00);
+        thermostatConfig.setName("termo");
+
+        thermostatsConfig = new ThermostatsConfig(Collections.singletonList(thermostatConfig));
 
         temperatureMonitor = new ITemperatureMonitor() {
 
@@ -86,15 +91,12 @@ public class ThermostatTest {
         timer = mock(ITimer.class);
         when(timer.getCurrentTime()).thenReturn(LocalDateTime.of(LocalDate.now(), LocalTime.of(12, 0)));
 
-        thermostat = new Thermostat(
-                thermostatConfig,
-                temperatureMonitor,
-                relayHandler,
-                timer,
-                "termo"
-        );
-        thermostat.postConstruct();
-
+        thermostat = new Thermostat("termo");
+        thermostat.setThermostatsConfig(thermostatsConfig);
+        thermostat.setTemperatureMonitor(temperatureMonitor);
+        thermostat.setRelayHandler(relayHandler);
+        thermostat.setTimer(timer);
+        thermostat.init();
     }
 
     @Test
@@ -216,7 +218,7 @@ public class ThermostatTest {
     }
 
     @Test
-    public void testOnOff() {
+    public void testOnOff(){
         when(timer.getCurrentTime()).thenReturn(LocalDateTime.of(LocalDate.now(), LocalTime.of(3, 0)));
 
         Pin heatingPin = RaspiPin.getPinByName(thermostatConfig.getRelayPins().get(0));

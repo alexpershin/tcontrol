@@ -3,7 +3,7 @@ import com.pi4j.io.gpio.RaspiPin;
 import org.junit.jupiter.api.BeforeEach;
 import org.mockito.Mockito;
 import org.tcontrol.handler.IRelayHandler;
-import org.tcontrol.service.RelayAggregator;
+import org.tcontrol.service.impl.RelayAggregator;
 import org.tcontrol.config.props.RelayAggregatorConfig;
 
 import static org.mockito.Mockito.*;

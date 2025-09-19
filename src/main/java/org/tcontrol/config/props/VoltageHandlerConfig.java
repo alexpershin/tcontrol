@@ -20,7 +20,7 @@ public class VoltageHandlerConfig {
   private List<String> relayPins =  new ArrayList<>();
 
   @PostConstruct
-  public void postConstruct() {
+  public void init() {
     relayPins.forEach(RaspiPin::getPinByName);
   }
 

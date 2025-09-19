@@ -1,13 +1,13 @@
 package org.tcontrol.service.impl;
 
 import com.pi4j.io.gpio.PinState;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import lombok.*;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
+import org.tcontrol.config.props.ThermostatsConfig;
 import org.tcontrol.hardware.ITemperatureMonitor;
 import org.tcontrol.service.models.SensorValue;
-import org.tcontrol.config.props.ThermostatConfig;
 import org.tcontrol.handler.IRelayHandler;
 import org.tcontrol.service.IThermostat;
 import org.tcontrol.service.ITimer;
@@ -19,19 +19,32 @@ import java.time.LocalTime;
 import java.util.List;
 
 import static java.lang.Float.max;
+import static org.tcontrol.config.props.ThermostatsConfig.ThermostatConfig;
 
-@Slf4j
 @RequiredArgsConstructor
+@Slf4j
 public class Thermostat implements IThermostat {
     public static final float TEMPERATURE_MAX_ON = 28.0f;
 
-    private final ThermostatConfig thermostatConfig;
+    @Autowired
+    @Setter
+    private ThermostatsConfig thermostatsConfig;
 
-    private final ITemperatureMonitor temperatureMonitor;
+    @Autowired
+    @Setter
+    private ITemperatureMonitor temperatureMonitor;
 
-    private final IRelayHandler relayHandler;
+    @Autowired
+    @Setter
+    private IRelayHandler relayHandler;
 
-    private final ITimer timer;
+    @Autowired
+    @Setter
+    private ITimer timer;
+
+    private ThermostatsConfig.ThermostatConfig thermostatCurrentConfig;
+
+    private ThermostatsConfig.ThermostatConfig thermostatConfig;
 
     @Getter
     private final String name;
@@ -46,11 +59,12 @@ public class Thermostat implements IThermostat {
     float mediumT;
 
     private boolean firstTime = true;
-    private ThermostatConfig thermostatCurrentConfig;
 
     @PostConstruct
-    public void postConstruct() {
-        thermostatCurrentConfig = thermostatConfig.toBuilder().build();
+    public void init() {
+        log.info("init");
+        thermostatConfig = thermostatsConfig.getThermostats().stream().filter(tc -> tc.getName().equals(name)).findAny().get();
+        thermostatCurrentConfig = thermostatConfig.clone();
     }
 
     @Override
@@ -98,22 +112,25 @@ public class Thermostat implements IThermostat {
     public Thermostat on(Float temperature) {
         this.on = true;
         if (temperature != null) {
-            thermostatCurrentConfig.setTDay(temperature);
-            thermostatCurrentConfig.setTNight(temperature);
+            ThermostatConfig clone;
+            clone = thermostatCurrentConfig.clone();
+            clone.setTNight(temperature);
+            clone.setTDay(temperature);
+            thermostatCurrentConfig = clone;
         }
         log.info("{}> thermostat is ON: {}", name, temperature);
         return this;
     }
 
     @Override
-    public float currentTemperature(){
-         return max(thermostatCurrentConfig.getTDay(), thermostatCurrentConfig.getTNight());
+    public float currentTemperature() {
+        return max(thermostatCurrentConfig.getTDay(), thermostatCurrentConfig.getTNight());
     }
 
     @Override
     public Thermostat off() {
         this.on = false;
-        thermostatCurrentConfig = thermostatConfig.toBuilder().build();
+        thermostatCurrentConfig = thermostatConfig.clone();
         log.info("{}> thermostat is back OFF", name);
         return this;
     }

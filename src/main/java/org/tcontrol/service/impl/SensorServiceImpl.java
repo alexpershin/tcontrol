@@ -1,10 +1,9 @@
 package org.tcontrol.service.impl;
 
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.stereotype.Component;
 import org.tcontrol.config.props.RelayPinsConfig;
+import org.tcontrol.config.props.ThermostatsConfig;
 import org.tcontrol.mappers.SensorMapper;
 import org.tcontrol.service.IThermostat;
 import org.tcontrol.service.SensorService;
@@ -15,6 +14,7 @@ import org.tcontrol.service.models.User;
 import org.tcontrol.service.IStatisticsSaver;
 import org.tcontrol.config.props.SensorConfig;
 
+import javax.annotation.PostConstruct;
 import java.text.MessageFormat;
 import java.util.List;
 import java.util.Map;
@@ -24,17 +24,21 @@ import java.util.stream.Collectors;
 /**
  * DAO stub to use while real DAO has not been completely implemented.
  */
-@Component
-@ConditionalOnProperty(value = "main-config.sensorsStub", havingValue = "false")
 @Slf4j
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class SensorServiceImpl implements SensorService {
 
+    protected final ThermostatsConfig thermostatsConfig;
     protected final SensorConfig sensorConfig;
     private final RelayPinsConfig relayPinsConfig;
     protected final IStatisticsSaver sensorLastDataSaver;
     protected final SensorMapper sensorMapper;
-    protected final List<IThermostat> thermostats;
+    protected final Map<String,IThermostat> dynamicThermostats;
+
+    @PostConstruct
+    public void init(){
+        log.info("init");
+    }
 
     @Override
     public Map<Integer, Sensor> getAllSensors() {
@@ -104,7 +108,7 @@ public class SensorServiceImpl implements SensorService {
                         .findFirst()
                         .orElseThrow(() -> new SensorServiceException(MessageFormat.format("Relay pin not found by sensorCode: {0}", sc.getCode())))
                 )
-                .map(r -> thermostats.stream()
+                .map(r -> dynamicThermostats.values().stream()
                         .filter(t -> t.getHeatingPins().contains(r.getPin()))
                         .findFirst()
                         .orElseThrow(() -> new SensorServiceException(MessageFormat.format("Thermostat not found by pin: {0}", r.getPin())))

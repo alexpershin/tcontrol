@@ -13,16 +13,15 @@ import org.tcontrol.hardware.ITemperatureReader;
 import org.tcontrol.config.props.SensorConfig;
 import org.tcontrol.config.props.SensorConfiguration;
 
+import javax.annotation.PostConstruct;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@Service
 @Slf4j
 @RequiredArgsConstructor
-@ConditionalOnProperty(value = "main-config.sensorsStub", havingValue = "false")
 public class TemperatureMonitor implements ITemperatureMonitor {
     final private Map<String, SensorValue> sensorValueMap = new HashMap<>();
 
@@ -33,6 +32,11 @@ public class TemperatureMonitor implements ITemperatureMonitor {
     private final CSVStatisticSaver csvWriter;
 
     private final IStatisticsSaver sensorLastDataSaver;
+
+    @PostConstruct
+    public void init(){
+        log.info("init");
+    }
 
     @Scheduled(cron = "${sensor-config.schedule}")
     public void readSensors() {

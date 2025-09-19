@@ -1,55 +1,75 @@
 package org.tcontrol.config;
 
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
+import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.CommonAnnotationBeanPostProcessor;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Primary;
 import org.springframework.scheduling.annotation.EnableScheduling;
+import org.tcontrol.config.props.ThermostatsConfig.ThermostatConfig;
 import org.tcontrol.handler.IOnOffHandler;
+import org.tcontrol.handler.impl.ButtonGasOnOffHandler;
 import org.tcontrol.handler.impl.OnOffHandler;
+import org.tcontrol.handler.impl.RelayHandler;
+import org.tcontrol.hardware.IPinFactory;
 import org.tcontrol.hardware.ITemperatureMonitor;
-import org.tcontrol.service.IThermostat;
-import org.tcontrol.service.ITimer;
-import org.tcontrol.service.impl.Thermostat;
+import org.tcontrol.hardware.ITemperatureReader;
+import org.tcontrol.hardware.IVoltageMonitor;
+import org.tcontrol.hardware.impl.TemperatureMonitor;
+import org.tcontrol.hardware.impl.TemperatureMonitorStub;
+import org.tcontrol.mappers.SensorMapper;
+import org.tcontrol.service.*;
+import org.tcontrol.service.impl.CSVStatisticSaver;
+import org.tcontrol.service.impl.RelayAggregator;
+import org.tcontrol.service.impl.SensorServiceImpl;
 import org.tcontrol.config.props.*;
 import org.tcontrol.handler.IRelayHandler;
 import org.tcontrol.service.models.Sensor;
+import org.tcontrol.sms.ISMSCommand;
+import org.tcontrol.sms.commands.*;
 
+import java.text.MessageFormat;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+@Slf4j
 @Configuration
 @EnableScheduling
-public class AppConfig {
+@RequiredArgsConstructor
+public class AppConfig implements BeanFactoryPostProcessor {
 
     @Bean
     @ConditionalOnProperty(value = "main-config.sensorsStub", havingValue = "true")
     public RelayPinsConfig relayPinsConfigStub() {
         RelayPinsConfig relayPinsConfig = new RelayPinsConfig();
         relayPinsConfig.setPins(Arrays.asList(
-                new RelayPinsConfig.RelayPinConfig(8,"GPIO 8", "heating", "отопление")
+                new RelayPinsConfig.RelayPinConfig(8, "GPIO 8", "heating", "отопление")
         ));
         return relayPinsConfig;
     }
 
     @Bean
     @ConditionalOnProperty(value = "main-config.sensorsStub", havingValue = "true")
-    public ThermostatConfig thermostatElectroConfigStub() {
-        return ThermostatConfig.builder().sensor("8").relayPins(Collections.singletonList("GPIO 8")).build();
-    }
+    public ThermostatsConfig thermostatsStub() {
 
-    @Bean
-    @ConditionalOnProperty(value = "main-config.sensorsStub", havingValue = "true")
-    public IThermostat thermostatElectroStub(
-            final ThermostatConfig thermostatElectroConfigStub,
-            final ITemperatureMonitor temperatureMonitor,
-            final IRelayHandler relayHandler,
-            final ITimer timer) {
-        return new Thermostat(thermostatElectroConfigStub, temperatureMonitor, relayHandler,
-                timer, "termo(electro)");
+        ThermostatConfig thermostatElectroConfigStub =
+                ThermostatConfig.builder()
+                        .name("termo1(electro)")
+                        .sensor("8")
+                        .relayPins(Arrays.asList("GPIO 8")).build();
+
+        ThermostatsConfig thermostatsConfig = new ThermostatsConfig(Arrays.asList(thermostatElectroConfigStub));
+        return thermostatsConfig;
     }
 
     @Bean
@@ -106,9 +126,22 @@ public class AppConfig {
     }
 
     @Bean
-    @ConfigurationProperties(prefix = "sms-config")
-    public SMSConfig smsConfig() {
-        return new SMSConfig();
+    @ConditionalOnProperty(value = "main-config.sensorsStub", havingValue = "true")
+    public ITemperatureMonitor temperatureMonitorStub(
+            SensorConfig sensorConfig,
+            CSVStatisticSaver csvWriter,
+            IStatisticsSaver sensorLastDataSaver) {
+        return new TemperatureMonitorStub(sensorConfig, csvWriter, sensorLastDataSaver);
+    }
+
+    @Bean
+    @ConditionalOnProperty(value = "main-config.sensorsStub", havingValue = "false")
+    public ITemperatureMonitor temperatureMonitor(
+            ITemperatureReader temperatureReader,
+            SensorConfig sensorConfig,
+            CSVStatisticSaver csvWriter,
+            IStatisticsSaver sensorLastDataSaver) {
+        return new TemperatureMonitor(temperatureReader, sensorConfig, csvWriter, sensorLastDataSaver);
     }
 
     @Bean
@@ -119,39 +152,49 @@ public class AppConfig {
     }
 
     @Bean
-    @ConfigurationProperties(prefix = "thermostat-electro")
-    public ThermostatConfig thermostatElectroConfig() {
-        return ThermostatConfig.builder().build();
+    public IRelayAggregator relayAggregator(RelayAggregatorConfig relayAggregatorConfig,
+                                            IRelayHandler relayHandler) {
+        return new RelayAggregator(relayAggregatorConfig, relayHandler);
     }
 
     @Bean
-    @ConfigurationProperties(prefix = "thermostat-gas")
-    public ThermostatConfig thermostatGasConfig() {
-        return ThermostatConfig.builder().build();
+    public IRelayHandler relayHandler(CSVStatisticSaver csvStatisticSaver,
+                                      IStatisticsSaver sensorLastDataSaver,
+                                      IPinFactory pinFactory,
+                                      RelayPinsConfig relayPinsConfig,
+                                      SensorConfig sensorConfig) {
+        return new RelayHandler(csvStatisticSaver, sensorLastDataSaver, pinFactory, relayPinsConfig, sensorConfig);
     }
 
     @Bean
-    @ConfigurationProperties(prefix = "thermostat-veranda")
-    public ThermostatConfig thermostatVerandaConfig() {
-        return ThermostatConfig.builder().build();
+    @ConfigurationProperties(prefix = "sms-config")
+    public SMSConfig smsConfig() {
+        return new SMSConfig();
     }
 
     @Bean
-    @ConfigurationProperties(prefix = "thermostat-veranda-em")
-    public ThermostatConfig thermostatVerandaEmConfig() {
-        return ThermostatConfig.builder().build();
+    @ConfigurationProperties(prefix = "thermostats-config")
+    @ConditionalOnProperty(value = "main-config.sensorsStub", havingValue = "false")
+    public ThermostatsConfig thermostatsConfig() {
+        return new ThermostatsConfig();
     }
 
     @Bean
-    @ConfigurationProperties(prefix = "thermostat-my-room")
-    public ThermostatConfig thermostatMyRoomConfig() {
-        return ThermostatConfig.builder().build();
-    }
-
-    @Bean
-    @ConfigurationProperties(prefix = "thermostat-hot-watter")
-    public ThermostatConfig thermostatHotWatterConfig() {
-        return ThermostatConfig.builder().build();
+    public SensorService sensorService(
+            final ThermostatsConfig thermostatsConfig,
+            final SensorConfig sensorConfig,
+            final RelayPinsConfig relayPinsConfig,
+            final IStatisticsSaver sensorLastDataSaver,
+            final SensorMapper sensorMapper,
+            final Map<String, IThermostat> dynamicThermostats
+    ) {
+        return new SensorServiceImpl(
+                thermostatsConfig,
+                sensorConfig,
+                relayPinsConfig,
+                sensorLastDataSaver,
+                sensorMapper,
+                dynamicThermostats);
     }
 
     @Bean
@@ -191,73 +234,101 @@ public class AppConfig {
     }
 
     @Bean
-    public IThermostat thermostatElectro(
-            final ThermostatConfig thermostatElectroConfig,
-            final ITemperatureMonitor temperatureMonitor,
-            final IRelayHandler relayHandler,
-            final ITimer timer) {
-        return new Thermostat(thermostatElectroConfig, temperatureMonitor, relayHandler,
-                timer, "termo1(electro)");
-    }
-
-    @Bean
-    public IThermostat thermostatGas(
-            final ThermostatConfig thermostatGasConfig,
-            final ITemperatureMonitor temperatureMonitor,
-            final IRelayHandler relayAggregator,
-            final ITimer timer) {
-        return new Thermostat(thermostatGasConfig, temperatureMonitor, relayAggregator,
-                timer, "termo2(gas)");
-    }
-
-    @Bean
-    public IThermostat thermostatVeranda(
-            final ThermostatConfig thermostatVerandaConfig,
-            final ITemperatureMonitor temperatureMonitor,
-            final IRelayHandler relayHandler,
-            final ITimer timer) {
-        return new Thermostat(thermostatVerandaConfig, temperatureMonitor, relayHandler,
-                timer, "termo3(veranda)");
-    }
-
-    @Bean
-    public IThermostat thermostatVerandaEm(
-            final ThermostatConfig thermostatVerandaEmConfig,
-            final ITemperatureMonitor temperatureMonitor,
-            final IRelayHandler relayAggregator,
-            final ITimer timer) {
-        return new Thermostat(thermostatVerandaEmConfig, temperatureMonitor, relayAggregator,
-                timer, "termo5(veranda em)");
-    }
-
-    @Bean
-    public IThermostat thermostatMyRoom(
-            final ThermostatConfig thermostatMyRoomConfig,
-            final ITemperatureMonitor temperatureMonitor,
-            final IRelayHandler relayAggregator,
-            final ITimer timer) {
-        return new Thermostat(thermostatMyRoomConfig, temperatureMonitor, relayAggregator,
-                timer, "termo4(my room)");
-    }
-
-    @Bean
-    public IThermostat thermostatHotWatter(
-            final ThermostatConfig thermostatHotWatterConfig,
-            final ITemperatureMonitor temperatureMonitor,
-            final IRelayHandler relayHandler,
-            final ITimer timer) {
-        return new Thermostat(thermostatHotWatterConfig, temperatureMonitor, relayHandler,
-                timer, "termo5(hot watter)");
-    }
-
-    @Bean
     public IOnOffHandler electricHeatingOnOfHandler(
             final OnOfHandlerConfig onOfHandlerConfig,
             final RelayPinsConfig relayPinsConfig,
             final IRelayHandler relayHandler,
-            final IThermostat thermostatElectro
-    ){
-        return new OnOffHandler(onOfHandlerConfig, relayPinsConfig, relayHandler, thermostatElectro);
+            final Map<String, IThermostat> dynamicThermostats
+    ) {
+        IThermostat thermostat = dynamicThermostats.get(onOfHandlerConfig.getThermostat());
+        return new OnOffHandler(onOfHandlerConfig, relayPinsConfig, relayHandler, thermostat);
     }
 
+    @Bean
+    public ButtonGasOnOffHandler buttonGasOnOffHandler(ButtonHandlerConfig buttonHandlerConfig,
+                                                       final Map<String, IThermostat> dynamicThermostats) {
+        IThermostat thermostat = dynamicThermostats.get(buttonHandlerConfig.getThermostat());
+        return new ButtonGasOnOffHandler(buttonHandlerConfig, thermostat);
+    }
+
+    @Bean
+    @Primary
+    @Qualifier("heatingOnCommand")
+    public ISMSCommand heatingOnCommand(
+            final Map<String, IThermostat> dynamicThermostats) {
+        IThermostat thermostat = dynamicThermostats.get("thermostat-electro");
+        return new HeatingOnCommand(thermostat);
+    }
+
+    @Bean
+    @Qualifier("thermostatOnCommand")
+    public ISMSCommand thermostatOnCommand(
+            final Map<String, IThermostat> dynamicThermostats) {
+        IThermostat thermostat = dynamicThermostats.get("thermostat-electro");
+        return new ThermostatOnCommand(dynamicThermostats);
+    }
+
+    @Bean
+    @Qualifier("thermostatOffCommand")
+    public ISMSCommand thermostatOffCommand(
+            final Map<String, IThermostat> dynamicThermostats) {
+        IThermostat thermostat = dynamicThermostats.get("thermostat-electro");
+        return new ThermostatOffCommand(thermostat);
+    }
+
+    @Bean
+    @Qualifier("gasOnCommand")
+    public ISMSCommand gasOnCommand(
+            final Map<String, IThermostat> dynamicThermostats) {
+        IThermostat thermostat = dynamicThermostats.get("thermostat-gas");
+        return new GasOnCommand(thermostat);
+    }
+
+    @Bean
+    @Qualifier("gasOffCommand")
+    public GasOffCommand gasOffCommand(
+            final Map<String, IThermostat> dynamicThermostats) {
+        IThermostat thermostat = dynamicThermostats.get("thermostat-gas");
+        return new GasOffCommand(thermostat);
+    }
+
+    @Bean
+    public ISMSCommand statusCommand(
+            final ITemperatureMonitor temperatureMonitor,
+            final SensorConfig sensorConfig,
+            final IRelayHandler relayHandler,
+            final Map<String, IThermostat> dynamicThermostats,
+            final IVoltageMonitor voltageMonitor) {
+
+        final IThermostat thermostatElectro = dynamicThermostats.get("thermostat-electro");
+
+        final IThermostat thermostatGas = dynamicThermostats.get("thermostat-gas");
+
+        final IThermostat thermostatVeranda = dynamicThermostats.get("thermostat-veranda");
+
+        final IThermostat thermostatMyRoom = dynamicThermostats.get("thermostat-my-room");
+
+        return new StatusCommand(temperatureMonitor, sensorConfig, relayHandler,
+                thermostatElectro, thermostatGas, thermostatVeranda, thermostatMyRoom, voltageMonitor);
+    }
+
+    @Bean
+    public DynamicThermostatBeanRegistrator dynamicThermostatBeanRegistrator(ThermostatsConfig thermostatsConfig,
+                                                                             CommonAnnotationBeanPostProcessor commonAnnotationBeanPostProcessor) {
+        return new DynamicThermostatBeanRegistrator(thermostatsConfig, commonAnnotationBeanPostProcessor);
+    }
+
+    private static ThermostatConfig thermostatConfig(ThermostatsConfig thermostatsConfig, String name) {
+        ThermostatConfig thermostatConfig =
+                thermostatsConfig.getThermostats().stream()
+                        .filter(tc -> tc.getName().equals(name))
+                        .findFirst()
+                        .orElseThrow(() -> new SensorServiceException(MessageFormat.format("Thermostat config not found by name: {0}", name)));
+        return thermostatConfig;
+    }
+
+    @Override
+    public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) throws BeansException {
+
+    }
 }

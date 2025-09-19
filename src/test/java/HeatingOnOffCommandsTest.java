@@ -1,5 +1,5 @@
+import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.support.AnnotationConfigContextLoader;
@@ -12,16 +12,25 @@ import org.tcontrol.sms.commands.HeatingOnCommand;
 import org.junit.jupiter.api.Test;
 import org.tcontrol.handler.IRelayHandler;
 
+import java.util.Map;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 @ContextConfiguration(classes = CommandConfiguration.class, loader = AnnotationConfigContextLoader.class)
 @SpringBootTest
 public class HeatingOnOffCommandsTest {
     @Autowired
-    @Qualifier("thermostatElectro")
-    private IThermostat thermostat;
+    private Map<String,IThermostat> dynamicThermostats;
+
     @Autowired
     private IRelayHandler relayHandler;
+
+    private IThermostat thermostat;
+
+    @BeforeEach
+    public void befoEach(){
+        thermostat = dynamicThermostats.get("elect");
+    }
 
     @Test
     public void thermostatWasOnTest() {

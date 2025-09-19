@@ -1,11 +1,12 @@
 package org.tcontrol.sms.commands;
 
 import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.tcontrol.sms.ISMSCommand;
 
 @Component
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class CommandExecutor {
     public enum CommandName {
         STATUS,
@@ -18,19 +19,19 @@ public class CommandExecutor {
         SET_TEMP
     }
 
-    private ISMSCommand heatingOnCommand;
+    private final ISMSCommand heatingOnCommand;
 
-    private ISMSCommand heatingOffCommand;
+    private final ISMSCommand heatingOffCommand;
 
-    private ISMSCommand statusCommand;
+    private final ISMSCommand statusCommand;
 
-    private ISMSCommand thermostatOnCommand;
+    private final ISMSCommand thermostatOnCommand;
 
-    private ISMSCommand thermostatOffCommand;
+    private final ISMSCommand thermostatOffCommand;
 
-    private ISMSCommand gasOnCommand;
+    private final ISMSCommand gasOnCommand;
 
-    private ISMSCommand gasOffCommand;
+    private final ISMSCommand gasOffCommand;
 
     public CommandResult run(String name) {
         final CommandName commandName;

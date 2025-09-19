@@ -2,24 +2,23 @@ package org.tcontrol.sms.commands;
 
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.stereotype.Component;
 import org.tcontrol.sms.ISMSCommand;
 import org.tcontrol.service.IThermostat;
 
+import java.util.Map;
+
 import static org.tcontrol.service.impl.Thermostat.TEMPERATURE_MAX_ON;
 
-@Component
 @Slf4j
-@Qualifier("thermostatOnCommand")
 @AllArgsConstructor
 public class ThermostatOnCommand implements ISMSCommand {
 
-    private IThermostat thermostatElectro;
+    private final Map<String, IThermostat> dynamicThermostats;
 
     @Override
     public CommandResult run() {
 
+        IThermostat thermostatElectro = dynamicThermostats.get("thermostat-electro");
         thermostatElectro.on(TEMPERATURE_MAX_ON);
 
         log.info("Executed");

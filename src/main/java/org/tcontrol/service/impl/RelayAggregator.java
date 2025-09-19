@@ -1,20 +1,19 @@
-package org.tcontrol.service;
+package org.tcontrol.service.impl;
 
 import com.pi4j.io.gpio.Pin;
 import com.pi4j.io.gpio.PinState;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.stereotype.Component;
 import org.tcontrol.config.props.RelayAggregatorConfig;
 import org.tcontrol.handler.IRelayHandler;
+import org.tcontrol.service.IRelayAggregator;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@Component
 @Slf4j
 @RequiredArgsConstructor
 public class RelayAggregator implements IRelayAggregator {

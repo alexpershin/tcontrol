@@ -14,7 +14,7 @@ public interface IThermostat {
 
   float getMediumT();
 
-  Thermostat on(Float temperature);
+  Thermostat on(Float temperature) ;
 
   float currentTemperature();
 

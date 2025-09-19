@@ -13,7 +13,7 @@ springdoc:
 
 main-config:
   sensorValuesBufferSize: 20
-  sensorsStub: true
+  sensorsStub: false
 
 w1DevicesPath: /sys/bus/w1/devices
 
@@ -168,15 +168,64 @@ relay-pins:
 
 thermostat.schedule: '5 0/1 * * * ?'
 
-thermostat-electro:
-  tDay: 14.0
-  tNight: 16.0
-  delta: 0.5
-  nightBegin: 23:10:00
-  nightEnd: 7:10:00
-  sensor: 28-000002c7c3ee
-  relayPins:
-    - 'GPIO 0'
+thermostats-config:
+  thermostats:
+    - name: 'thermostat-electro'
+      tDay: 14.0
+      tNight: 16.0
+      delta: 0.5
+      nightBegin: 23:10:00
+      nightEnd: 7:10:00
+      sensor: 28-000002c7c3ee
+      relayPins:
+        - 'GPIO 0'
+    - name: thermostat-gas
+      tDay: 22.0
+      tNight: 19.0
+      delta: 0.3
+      nightBegin: 22:00:00
+      nightEnd: 8:00:00
+      sensor: 28-000002c7c3ee
+      relayPins:
+        - 'GPIO 1'
+        - 'GPIO 4'
+    - name: thermostat-veranda
+      tDay: 6.0
+      tNight: 6.0
+      delta: 0.5
+      nightBegin: 21:00:00
+      nightEnd: 8:00:00
+      sensor: 28-0417019b15ff
+      relayPins:
+        - 'GPIO 2'
+    - name: thermostat-veranda-em
+      tDay: 4.0
+      tNight: 4.0
+      delta: 0.3
+      nightBegin: 22:00:00
+      nightEnd: 7:00:00
+      sensor: 28-0417019b15ff
+      relayPins:
+        - 'GPIO 1'
+    - name: thermostat-my-room
+      tDay: 23.5
+      tNight: 20.0
+      delta: 0.3
+      nightBegin: 22:00:00
+      nightEnd: 8:00:00
+      sensor: 28-0317017a6aff
+      relayPins:
+        - 'GPIO 3'
+        - 'GPIO 1'
+    - name: thermostat-hot-watter
+      tDay: 38.5
+      tNight: 38.5
+      delta: 4.0
+      nightBegin: 23:10:00
+      nightEnd: 7:10:00
+      sensor: 28-031701e06cff
+      relayPins:
+        - 'GPIO 6'
 
 voltage-monitor:
   schedule: '0/30 * * * * ?'
@@ -188,61 +237,10 @@ voltage-monitor:
       ratio: 0.33190
       unit: V
 
-thermostat-gas:
-  tDay: 22.0
-  tNight: 19.0
-  delta: 0.3
-  nightBegin: 22:00:00
-  nightEnd: 8:00:00
-  sensor: 28-000002c7c3ee
-  relayPins:
-    - 'GPIO 1'
-    - 'GPIO 4'
-
-thermostat-veranda:
-  tDay: 6.0
-  tNight: 6.0
-  delta: 0.5
-  nightBegin: 21:00:00
-  nightEnd: 8:00:00
-  sensor: 28-0417019b15ff
-  relayPins:
-    - 'GPIO 2'
-
-thermostat-veranda-em:
-  tDay: 4.0
-  tNight: 4.0
-  delta: 0.3
-  nightBegin: 22:00:00
-  nightEnd: 7:00:00
-  sensor: 28-0417019b15ff
-  relayPins:
-    - 'GPIO 1'
-
-thermostat-my-room:
-  tDay: 23.5
-  tNight: 20.0
-  delta: 0.3
-  nightBegin: 22:00:00
-  nightEnd: 8:00:00
-  sensor: 28-0317017a6aff
-  relayPins:
-    - 'GPIO 3'
-    - 'GPIO 1'
-
-thermostat-hot-watter:
-  tDay: 38.5
-  tNight: 38.5
-  delta: 4.0
-  nightBegin: 23:10:00
-  nightEnd: 7:10:00
-  sensor: 28-031701e06cff
-  relayPins:
-    - 'GPIO 6'
-
 button-handler:
   buttonPinId: 'GPIO 5'
   buttonPinName: 'Включение котла'
+  thermostat: thermostat-gas
 
 relay-aggregator:
   schedule: '10 0/1 * * * ?'
@@ -260,3 +258,4 @@ voltage-handler:
 electric-heater-handler:
   pin-id: 100
   sensor-id: 9
+  thermostat: thermostat-electro

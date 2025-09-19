@@ -5,8 +5,6 @@ import com.pi4j.io.gpio.PinState;
 import com.pi4j.io.gpio.RaspiPin;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.stereotype.Component;
 import org.tcontrol.hardware.ITemperatureMonitor;
 import org.tcontrol.service.IThermostat;
 import org.tcontrol.sms.*;
@@ -20,9 +18,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Optional;
 
-@Component
 @Slf4j
-@Qualifier("statusCommand")
 @RequiredArgsConstructor
 public class StatusCommand implements ISMSCommand {
 

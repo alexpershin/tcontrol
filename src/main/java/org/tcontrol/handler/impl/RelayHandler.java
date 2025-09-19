@@ -3,7 +3,6 @@ package org.tcontrol.handler.impl;
 import com.pi4j.io.gpio.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Service;
 import org.tcontrol.config.props.SensorConfig;
 import org.tcontrol.config.props.SensorConfiguration;
 import org.tcontrol.hardware.IPinFactory;
@@ -18,7 +17,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
-@Service
 @Slf4j
 @RequiredArgsConstructor
 public class RelayHandler implements IRelayHandler {

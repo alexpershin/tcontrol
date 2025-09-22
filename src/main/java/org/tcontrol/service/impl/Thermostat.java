@@ -7,12 +7,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.tcontrol.config.props.ThermostatsConfig;
 import org.tcontrol.hardware.ITemperatureMonitor;
+import org.tcontrol.service.SensorServiceException;
 import org.tcontrol.service.models.SensorValue;
 import org.tcontrol.handler.IRelayHandler;
 import org.tcontrol.service.IThermostat;
 import org.tcontrol.service.ITimer;
 
 import javax.annotation.PostConstruct;
+import java.text.MessageFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -63,7 +65,11 @@ public class Thermostat implements IThermostat {
     @PostConstruct
     public void init() {
         log.info("init");
-        thermostatConfig = thermostatsConfig.getThermostats().stream().filter(tc -> tc.getName().equals(name)).findAny().get();
+        thermostatConfig = thermostatsConfig.getThermostats()
+                .stream()
+                .filter(tc -> tc.getName().equals(name))
+                .findAny()
+                .orElseThrow(() -> new SensorServiceException(MessageFormat.format("Thermostat config not found by name: {0}", name)));;
         thermostatCurrentConfig = thermostatConfig.clone();
     }
 

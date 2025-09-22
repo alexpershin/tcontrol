@@ -37,6 +37,7 @@ import org.tcontrol.sms.commands.*;
 
 import java.text.MessageFormat;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -52,7 +53,7 @@ public class AppConfig implements BeanFactoryPostProcessor {
     @ConditionalOnProperty(value = "main-config.sensorsStub", havingValue = "true")
     public RelayPinsConfig relayPinsConfigStub() {
         RelayPinsConfig relayPinsConfig = new RelayPinsConfig();
-        relayPinsConfig.setPins(Arrays.asList(
+        relayPinsConfig.setPins(Collections.singletonList(
                 new RelayPinsConfig.RelayPinConfig(8, "GPIO 8", "heating", "отопление")
         ));
         return relayPinsConfig;
@@ -66,7 +67,7 @@ public class AppConfig implements BeanFactoryPostProcessor {
                 ThermostatConfig.builder()
                         .name("termo1(electro)")
                         .sensor("8")
-                        .relayPins(Arrays.asList("GPIO 8")).build();
+                        .relayPins(Collections.singletonList("GPIO 8")).build();
 
         ThermostatsConfig thermostatsConfig = new ThermostatsConfig(Arrays.asList(thermostatElectroConfigStub));
         return thermostatsConfig;
@@ -319,12 +320,10 @@ public class AppConfig implements BeanFactoryPostProcessor {
     }
 
     private static ThermostatConfig thermostatConfig(ThermostatsConfig thermostatsConfig, String name) {
-        ThermostatConfig thermostatConfig =
-                thermostatsConfig.getThermostats().stream()
-                        .filter(tc -> tc.getName().equals(name))
-                        .findFirst()
-                        .orElseThrow(() -> new SensorServiceException(MessageFormat.format("Thermostat config not found by name: {0}", name)));
-        return thermostatConfig;
+        return thermostatsConfig.getThermostats().stream()
+                .filter(tc -> tc.getName().equals(name))
+                .findFirst()
+                .orElseThrow(() -> new SensorServiceException(MessageFormat.format("Thermostat config not found by name: {0}", name)));
     }
 
     @Override

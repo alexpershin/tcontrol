@@ -1,6 +1,5 @@
 import com.pi4j.io.gpio.Pin;
 import com.pi4j.io.gpio.PinState;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.tcontrol.config.props.ThermostatsConfig;

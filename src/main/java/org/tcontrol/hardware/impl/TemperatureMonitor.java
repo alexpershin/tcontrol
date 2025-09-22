@@ -2,9 +2,7 @@ package org.tcontrol.hardware.impl;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.stereotype.Service;
 import org.tcontrol.hardware.ITemperatureMonitor;
 import org.tcontrol.service.IStatisticsSaver;
 import org.tcontrol.service.impl.CSVStatisticSaver;

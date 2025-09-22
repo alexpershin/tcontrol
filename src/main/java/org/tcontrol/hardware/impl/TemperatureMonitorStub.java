@@ -48,10 +48,9 @@ public class TemperatureMonitorStub implements ITemperatureMonitor {
             int sensorId = sensor.getId();
             String sensorCode = sensor.getCode();
             List<SensorValue> sensorValuesTransformed = sensorValues.stream()
-                    .filter(s -> s.getSensorId() == sensorId).map(s -> {
-                        s.setSensorCode(sensorCode);
-                        return s;
-                    }).collect(Collectors.toList());
+                    .filter(s -> s.getSensorId() == sensorId)
+                    .peek(s -> s.setSensorCode(sensorCode))
+                    .collect(Collectors.toList());
             SensorValue value = sensorValuesTransformed.get(sensorValuesTransformed.size() - 1);
             sensorValueMap.put(sensorCode, value);
             values.add(value);

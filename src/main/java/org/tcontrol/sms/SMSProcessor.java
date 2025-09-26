@@ -35,7 +35,7 @@ public class SMSProcessor {
     private CommandExecutor commandExecutor;
 
     @PostConstruct
-    private final void init(){
+    private void init(){
         log.info("init");
     }
 

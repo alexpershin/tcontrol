@@ -9,8 +9,6 @@ import org.springframework.context.annotation.CommonAnnotationBeanPostProcessor;
 import org.springframework.stereotype.Component;
 import org.tcontrol.config.props.ThermostatsConfig;
 import org.tcontrol.hardware.ITemperatureMonitor;
-import org.tcontrol.service.IThermostat;
-import org.tcontrol.service.impl.Thermostat;
 
 import java.util.Arrays;
 

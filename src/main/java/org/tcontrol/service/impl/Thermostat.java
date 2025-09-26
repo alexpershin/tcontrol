@@ -69,7 +69,7 @@ public class Thermostat implements IThermostat {
                 .stream()
                 .filter(tc -> tc.getName().equals(name))
                 .findAny()
-                .orElseThrow(() -> new SensorServiceException(MessageFormat.format("Thermostat config not found by name: {0}", name)));;
+                .orElseThrow(() -> new SensorServiceException(MessageFormat.format("Thermostat config not found by name: {0}", name)));
         thermostatCurrentConfig = thermostatConfig.clone();
     }
 

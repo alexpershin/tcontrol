@@ -1,6 +1,5 @@
 package org.tcontrol.sms.commands;
 
-import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.tcontrol.sms.ISMSCommand;
@@ -65,8 +64,6 @@ public class CommandExecutor {
                 break;
         }
 
-        CommandResult result = command != null ? command.run() : null;
-
-        return result;
+        return command != null ? command.run() : null;
     }
 }

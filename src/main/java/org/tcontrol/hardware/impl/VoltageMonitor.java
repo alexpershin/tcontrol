@@ -77,7 +77,7 @@ public class VoltageMonitor implements IVoltageMonitor {
 
     private final IStatisticsSaver sensorLastDataSaver;
 
-    private List<VoltageResult> voltageResults = new ArrayList<>();
+    private final List<VoltageResult>  voltageResults = new ArrayList<>();
 
     @PostConstruct
     public void init() {

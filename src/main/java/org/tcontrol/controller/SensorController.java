@@ -169,7 +169,7 @@ public class SensorController {
             requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
                     description = "Тело запроса для старта отопления", required = true)
     )
-    public ResponseEntity<Float> thermostatCurrentTemperature(@RequestParam(name = "sensorId") Integer sensorId) throws InterruptedException {
+    public ResponseEntity<Float> thermostatCurrentTemperature(@RequestParam(name = "sensorId") Integer sensorId) {
         log.info("current temperature for sensor: {}", sensorId);
         if (sensorId == null || sensorId < 0) {
             throw new IllegalArgumentException("sensorId has to be not null and positive number");

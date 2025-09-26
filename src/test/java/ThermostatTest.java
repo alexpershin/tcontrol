@@ -29,7 +29,6 @@ public class ThermostatTest {
     private static final String SENSOR_CODE = "abc";
     private Thermostat thermostat;
     private ThermostatsConfig.ThermostatConfig thermostatConfig;
-    private ThermostatsConfig thermostatsConfig;
     private ITemperatureMonitor temperatureMonitor;
     private IRelayHandler relayHandler;
     private ITimer timer;
@@ -47,7 +46,7 @@ public class ThermostatTest {
         thermostatConfig.getRelayPins().add(GPIO_00);
         thermostatConfig.setName("termo");
 
-        thermostatsConfig = new ThermostatsConfig();
+        ThermostatsConfig thermostatsConfig = new ThermostatsConfig();
         thermostatsConfig.setThermostats(Collections.singletonList(thermostatConfig));
 
         temperatureMonitor = new ITemperatureMonitor() {

@@ -131,6 +131,22 @@ public class AppConfig implements BeanFactoryPostProcessor {
     }
 
     @Bean
+    @ConditionalOnProperty(value = "main-config.sensorsStub", havingValue = "true")
+    public DynamicThermostatBeanCreator dynamicThermostatBeanCreatorStub(
+            ThermostatsConfig thermostatsConfig
+    ) {
+        return new DynamicThermostatBeanCreator(thermostatsConfig);
+    }
+
+    @Bean
+    @ConditionalOnProperty(value = "main-config.sensorsStub", havingValue = "false")
+    public DynamicThermostatBeanCreator dynamicThermostatBeanCreator(
+            Environment environment
+    ) {
+        return new DynamicThermostatBeanCreator(environment);
+    }
+
+    @Bean
     @ConfigurationProperties(prefix = "sensor-config")
     @ConditionalOnProperty(value = "main-config.sensorsStub", havingValue = "false")
     public SensorConfig sensorConfig() {
@@ -317,13 +333,6 @@ public class AppConfig implements BeanFactoryPostProcessor {
 
         return new StatusCommand(temperatureMonitor, sensorConfig, relayHandler,
                 thermostatElectro, thermostatGas, thermostatVeranda, thermostatMyRoom, voltageMonitor);
-    }
-
-    @Bean
-    public DynamicThermostatBeanCreator dynamicThermostatBeanCreator(
-            Environment environment
-    ) {
-        return new DynamicThermostatBeanCreator(environment);
     }
 
     private static ThermostatConfig thermostatConfig(ThermostatsConfig thermostatsConfig, String name) {

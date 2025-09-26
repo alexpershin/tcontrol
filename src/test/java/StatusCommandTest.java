@@ -11,7 +11,6 @@ import org.tcontrol.hardware.IVoltageMonitor.VoltageResult;
 import org.tcontrol.sms.commands.CommandResult;
 import org.tcontrol.sms.commands.StatusCommand;
 import org.tcontrol.config.props.SensorConfig;
-import org.tcontrol.config.props.SensorConfiguration;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -51,7 +50,7 @@ public class StatusCommandTest {
 
     @BeforeEach
     public void before() {
-        thermostatConfig = ThermostatConfig.builder().build();
+        thermostatConfig = new ThermostatConfig();
         thermostatConfig.setDelta(0.5f);
         thermostatConfig.setNightBegin(60 * 60 * 23);
         thermostatConfig.setNightEnd(60 * 60 * 7);
@@ -63,7 +62,7 @@ public class StatusCommandTest {
         thermostatConfig.setName("termo1");
         thermostatConfig.init();
 
-        thermostatConfig2 = ThermostatConfig.builder().build();
+        thermostatConfig2 = new ThermostatConfig();
         thermostatConfig2.setDelta(0.5f);
         thermostatConfig2.setNightBegin(60 * 60 * 23);
         thermostatConfig2.setNightEnd(60 * 60 * 7);
@@ -75,7 +74,7 @@ public class StatusCommandTest {
         thermostatConfig2.setName("termo2");
         thermostatConfig2.init();
 
-        thermostatConfig3 = ThermostatConfig.builder().build();
+        thermostatConfig3 = new ThermostatConfig();
         thermostatConfig3.setDelta(0.5f);
         thermostatConfig3.setNightBegin(60 * 60 * 23);
         thermostatConfig3.setNightEnd(60 * 60 * 7);
@@ -87,7 +86,7 @@ public class StatusCommandTest {
         thermostatConfig3.setName("termo3");
         thermostatConfig3.init();
 
-        thermostatConfig4 = ThermostatConfig.builder().build();
+        thermostatConfig4 = new ThermostatConfig();
         thermostatConfig4.setDelta(0.5f);
         thermostatConfig4.setNightBegin(60 * 60 * 23);
         thermostatConfig4.setNightEnd(60 * 60 * 7);
@@ -99,7 +98,8 @@ public class StatusCommandTest {
         thermostatConfig4.setName("termo4");
         thermostatConfig4.init();
 
-        thermostatsConfig = new ThermostatsConfig(Arrays.asList(thermostatConfig, thermostatConfig2,
+        thermostatsConfig = new ThermostatsConfig();
+        thermostatsConfig.setThermostats(Arrays.asList(thermostatConfig, thermostatConfig2,
                 thermostatConfig3, thermostatConfig4));
 
         temperatureMonitor = new ITemperatureMonitor() {
@@ -187,7 +187,7 @@ public class StatusCommandTest {
 
         sensorConfig = new SensorConfig();
 
-        SensorConfiguration sensorConfiguration = new SensorConfiguration();
+        SensorConfig.SensorConfiguration sensorConfiguration = new SensorConfig.SensorConfiguration();
         sensorConfiguration.setName("дом");
         sensorConfiguration.setCode(SENSOR_CODE);
 

@@ -11,12 +11,13 @@ import org.tcontrol.sms.*;
 import org.tcontrol.hardware.IVoltageMonitor;
 import org.tcontrol.hardware.IVoltageMonitor.VoltageResult;
 import org.tcontrol.config.props.SensorConfig;
-import org.tcontrol.config.props.SensorConfiguration;
 import org.tcontrol.handler.IRelayHandler;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Optional;
+
+import static org.tcontrol.config.props.SensorConfig.SensorConfiguration;
 
 @Slf4j
 @RequiredArgsConstructor

@@ -9,7 +9,6 @@ import org.tcontrol.service.ITimer;
 import org.tcontrol.service.impl.Thermostat;
 import org.tcontrol.service.models.SensorValue;
 import org.tcontrol.config.props.SensorConfig;
-import org.tcontrol.config.props.SensorConfiguration;
 import org.tcontrol.handler.IRelayHandler;
 
 import java.time.LocalDate;
@@ -27,7 +26,7 @@ public class CommandConfiguration {
 
     @Bean
     public ThermostatConfig thermostatConfig() {
-        ThermostatConfig thermostatConfig = ThermostatConfig.builder().build();
+        ThermostatConfig thermostatConfig = new ThermostatConfig();
         thermostatConfig.setDelta(0.5f);
         thermostatConfig.setNightBegin(60 * 60 * 23);
         thermostatConfig.setNightEnd(60 * 60 * 7);
@@ -42,7 +41,7 @@ public class CommandConfiguration {
 
     @Bean
     public ThermostatConfig thermostatConfig2() {
-        ThermostatConfig thermostatConfig = ThermostatConfig.builder().build();
+        ThermostatConfig thermostatConfig = new ThermostatConfig();
         thermostatConfig.setDelta(0.5f);
         thermostatConfig.setNightBegin(60 * 60 * 23);
         thermostatConfig.setNightEnd(60 * 60 * 7);
@@ -57,7 +56,9 @@ public class CommandConfiguration {
 
     @Bean
     public ThermostatsConfig thermostatsConfig(ThermostatConfig thermostatConfig, ThermostatConfig thermostatConfig2){
-        return new ThermostatsConfig(Arrays.asList(thermostatConfig, thermostatConfig2));
+        ThermostatsConfig thermostatsConfig = new ThermostatsConfig();
+        thermostatsConfig.setThermostats(Arrays.asList(thermostatConfig, thermostatConfig2));
+        return  thermostatsConfig;
     }
 
     @Bean
@@ -141,7 +142,7 @@ public class CommandConfiguration {
     public SensorConfig sensorConfig() {
         SensorConfig sensorConfig = new SensorConfig();
 
-        SensorConfiguration sensorConfiguration = new SensorConfiguration();
+        SensorConfig.SensorConfiguration sensorConfiguration = new SensorConfig.SensorConfiguration();
         sensorConfiguration.setName("дом");
         sensorConfiguration.setCode(SENSOR_CODE);
 

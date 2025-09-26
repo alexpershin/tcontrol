@@ -3,7 +3,6 @@ package org.tcontrol.hardware.impl;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.tcontrol.config.props.SensorConfig;
-import org.tcontrol.config.props.SensorConfiguration;
 import org.tcontrol.hardware.ITemperatureMonitor;
 import org.tcontrol.service.IStatisticsSaver;
 import org.tcontrol.service.impl.CSVStatisticSaver;
@@ -12,6 +11,8 @@ import org.tcontrol.service.models.SensorValue;
 import javax.annotation.PostConstruct;
 import java.util.*;
 import java.util.stream.Collectors;
+
+import static org.tcontrol.config.props.SensorConfig.SensorConfiguration;
 
 @Slf4j
 @RequiredArgsConstructor

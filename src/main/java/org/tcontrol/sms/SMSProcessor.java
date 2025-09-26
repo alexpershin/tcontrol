@@ -10,6 +10,7 @@ import org.tcontrol.sms.commands.CommandResult;
 import org.tcontrol.sms.commands.STATUS;
 import org.tcontrol.config.props.SMSConfig;
 
+import javax.annotation.PostConstruct;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
@@ -32,6 +33,11 @@ public class SMSProcessor {
     private SMSConfig smsConfig;
 
     private CommandExecutor commandExecutor;
+
+    @PostConstruct
+    private final void init(){
+        log.info("init");
+    }
 
    @Scheduled(cron = "${sms-config.schedule}")
     public void inputSmsScan() {

@@ -3,26 +3,25 @@ package org.tcontrol.config.props;
 import com.pi4j.io.gpio.Pin;
 import com.pi4j.io.gpio.RaspiPin;
 import lombok.*;
+import lombok.experimental.FieldNameConstants;
 
 import javax.annotation.PostConstruct;
 import java.time.LocalTime;
-import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Data
-@AllArgsConstructor
-@NoArgsConstructor
+@RequiredArgsConstructor
+@FieldNameConstants
 public class ThermostatsConfig {
 
-    private List<org.tcontrol.config.props.ThermostatsConfig.ThermostatConfig> thermostats = new ArrayList<>();
+    private List<ThermostatConfig> thermostats;
 
     @Data
-    @AllArgsConstructor
-    @NoArgsConstructor
-    @Builder
-    public static class ThermostatConfig implements Cloneable {
+    @RequiredArgsConstructor
+    @FieldNameConstants
+    public static class ThermostatConfig implements Cloneable{
 
         private String name;
         private float tDay;

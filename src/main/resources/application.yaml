@@ -116,21 +116,6 @@ sensor-config:
       userName: "Газовый котел"
       description: 'Газовый котел'
 
-sms-config:
-  inputFolder: /var/spool/gammu/inbox
-  outputFolder: /var/spool/gammu/outbox
-  processedFolder: /var/spool/gammu/processed
-  schedule: '0/15 * * * * ?'
-  heatingPin: 'GPIO 0'
-  forwardingPhone: 79210972100
-  phones:
-    - phone: 79210972100
-      name: megafon
-    - phone: 79112403797
-      name: MTS
-    - phone: 79119378212
-      name: mama
-
 relay-pins:
   pins:
     - pinId: 100
@@ -165,6 +150,22 @@ relay-pins:
       pin: 'GPIO 25'
       name: 'solar-supply'
       userName: "Питание от солнечной панели"
+
+sms-config:
+  inputFolder: /var/spool/gammu/inbox
+  outputFolder: /var/spool/gammu/outbox
+  processedFolder: /var/spool/gammu/processed
+  schedule: '0/15 * * * * ?'
+  heatingPin: 'GPIO 0'
+  forwardingPhone: 79210972100
+  phones:
+    - phone: 79210972100
+      name: megafon
+    - phone: 79112403797
+      name: MTS
+    - phone: 79119378212
+      name: mama
+
 
 thermostat.schedule: '5 0/1 * * * ?'
 

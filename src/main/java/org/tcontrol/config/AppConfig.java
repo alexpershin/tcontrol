@@ -9,9 +9,9 @@ import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.CommonAnnotationBeanPostProcessor;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
+import org.springframework.core.env.Environment;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.tcontrol.config.props.ThermostatsConfig.ThermostatConfig;
 import org.tcontrol.handler.IOnOffHandler;
@@ -36,12 +36,12 @@ import org.tcontrol.sms.ISMSCommand;
 import org.tcontrol.sms.commands.*;
 
 import java.text.MessageFormat;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
+import static org.tcontrol.config.props.SensorConfig.SensorConfiguration;
+
 
 @Slf4j
 @Configuration
@@ -54,7 +54,7 @@ public class AppConfig implements BeanFactoryPostProcessor {
     public RelayPinsConfig relayPinsConfigStub() {
         RelayPinsConfig relayPinsConfig = new RelayPinsConfig();
         relayPinsConfig.setPins(Collections.singletonList(
-                new RelayPinsConfig.RelayPinConfig(8, "GPIO 8", "heating", "отопление")
+                new RelayPinsConfig.RelayPinConfiguration(8, "GPIO 8", "heating", "отопление")
         ));
         return relayPinsConfig;
     }
@@ -64,12 +64,14 @@ public class AppConfig implements BeanFactoryPostProcessor {
     public ThermostatsConfig thermostatsStub() {
 
         ThermostatConfig thermostatElectroConfigStub =
-                ThermostatConfig.builder()
-                        .name("termo1(electro)")
-                        .sensor("8")
-                        .relayPins(Collections.singletonList("GPIO 8")).build();
+                new ThermostatConfig();
 
-        ThermostatsConfig thermostatsConfig = new ThermostatsConfig(Arrays.asList(thermostatElectroConfigStub));
+        thermostatElectroConfigStub.setName("termo1(electro)");
+        thermostatElectroConfigStub.setSensor("8");
+        thermostatElectroConfigStub.setRelayPins(Collections.singletonList("GPIO 8"));
+
+        ThermostatsConfig thermostatsConfig = new ThermostatsConfig();
+        thermostatsConfig.setThermostats(Collections.singletonList(thermostatElectroConfigStub));
         return thermostatsConfig;
     }
 
@@ -120,13 +122,6 @@ public class AppConfig implements BeanFactoryPostProcessor {
     }
 
     @Bean
-    @ConfigurationProperties(prefix = "sensor-config")
-    @ConditionalOnProperty(value = "main-config.sensorsStub", havingValue = "false")
-    public SensorConfig sensorConfig() {
-        return new SensorConfig();
-    }
-
-    @Bean
     @ConditionalOnProperty(value = "main-config.sensorsStub", havingValue = "true")
     public ITemperatureMonitor temperatureMonitorStub(
             SensorConfig sensorConfig,
@@ -136,35 +131,18 @@ public class AppConfig implements BeanFactoryPostProcessor {
     }
 
     @Bean
+    @ConfigurationProperties(prefix = "sensor-config")
     @ConditionalOnProperty(value = "main-config.sensorsStub", havingValue = "false")
-    public ITemperatureMonitor temperatureMonitor(
-            ITemperatureReader temperatureReader,
-            SensorConfig sensorConfig,
-            CSVStatisticSaver csvWriter,
-            IStatisticsSaver sensorLastDataSaver) {
-        return new TemperatureMonitor(temperatureReader, sensorConfig, csvWriter, sensorLastDataSaver);
+    public SensorConfig sensorConfig() {
+        return new SensorConfig();
     }
+
 
     @Bean
     @ConfigurationProperties(prefix = "relay-pins")
     @ConditionalOnProperty(value = "main-config.sensorsStub", havingValue = "false")
     public RelayPinsConfig relayPinsConfig() {
         return new RelayPinsConfig();
-    }
-
-    @Bean
-    public IRelayAggregator relayAggregator(RelayAggregatorConfig relayAggregatorConfig,
-                                            IRelayHandler relayHandler) {
-        return new RelayAggregator(relayAggregatorConfig, relayHandler);
-    }
-
-    @Bean
-    public IRelayHandler relayHandler(CSVStatisticSaver csvStatisticSaver,
-                                      IStatisticsSaver sensorLastDataSaver,
-                                      IPinFactory pinFactory,
-                                      RelayPinsConfig relayPinsConfig,
-                                      SensorConfig sensorConfig) {
-        return new RelayHandler(csvStatisticSaver, sensorLastDataSaver, pinFactory, relayPinsConfig, sensorConfig);
     }
 
     @Bean
@@ -178,24 +156,6 @@ public class AppConfig implements BeanFactoryPostProcessor {
     @ConditionalOnProperty(value = "main-config.sensorsStub", havingValue = "false")
     public ThermostatsConfig thermostatsConfig() {
         return new ThermostatsConfig();
-    }
-
-    @Bean
-    public SensorService sensorService(
-            final ThermostatsConfig thermostatsConfig,
-            final SensorConfig sensorConfig,
-            final RelayPinsConfig relayPinsConfig,
-            final IStatisticsSaver sensorLastDataSaver,
-            final SensorMapper sensorMapper,
-            final Map<String, IThermostat> dynamicThermostats
-    ) {
-        return new SensorServiceImpl(
-                thermostatsConfig,
-                sensorConfig,
-                relayPinsConfig,
-                sensorLastDataSaver,
-                sensorMapper,
-                dynamicThermostats);
     }
 
     @Bean
@@ -233,6 +193,52 @@ public class AppConfig implements BeanFactoryPostProcessor {
     public OnOfHandlerConfig onOfHandlerConfig() {
         return new OnOfHandlerConfig();
     }
+
+
+    @Bean
+    @ConditionalOnProperty(value = "main-config.sensorsStub", havingValue = "false")
+    public ITemperatureMonitor temperatureMonitor(
+            ITemperatureReader temperatureReader,
+            SensorConfig sensorConfig,
+            CSVStatisticSaver csvWriter,
+            IStatisticsSaver sensorLastDataSaver) {
+        return new TemperatureMonitor(temperatureReader, sensorConfig, csvWriter, sensorLastDataSaver);
+    }
+
+
+    @Bean
+    public IRelayAggregator relayAggregator(RelayAggregatorConfig relayAggregatorConfig,
+                                            IRelayHandler relayHandler) {
+        return new RelayAggregator(relayAggregatorConfig, relayHandler);
+    }
+
+    @Bean
+    public IRelayHandler relayHandler(CSVStatisticSaver csvStatisticSaver,
+                                      IStatisticsSaver sensorLastDataSaver,
+                                      IPinFactory pinFactory,
+                                      RelayPinsConfig relayPinsConfig,
+                                      SensorConfig sensorConfig) {
+        return new RelayHandler(csvStatisticSaver, sensorLastDataSaver, pinFactory, relayPinsConfig, sensorConfig);
+    }
+
+    @Bean
+    public SensorService sensorService(
+            final ThermostatsConfig thermostatsConfig,
+            final SensorConfig sensorConfig,
+            final RelayPinsConfig relayPinsConfig,
+            final IStatisticsSaver sensorLastDataSaver,
+            final SensorMapper sensorMapper,
+            final Map<String, IThermostat> dynamicThermostats
+    ) {
+        return new SensorServiceImpl(
+                thermostatsConfig,
+                sensorConfig,
+                relayPinsConfig,
+                sensorLastDataSaver,
+                sensorMapper,
+                dynamicThermostats);
+    }
+
 
     @Bean
     public IOnOffHandler electricHeatingOnOfHandler(
@@ -314,9 +320,10 @@ public class AppConfig implements BeanFactoryPostProcessor {
     }
 
     @Bean
-    public DynamicThermostatBeanRegistrator dynamicThermostatBeanRegistrator(ThermostatsConfig thermostatsConfig,
-                                                                             CommonAnnotationBeanPostProcessor commonAnnotationBeanPostProcessor) {
-        return new DynamicThermostatBeanRegistrator(thermostatsConfig, commonAnnotationBeanPostProcessor);
+    public DynamicThermostatBeanCreator dynamicThermostatBeanCreator(
+            Environment environment
+    ) {
+        return new DynamicThermostatBeanCreator(environment);
     }
 
     private static ThermostatConfig thermostatConfig(ThermostatsConfig thermostatsConfig, String name) {

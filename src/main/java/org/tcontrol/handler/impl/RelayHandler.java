@@ -4,7 +4,6 @@ import com.pi4j.io.gpio.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.tcontrol.config.props.SensorConfig;
-import org.tcontrol.config.props.SensorConfiguration;
 import org.tcontrol.hardware.IPinFactory;
 import org.tcontrol.service.IStatisticsSaver;
 import org.tcontrol.service.models.SensorValue;
@@ -16,6 +15,8 @@ import javax.annotation.PostConstruct;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+
+import static org.tcontrol.config.props.SensorConfig.SensorConfiguration;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -69,23 +70,23 @@ public class RelayHandler implements IRelayHandler {
         log.info("{} state was: {} ", pin.getName(), pin.getState());
 
         SensorValue sensorValue = new SensorValue();
-        Optional<RelayPinsConfig.RelayPinConfig> relayPinConfigOptional =
+        Optional<RelayPinsConfig.RelayPinConfiguration> relayPinConfigOptional =
                 relayPinsConfig.getPins().stream()
                         .filter(p -> p.getPin().equals(controlPin.getName()))
                         .findAny();
 
         if (relayPinConfigOptional.isPresent()) {
-            RelayPinsConfig.RelayPinConfig relayPinConfig = relayPinConfigOptional.get();
+            RelayPinsConfig.RelayPinConfiguration relayPinConfiguration = relayPinConfigOptional.get();
             Optional<SensorConfiguration> sensorConfigurationOptional =
                     sensorConfig.getSensors()
                             .stream()
-                            .filter(sensor -> sensor.getCode().equals(String.valueOf(relayPinConfig.getPinId())))
+                            .filter(sensor -> sensor.getCode().equals(String.valueOf(relayPinConfiguration.getPinId())))
                             .findAny();
 
             sensorValue.setSensorId(sensorConfigurationOptional.map(SensorConfiguration::getId)
-                    .orElseGet(relayPinConfig::getPinId));
+                    .orElseGet(relayPinConfiguration::getPinId));
 
-            sensorValue.setSensorCode(String.valueOf(relayPinConfig.getPinId()));
+            sensorValue.setSensorCode(String.valueOf(relayPinConfiguration.getPinId()));
             sensorValue.setPin(controlPin.getName());
             sensorValue.setTimestamp(System.currentTimeMillis());
 

@@ -36,7 +36,7 @@ public class ThermostatTest {
 
     @BeforeEach
     public void before() {
-        thermostatConfig = ThermostatsConfig.ThermostatConfig.builder().build();
+        thermostatConfig = new ThermostatsConfig.ThermostatConfig();
         thermostatConfig.setDelta(0.5f);
         thermostatConfig.setNightBegin(60 * 60 * 23);
         thermostatConfig.setNightEnd(60 * 60 * 7);
@@ -47,7 +47,8 @@ public class ThermostatTest {
         thermostatConfig.getRelayPins().add(GPIO_00);
         thermostatConfig.setName("termo");
 
-        thermostatsConfig = new ThermostatsConfig(Collections.singletonList(thermostatConfig));
+        thermostatsConfig = new ThermostatsConfig();
+        thermostatsConfig.setThermostats(Collections.singletonList(thermostatConfig));
 
         temperatureMonitor = new ITemperatureMonitor() {
 

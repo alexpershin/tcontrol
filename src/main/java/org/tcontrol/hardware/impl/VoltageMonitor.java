@@ -46,7 +46,6 @@ import org.tcontrol.service.IStatisticsSaver;
 import org.tcontrol.service.impl.CSVStatisticSaver;
 import org.tcontrol.service.models.SensorValue;
 import org.tcontrol.config.props.SensorConfig;
-import org.tcontrol.config.props.SensorConfiguration;
 import org.tcontrol.config.props.VoltageMonitorConfig;
 import org.tcontrol.config.props.VoltageMonitorConfig.PinConfiguration;
 
@@ -57,6 +56,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import static org.tcontrol.config.props.SensorConfig.SensorConfiguration;
 
 @Service
 @Slf4j
@@ -67,6 +67,8 @@ public class VoltageMonitor implements IVoltageMonitor {
 
     private final VoltageMonitorConfig voltageMonitorConfig;
 
+    private final SensorConfig sensorConfig;
+
     private AdcGpioProvider provider;
 
     private GpioPinAnalogInput[] inputs;
@@ -74,8 +76,6 @@ public class VoltageMonitor implements IVoltageMonitor {
     private final CSVStatisticSaver csvWriter;
 
     private final IStatisticsSaver sensorLastDataSaver;
-
-    private final SensorConfig sensorConfig;
 
     private List<VoltageResult> voltageResults = new ArrayList<>();
 

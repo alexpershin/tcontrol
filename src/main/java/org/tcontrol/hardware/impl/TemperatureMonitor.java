@@ -9,7 +9,6 @@ import org.tcontrol.service.impl.CSVStatisticSaver;
 import org.tcontrol.service.models.SensorValue;
 import org.tcontrol.hardware.ITemperatureReader;
 import org.tcontrol.config.props.SensorConfig;
-import org.tcontrol.config.props.SensorConfiguration;
 
 import javax.annotation.PostConstruct;
 import java.io.IOException;
@@ -17,6 +16,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import static org.tcontrol.config.props.SensorConfig.SensorConfiguration;
 
 @Slf4j
 @RequiredArgsConstructor

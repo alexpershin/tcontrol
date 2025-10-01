@@ -158,21 +158,21 @@ public class StatusCommandTest {
         thermostat1 = new Thermostat("termo1");
         thermostat1.setThermostatsConfig(thermostatsConfig);
         thermostat1.setTemperatureMonitor(temperatureMonitor);
-        thermostat1.setRelayHandler(relayHandler);
+        thermostat1.setRelayAggregator(relayHandler);
         thermostat1.setTimer(timer);
         thermostat1.init();
 
         thermostat2 = new Thermostat("termo2");
         thermostat2.setThermostatsConfig(thermostatsConfig);
         thermostat2.setTemperatureMonitor(temperatureMonitor);
-        thermostat2.setRelayHandler(relayHandler);
+        thermostat2.setRelayAggregator(relayHandler);
         thermostat2.setTimer(timer);
         thermostat2.init();
 
         thermostat3 = new Thermostat("termo3");
         thermostat3.setThermostatsConfig(thermostatsConfig);
         thermostat3.setTemperatureMonitor(temperatureMonitor);
-        thermostat3.setRelayHandler(relayHandler);
+        thermostat3.setRelayAggregator(relayHandler);
         thermostat3.setTimer(timer);
         thermostat3.init();
 
@@ -180,7 +180,7 @@ public class StatusCommandTest {
         thermostat4 = new Thermostat("termo4");
         thermostat4.setThermostatsConfig(thermostatsConfig);
         thermostat4.setTemperatureMonitor(temperatureMonitor);
-        thermostat4.setRelayHandler(relayHandler);
+        thermostat4.setRelayAggregator(relayHandler);
         thermostat4.setTimer(timer);
         thermostat4.init();
 

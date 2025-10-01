@@ -38,7 +38,7 @@ public class Thermostat implements IThermostat {
 
     @Autowired
     @Setter
-    private IRelayHandler relayHandler;
+    private IRelayHandler relayAggregator;
 
     @Autowired
     @Setter
@@ -65,12 +65,15 @@ public class Thermostat implements IThermostat {
     @PostConstruct
     public void init() {
         log.info("init");
-        thermostatConfig = thermostatsConfig.getThermostats()
-                .stream()
-                .filter(tc -> tc.getName().equals(name))
-                .findAny()
-                .orElseThrow(() -> new SensorServiceException(MessageFormat.format("Thermostat config not found by name: {0}", name)));
+        thermostatConfig = thermostatConfig(thermostatsConfig, name);
         thermostatCurrentConfig = thermostatConfig.clone();
+    }
+
+    public static ThermostatConfig thermostatConfig(ThermostatsConfig thermostatsConfig, String name) {
+        return thermostatsConfig.getThermostats().stream()
+                .filter(tc -> tc.getName().equals(name))
+                .findFirst()
+                .orElseThrow(() -> new SensorServiceException(MessageFormat.format("Thermostat config not found by name: {0}", name)));
     }
 
     @Override
@@ -95,12 +98,12 @@ public class Thermostat implements IThermostat {
             }
 
             thermostatCurrentConfig.relayPins().forEach(heatingPin -> {
-                PinState oldState = relayHandler.getPinState(heatingPin);
+                PinState oldState = relayAggregator.getPinState(heatingPin);
                 if (oldState == null || oldState.isHigh() != heatingOn) {
                     if (heatingOn) {
-                        relayHandler.turnOnRelay(heatingPin);
+                        relayAggregator.turnOnRelay(heatingPin);
                     } else {
-                        relayHandler.turnOffRelay(heatingPin);
+                        relayAggregator.turnOffRelay(heatingPin);
                     }
                 }
             });

@@ -121,14 +121,14 @@ public class CommandConfiguration {
         Thermostat t1 = new Thermostat("elect");
         t1.setThermostatsConfig(thermostatsConfig);
         t1.setTemperatureMonitor(temperatureMonitor);
-        t1.setRelayHandler(relayHandler);
+        t1.setRelayAggregator(relayHandler);
         t1.setTimer(timer);
         t1.init();
 
         Thermostat t2 = new Thermostat("gast");
         t2.setThermostatsConfig(thermostatsConfig);
         t2.setTemperatureMonitor(temperatureMonitor);
-        t2.setRelayHandler(relayHandler);
+        t2.setRelayAggregator(relayHandler);
         t2.setTimer(timer);
         t2.init();
 

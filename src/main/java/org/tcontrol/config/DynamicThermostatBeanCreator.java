@@ -31,7 +31,9 @@ public class DynamicThermostatBeanCreator implements BeanDefinitionRegistryPostP
                         Bindable.listOf(HashMap.class)
                 ).get();
 
-        thermostatNames = properties.stream().map(thermostatProps -> valueOf(thermostatProps.get(ThermostatConfig.Fields.name))).collect(Collectors.toList());
+        thermostatNames = properties.stream()
+                .map(thermostatProps -> valueOf(thermostatProps.get(ThermostatConfig.Fields.name)))
+                .collect(Collectors.toList());
     }
 
     /**

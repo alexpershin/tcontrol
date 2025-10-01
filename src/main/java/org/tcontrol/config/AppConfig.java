@@ -335,12 +335,6 @@ public class AppConfig implements BeanFactoryPostProcessor {
                 thermostatElectro, thermostatGas, thermostatVeranda, thermostatMyRoom, voltageMonitor);
     }
 
-    private static ThermostatConfig thermostatConfig(ThermostatsConfig thermostatsConfig, String name) {
-        return thermostatsConfig.getThermostats().stream()
-                .filter(tc -> tc.getName().equals(name))
-                .findFirst()
-                .orElseThrow(() -> new SensorServiceException(MessageFormat.format("Thermostat config not found by name: {0}", name)));
-    }
 
     @Override
     public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) throws BeansException {

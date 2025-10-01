@@ -94,7 +94,7 @@ public class ThermostatTest {
         thermostat = new Thermostat("termo");
         thermostat.setThermostatsConfig(thermostatsConfig);
         thermostat.setTemperatureMonitor(temperatureMonitor);
-        thermostat.setRelayHandler(relayHandler);
+        thermostat.setRelayAggregator(relayHandler);
         thermostat.setTimer(timer);
         thermostat.init();
     }

@@ -6,6 +6,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.tcontrol.hardware.ITemperatureMonitor;
 import org.tcontrol.service.IStatisticsSaver;
 import org.tcontrol.service.impl.CSVStatisticSaver;
+import org.tcontrol.service.models.Sensor;
 import org.tcontrol.service.models.SensorValue;
 import org.tcontrol.hardware.ITemperatureReader;
 import org.tcontrol.config.props.SensorConfig;
@@ -33,7 +34,7 @@ public class TemperatureMonitor implements ITemperatureMonitor {
     private final IStatisticsSaver sensorLastDataSaver;
 
     @PostConstruct
-    public void init(){
+    public void init() {
         log.info("init");
     }
 
@@ -45,17 +46,19 @@ public class TemperatureMonitor implements ITemperatureMonitor {
         List<SensorConfiguration> sensors = sensorConfig.getSensors();
         List<SensorValue> values = new ArrayList<>();
         for (SensorConfiguration sensor : sensors) {
-            try {
-                int sensorId = sensor.getId();
-                String sensorCode = sensor.getCode();
-                SensorValue value = temperatureReader.loadValue(sensorCode);
-                value.setSensorCode(sensorCode);
-                value.setSensorId(sensorId);
-                sensorValueMap.put(sensorCode, value);
-                values.add(value);
-                successCount++;
-            } catch (IOException e) {
-                log.warn(e.getMessage());
+            if (sensor.getType() == Sensor.SensorType.TEMPERATURE) {
+                try {
+                    int sensorId = sensor.getId();
+                    String sensorCode = sensor.getCode();
+                    SensorValue value = temperatureReader.loadValue(sensorCode);
+                    value.setSensorCode(sensorCode);
+                    value.setSensorId(sensorId);
+                    sensorValueMap.put(sensorCode, value);
+                    values.add(value);
+                    successCount++;
+                } catch (IOException e) {
+                    log.warn(e.getMessage());
+                }
             }
         }
         csvWriter.write(values);

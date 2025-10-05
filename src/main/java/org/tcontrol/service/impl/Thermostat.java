@@ -98,14 +98,11 @@ public class Thermostat implements IThermostat {
             }
 
             thermostatCurrentConfig.relayPins().forEach(heatingPin -> {
-                PinState oldState = relayAggregator.getPinState(heatingPin);
-             //   if (oldState == null || oldState.isHigh() != heatingOn) {
-                    if (heatingOn) {
-                        relayAggregator.turnOnRelay(heatingPin);
-                    } else {
-                        relayAggregator.turnOffRelay(heatingPin);
-                    }
-              //  }
+                if (heatingOn) {
+                    relayAggregator.turnOnRelay(heatingPin);
+                } else {
+                    relayAggregator.turnOffRelay(heatingPin);
+                }
             });
 
             log.info("{}> Check temperature between({},{}), current:{}, state:{}", name, mediumT - delta, mediumT + delta, currentT, heatingOn);

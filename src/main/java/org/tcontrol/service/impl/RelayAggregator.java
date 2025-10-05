@@ -52,7 +52,7 @@ public class RelayAggregator implements IRelayAggregator {
         Integer n = relayAggregatorConfig.getPinAggregates().get(controlPin.getName());
         if (n == null) {
             relayHandler.turnOffRelay(controlPin);
-            log.info("delegated turnOffRelay: {}", controlPin.getName());
+            log.info("delegate relayHandler turnOffRelay: {}", controlPin.getName());
             return PinState.LOW;
         } else {
             List<Boolean> pinStates = currentState.computeIfAbsent(controlPin.getName(), k -> new ArrayList<>());
@@ -61,10 +61,10 @@ public class RelayAggregator implements IRelayAggregator {
             if (pinStates.size() == n) {
                 boolean or = pinStates.stream().reduce(false, (a, b) -> a || b);
                 if (or) {
-                    log.info("aggregated delegation turnOnRelay: {}", controlPin.getName());
+                    log.info("aggregated delegate turnOnRelay: {}", controlPin.getName());
                     return relayHandler.turnOnRelay(controlPin);
                 } else {
-                    log.info("aggregated delegation turnOffRelay: {}", controlPin.getName());
+                    log.info("aggregated delegate turnOffRelay: {}", controlPin.getName());
                     return relayHandler.turnOffRelay(controlPin);
                 }
             }

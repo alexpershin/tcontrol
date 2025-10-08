@@ -13,7 +13,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
 
-@Component
+//@Component //
 @Slf4j
 public class TemperatureReader implements ITemperatureReader {
 
@@ -26,7 +26,7 @@ public class TemperatureReader implements ITemperatureReader {
     private String w1SensorInfoFileName;
 
     @Override
-    public SensorValue loadValue(String sensorCode) throws IOException {
+    public SensorValue getValue(String sensorCode) throws IOException {
         double t = readTemperatureFromFile(getFullPathToDevice(sensorCode));
         return new SensorValue(null, System.currentTimeMillis(), t);
     }

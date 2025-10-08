@@ -5,5 +5,6 @@ import org.tcontrol.service.models.SensorValue;
 import java.io.IOException;
 
 public interface ITemperatureReader {
-    SensorValue loadValue(String sensorCode) throws IOException;
+    default void load(){}
+    SensorValue getValue(String sensorCode) throws IOException;
 }

@@ -42,6 +42,7 @@ public class TemperatureMonitor implements ITemperatureMonitor {
     public void readSensors() {
         log.info("Reading temperature sensors...");
 
+        temperatureReader.load();
         int successCount = 0;
         List<SensorConfiguration> sensors = sensorConfig.getSensors();
         List<SensorValue> values = new ArrayList<>();
@@ -50,7 +51,7 @@ public class TemperatureMonitor implements ITemperatureMonitor {
                 try {
                     int sensorId = sensor.getId();
                     String sensorCode = sensor.getCode();
-                    SensorValue value = temperatureReader.loadValue(sensorCode);
+                    SensorValue value = temperatureReader.getValue(sensorCode);
                     value.setSensorCode(sensorCode);
                     value.setSensorId(sensorId);
                     sensorValueMap.put(sensorCode, value);

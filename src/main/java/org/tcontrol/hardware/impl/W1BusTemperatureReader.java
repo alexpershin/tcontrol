@@ -5,17 +5,21 @@ import com.pi4j.component.temperature.impl.TmpDS18B20DeviceType;
 import com.pi4j.io.w1.W1Device;
 import com.pi4j.io.w1.W1Master;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
-import org.tcontrol.hardware.W1Reader;
+import org.tcontrol.hardware.ITemperatureReader;
+import org.tcontrol.service.models.SensorValue;
 
 import javax.annotation.PostConstruct;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 @Slf4j
-public class W1ReaderImpl implements W1Reader {
+public class W1BusTemperatureReader implements ITemperatureReader {
+
+    private final Map<String, SensorValue> lastValues = new HashMap<>();
 
     @PostConstruct
     private void init() {
@@ -23,11 +27,20 @@ public class W1ReaderImpl implements W1Reader {
     }
 
     @Override
-    @Scheduled(cron = "0/30 * * * * ?")
-    public void read(){
+    public void load(){
         log.info("Reading w1 sensors...");
+
+        lastValues.clear();
+
+        loadValues();
+
+        log.info("Reading w1 sensors COMPLETE");
+    }
+
+    private static void loadValues() {
         W1Master master = new W1Master();
         List<W1Device> w1Devices = master.getDevices(TmpDS18B20DeviceType.FAMILY_CODE);
+
         for (W1Device device : w1Devices) {
             //this line is enought if you want to read the temperature
             log.info("Temperature: " + ((TemperatureSensor) device).getTemperature());
@@ -40,6 +53,10 @@ public class W1ReaderImpl implements W1Reader {
                 log.error("", e);
             }
         }
-        log.info("Reading w1 sensors COMPLETE");
+    }
+
+    @Override
+    public SensorValue getValue(String sensorCode) throws IOException {
+        return lastValues.get(sensorCode);
     }
 }

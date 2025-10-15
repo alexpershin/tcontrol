@@ -1,6 +1,5 @@
 package org.tcontrol.service.impl;
 
-import com.pi4j.io.gpio.PinState;
 import lombok.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -33,6 +33,11 @@ public class SensorValueDto {
     
     private SensorValueState state;
 
+    private Double minValue;
+    private long minValueTimestamp;
+
+    private Double maxValue;
+    private long maxValueTimestamp;
 
     /**
      * Returns current value of the sensor.

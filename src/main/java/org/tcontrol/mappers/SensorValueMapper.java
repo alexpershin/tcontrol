@@ -5,11 +5,23 @@ import org.mapstruct.ReportingPolicy;
 import org.tcontrol.controller.dto.SensorValueDto;
 import org.tcontrol.service.models.SensorValue;
 
+import java.util.List;
+
 @Mapper(componentModel = "spring",
         unmappedTargetPolicy = ReportingPolicy.IGNORE)
 public interface SensorValueMapper {
     SensorValueDto map(SensorValue sc);
-    default SensorValueDto.SensorValueState map(SensorValue.SensorState state){
-        return SensorValueDto.SensorValueState.NORMAL;
+
+    SensorValue clone(SensorValue sc);
+
+    List<SensorValueDto> map(List<SensorValue> valueList);
+
+    default SensorValueDto.SensorValueState map(SensorValue.SensorState state) {
+        switch (state){
+            case ALARM: return SensorValueDto.SensorValueState.ALERT;
+            case NORMAL: return SensorValueDto.SensorValueState.NORMAL;
+            case WARNING: return SensorValueDto.SensorValueState.WARNING;
+        }
+        return null;
     }
 }

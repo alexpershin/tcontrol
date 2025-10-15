@@ -2,7 +2,6 @@ package org.tcontrol.hardware.impl;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
 import org.tcontrol.service.models.SensorValue;
 import org.tcontrol.hardware.ITemperatureReader;
 
@@ -62,7 +61,6 @@ public class TemperatureReader implements ITemperatureReader {
     private String getW1DevicesPath() {
         return w1DevicesPath;
     }
-
 
     private String getW1SensorInfoFileName() {
         return w1SensorInfoFileName;

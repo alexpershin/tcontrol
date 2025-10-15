@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.tcontrol.config.props.RelayPinsConfig;
 import org.tcontrol.config.props.ThermostatsConfig;
 import org.tcontrol.mappers.SensorMapper;
+import org.tcontrol.mappers.SensorValueMapper;
 import org.tcontrol.service.IThermostat;
 import org.tcontrol.service.SensorService;
 import org.tcontrol.service.SensorServiceException;
@@ -34,6 +35,7 @@ public class SensorServiceImpl implements SensorService {
     protected final IStatisticsSaver sensorLastDataSaver;
     protected final SensorMapper sensorMapper;
     protected final Map<String,IThermostat> dynamicThermostats;
+    protected final SensorValueMapper sensorValueMapper;
 
     @PostConstruct
     public void init(){
@@ -62,9 +64,7 @@ public class SensorServiceImpl implements SensorService {
                 .map(Optional::get)
                 .map(sc -> {
                     SensorValue sensorValue = sensorLastDataSaver.currentValues().get(sc.getId());
-                    SensorValue sensorValueClone = new SensorValue(sc.getId(), sc.getCode(), sensorValue.getTimestamp(), sensorValue.getValue());
-                    sensorValueClone.setGradient(sensorValue.getGradient());
-                    return sensorValueClone;
+                    return sensorValueMapper.clone(sensorValue);
                 })
                 .collect(Collectors.toList());
     }

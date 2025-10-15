@@ -32,9 +32,8 @@ public class TemperatureMonitorStub implements ITemperatureMonitor {
         List<SensorValue> values = new ArrayList<>();
         long timestamp = System.currentTimeMillis();
         List<SensorValue> sensorValues = Arrays.asList(
-                new SensorValue(0, "0", timestamp, 0.0),
-                new SensorValue(1, "1", timestamp - 900001, 24.1),
-                new SensorValue(1, "1", timestamp, 25.5),
+                new SensorValue(1, "1", timestamp - 900001, 24.1, -10.0, 20.0),
+                new SensorValue(1, "1", timestamp, 25.5, -10.0, 20.0),
                 new SensorValue(2, "2", timestamp-900002, -22.6),
                 new SensorValue(2, "2", timestamp, -23.6),
                 new SensorValue(3, "3", timestamp, +2.4),

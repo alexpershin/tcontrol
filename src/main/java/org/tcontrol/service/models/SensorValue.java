@@ -4,8 +4,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.sql.Timestamp;
-
 /**
  *
  * @author Anton Buslavskii
@@ -22,6 +20,11 @@ public class SensorValue {
     private long timestamp;
     private double value;
     private Double gradient;
+    private Double minValue;
+    private long minValueTimestamp;
+    private Double maxValue;
+    private long maxValueTimestamp;
+
     /**
      * State of the sensor. Are not stored in the database. It should be
      * calculated in accordance with the sensor value and the low and hight
@@ -33,11 +36,13 @@ public class SensorValue {
     private SensorState state;
 
     public SensorValue(int sensorId, String sensorCode, Long timestamp,
-            double value) {
+                       double value, double minValue, double maxValue) {
         this.sensorId = sensorId;
         this.sensorCode = sensorCode;
         this.timestamp = timestamp;
         this.value = value;
+        this.minValue = minValue;
+        this.maxValue = maxValue;
     }
     
     public SensorValue(int sensorId, long time,
@@ -45,6 +50,7 @@ public class SensorValue {
         this.sensorId = sensorId;
         this.timestamp = time;
         this.value = value;
+
     }
 
     public SensorValue(double value) {

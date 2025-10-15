@@ -25,6 +25,7 @@ import org.tcontrol.hardware.IVoltageMonitor;
 import org.tcontrol.hardware.impl.TemperatureMonitor;
 import org.tcontrol.hardware.impl.TemperatureMonitorStub;
 import org.tcontrol.mappers.SensorMapper;
+import org.tcontrol.mappers.SensorValueMapper;
 import org.tcontrol.service.*;
 import org.tcontrol.service.impl.CSVStatisticSaver;
 import org.tcontrol.service.impl.RelayAggregator;
@@ -35,7 +36,6 @@ import org.tcontrol.service.models.Sensor;
 import org.tcontrol.sms.ISMSCommand;
 import org.tcontrol.sms.commands.*;
 
-import java.text.MessageFormat;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -244,15 +244,17 @@ public class AppConfig implements BeanFactoryPostProcessor {
             final RelayPinsConfig relayPinsConfig,
             final IStatisticsSaver sensorLastDataSaver,
             final SensorMapper sensorMapper,
-            final Map<String, IThermostat> dynamicThermostats
-    ) {
+            final Map<String, IThermostat> dynamicThermostats,
+            final SensorValueMapper sensorValueMapper
+            ) {
         return new SensorServiceImpl(
                 thermostatsConfig,
                 sensorConfig,
                 relayPinsConfig,
                 sensorLastDataSaver,
                 sensorMapper,
-                dynamicThermostats);
+                dynamicThermostats,
+                sensorValueMapper);
     }
 
 

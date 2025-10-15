@@ -1,8 +1,10 @@
 package org.tcontrol.controller;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 import org.tcontrol.controller.dto.*;
+import org.tcontrol.mappers.SensorValueMapper;
 import org.tcontrol.service.SensorServiceException;
 import org.tcontrol.service.SensorService;
 import org.tcontrol.service.models.Sensor;
@@ -24,22 +26,19 @@ import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import static org.tcontrol.controller.dto.SensorValueDto.SensorValueState.*;
 import static java.net.HttpURLConnection.HTTP_BAD_REQUEST;
 import static java.net.HttpURLConnection.HTTP_OK;
 
 @Slf4j
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("tcontrol/api")
 public class SensorController {
     private final SensorService sensorService;
+    private final SensorValueMapper sensorValueMapper;
 
     //Temp user
     private static final int CURRENT_USER_ID = 1;
-
-    public SensorController(SensorService sensorService) {
-        this.sensorService = sensorService;
-    }
 
     @PostConstruct
     public void init() {
@@ -99,11 +98,11 @@ public class SensorController {
                             content = @Content(mediaType = "application/json"))})
     public SensorValuesResult getSensorValues() throws SensorServiceException {
         log.info("get values");
-        SensorValuesResult result = new SensorValuesResult();
+        final List<SensorValue> values = sensorService.getCurrentValues(CURRENT_USER_ID, null);
+
+        final SensorValuesResult result = new SensorValuesResult();
         result.setTime(System.currentTimeMillis());
-        List<SensorValue> values = sensorService.getCurrentValues(CURRENT_USER_ID, null);
-        List<SensorValueDto> webValues = convertSensorValuesToWeb(values);
-        result.setValues(webValues.toArray(new SensorValueDto[]{}));
+        result.setValues(sensorValueMapper.map(values).toArray(new SensorValueDto[]{}));
         return result;
     }
 
@@ -136,7 +135,7 @@ public class SensorController {
         log.info("get previous values for sensor {}", sensorId);
         SensorValuesResult result = new SensorValuesResult();
         List<SensorValue> values = sensorService.getPrevSensorValues(CURRENT_USER_ID, null, sensorId);
-        List<SensorValueDto> webValues = convertSensorValuesToWeb(values);
+        List<SensorValueDto> webValues = sensorValueMapper.map(values);
         result.setValues(webValues.toArray(new SensorValueDto[]{}));
         return result;
     }
@@ -218,56 +217,5 @@ public class SensorController {
         }
         return webSensors;
     }
-
-    List<SensorValueDto> convertSensorValuesToWeb(List<SensorValue> values) throws SensorServiceException {
-
-        List<SensorValueDto> webValues = new ArrayList<>();
-
-        final Map<Integer, Sensor> allSensors = sensorService.getAllSensors();
-
-        for (SensorValue value : values) {
-
-            Sensor sensor = allSensors.get(value.getSensorId());
-
-            SensorValueDto webValue = new SensorValueDto(
-                    value.getSensorId(),
-                    value.getTimestamp(),
-                    value.getValue(),
-                    calculateSate(value, sensor),
-                    value.getGradient()
-            );
-
-            webValues.add(webValue);
-        }
-        return webValues;
-    }
-
-    public static SensorValueDto.SensorValueState calculateSate(SensorValue value,
-                                                                Sensor sensor) {
-
-        SensorValueDto.SensorValueState result = NORMAL;
-
-        double v = value.getValue();
-        if (Sensor.SensorType.ALARM == sensor.getType()
-                || Sensor.SensorType.ON_OFF == sensor.getType()) {
-            result = value.getValue() == 0 ? NORMAL : ALERT;
-
-        } else //calculate state according to threshold
-            //low thressHold
-            if (value.getValue() <= sensor.getLowThreshold()) {
-                result = ALERT;
-            } else if (v <= sensor.getLowThreshold() + sensor.getThresholdLag()
-                    && v > sensor.getLowThreshold()) {
-                result = WARNING;
-            } //high thressHold
-            else if (v >= sensor.getHighThreshold()) {
-                result = ALERT;
-            } else if (v >= sensor.getHighThreshold() - sensor.getThresholdLag()
-                    && v < sensor.getHighThreshold()) {
-                result = WARNING;
-            }
-        return result;
-    }
-
 
 }

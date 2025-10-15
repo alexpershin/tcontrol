@@ -12,7 +12,7 @@ springdoc:
   enable-data-rest: true
 
 main-config:
-  sensorValuesBufferSize: 20
+  sensorValuesBufferSize: 100
   sensorsStub: false
 
 w1DevicesPath: /sys/bus/w1/devices
@@ -26,7 +26,7 @@ sensor-config:
       code: '28-000002c7c3ee'
       name: house
       type: TEMPERATURE
-      userName: Дом
+      userName: Коридор
       description: Датчик в коридоре
       lowThreshold: 8.0
       highThreshold: 30.0
@@ -165,7 +165,6 @@ sms-config:
       name: MTS
     - phone: 79119378212
       name: mama
-
 
 thermostat.schedule: '5 0/1 * * * ?'
 

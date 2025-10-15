@@ -40,23 +40,6 @@ public class SensorValueDto {
     private long maxValueTimestamp;
 
     /**
-     * Returns current value of the sensor.
-     * @param sensorId sensor's id;
-     * @param timestamp time stamp when value was got;
-     * @param value the value;
-     * @param state the value state;
-     * @param gradient the gradient;
-     */
-    public SensorValueDto(int sensorId, long timestamp,
-                          double value, SensorValueState state, Double gradient) {
-        this.sensorId = sensorId;
-        this.timestamp = timestamp;
-        this.value = value;
-        this.state = state;
-        this.gradient = gradient;
-    }
-
-    /**
      * Sensors wrapper to be passed to web UI.
      */
     @Getter

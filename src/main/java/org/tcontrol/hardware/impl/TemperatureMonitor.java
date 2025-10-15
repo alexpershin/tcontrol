@@ -46,6 +46,7 @@ public class TemperatureMonitor implements ITemperatureMonitor {
         int successCount = 0;
         List<SensorConfiguration> sensors = sensorConfig.getSensors();
         List<SensorValue> values = new ArrayList<>();
+
         for (SensorConfiguration sensor : sensors) {
             if (sensor.getType() == Sensor.SensorType.TEMPERATURE) {
                 try {

@@ -7,6 +7,7 @@ import org.tcontrol.service.impl.SensorLastDataSaver;
 import org.tcontrol.service.models.Sensor;
 import org.tcontrol.service.models.SensorValue;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Arrays;
 import java.util.Map;
@@ -39,7 +40,7 @@ public class SensorLastDataSaverTest {
 
     @Test
     public void test() {
-        List<SensorValue> values = Arrays.asList(
+        List<SensorValue> values = Collections.singletonList(
                 new SensorValue(1, "abc", 1L, 1.0)
         );
         sensorLastDataSaver.write(values);

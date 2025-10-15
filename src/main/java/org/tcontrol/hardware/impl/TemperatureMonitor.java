@@ -53,11 +53,15 @@ public class TemperatureMonitor implements ITemperatureMonitor {
                     int sensorId = sensor.getId();
                     String sensorCode = sensor.getCode();
                     SensorValue value = temperatureReader.getValue(sensorCode);
-                    value.setSensorCode(sensorCode);
-                    value.setSensorId(sensorId);
-                    sensorValueMap.put(sensorCode, value);
-                    values.add(value);
-                    successCount++;
+                    if (value != null) {
+                        value.setSensorCode(sensorCode);
+                        value.setSensorId(sensorId);
+                        sensorValueMap.put(sensorCode, value);
+                        values.add(value);
+                        successCount++;
+                    } else {
+                        log.warn("No value found for sensor: {}", sensorCode);
+                    }
                 } catch (IOException e) {
                     log.warn(e.getMessage());
                 }

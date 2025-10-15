@@ -13,7 +13,7 @@ springdoc:
 
 main-config:
   sensorValuesBufferSize: 100
-  sensorsStub: false
+  sensorsStub: true
 
 w1DevicesPath: /sys/bus/w1/devices
 

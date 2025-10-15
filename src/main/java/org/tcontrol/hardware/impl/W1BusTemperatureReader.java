@@ -37,18 +37,17 @@ public class W1BusTemperatureReader implements ITemperatureReader {
         log.info("Reading w1 sensors COMPLETE");
     }
 
-    private static void loadValues() {
+    private void loadValues() {
         W1Master master = new W1Master();
         List<W1Device> w1Devices = master.getDevices(TmpDS18B20DeviceType.FAMILY_CODE);
 
         for (W1Device device : w1Devices) {
-            //this line is enought if you want to read the temperature
-            log.info("Temperature: " + ((TemperatureSensor) device).getTemperature());
-            //returns the temperature as double rounded to one decimal place after the point
-
             try {
-                log.info("1-Wire ID: " + device.getId() +  " value: " + device.getValue());
-                //returns the ID of the Sensor and the  full text of the virtual file
+                double temperature = ((TemperatureSensor) device).getTemperature();
+                log.info("Temperature: {}, 1-Wire ID: {}  value: {}", temperature, device.getId(),device.getValue());
+                final SensorValue sensorValue =
+                        new SensorValue(device.getId(), System.currentTimeMillis(), temperature);
+                lastValues.put(device.getId(), sensorValue);
             } catch (IOException e) {
                 log.error("", e);
             }

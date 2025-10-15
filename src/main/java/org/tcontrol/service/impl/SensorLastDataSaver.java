@@ -13,6 +13,7 @@ import java.util.*;
 
 import static java.util.stream.Collectors.toMap;
 import static org.tcontrol.service.models.SensorValue.SensorState.*;
+import static org.tcontrol.config.props.SensorConfig.SensorConfiguration;
 
 @Component
 @RequiredArgsConstructor
@@ -43,8 +44,9 @@ public class SensorLastDataSaver implements IStatisticsSaver {
     @Override
     public Map<Integer, SensorValue> currentValues() {
 
-        final Map<Integer, SensorConfig.SensorConfiguration> sensorConfigurationMap =
-                sensorConfig.getSensors().stream().collect(toMap(SensorConfig.SensorConfiguration::getId, sv -> sv));
+        final Map<Integer, SensorConfiguration> sensorConfigurationMap =
+                sensorConfig.getSensors().stream()
+                        .collect(toMap(SensorConfiguration::getId, sc -> sc));
         return cache.values().stream().map(values -> {
             SensorValue lastValue = values.getLast();
             Iterator<SensorValue> it = values.descendingIterator();
@@ -56,7 +58,7 @@ public class SensorLastDataSaver implements IStatisticsSaver {
                 long deltaT = lastValue.getTimestamp() - sv.getTimestamp();
                 double value = sv.getValue();
                 calcGradient(deltaT, lastValue, value);
-                calcMinMax(lastValue, value, sv.getTimestamp() ,deltaT);
+                calcMinMax(lastValue, value, sv.getTimestamp(), deltaT);
                 sv.setState(calcSate(sv, sensorConfiguration));
             }
             return lastValue;

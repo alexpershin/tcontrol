@@ -160,23 +160,25 @@ function renderSensor(sensorElementId, sensor, value) {
         alertSensorRenderer(sensorElementId, value);
     }
     if (typeof value.timestamp !== 'undefined'){
-        const dateObject = new Date(sensorValue.timestamp);
 
-        const options = {
+        const dateOpts = {
             hour12: false, // Set to false to use 24-hour format
             hour: '2-digit',
             minute: '2-digit',
             second: '2-digit' // Optional: include seconds if desired
         };
 
-        const timeWithoutAmPm = dateObject.toLocaleTimeString('en-US', options);
+        const timeWithoutAmPm = sensorValue.timestamp ?
+            new Date(sensorValue.timestamp).toLocaleTimeString('en-US', dateOpts):
+             '--';
 
         $(sensorElementId +' .sensor_item_body .sensor_indicator_panel .sensor_time').text (timeWithoutAmPm)
     }
 }
 
 function temperatureSensorRenderer(sensorElementId, sensorValue) {
-    var resValue = sensorValue.state !='UNDEFINED'? sensorValue.value.toFixed(1) + '\xB0':'--\xB0'
+    console.log('sensorValue: ' + sensorValue);
+    var resValue = sensorValue.value? sensorValue.value.toFixed(1) + '\xB0':'--\xB0'
     $(sensorElementId + ' .sensor_item_body .sensor_value').text(resValue)
     var sensorBody = $(sensorElementId + ' .sensor_item_body')
     const background = sensorBackgroundCalc(sensorValue)
@@ -186,6 +188,22 @@ function temperatureSensorRenderer(sensorElementId, sensorValue) {
     textColor = calcGradientValueAndColor(sensorValue.gradient)
     gradient.text(textColor.text)
     gradient.css('color', textColor.color)
+
+    var minValue = $(sensorElementId + ' .sensor_item_body .sensor_min_value')
+    var maxValue = $(sensorElementId + ' .sensor_item_body .sensor_max_value')
+    var minTime = $(sensorElementId + ' .sensor_item_body .sensor_min_time')
+    var maxTime = $(sensorElementId + ' .sensor_item_body .sensor_max_time')
+    minValue.text(sensorValue.minValue? sensorValue.minValue.toFixed(1):'--')
+    maxValue.text(sensorValue.maxValue? sensorValue.maxValue.toFixed(1):'--')
+
+    const timeFormatOptions = {
+        hour12: false, // Set to false to use 24-hour format
+        hour: '2-digit',
+        minute: '2-digit'
+    };
+
+    minTime.text(sensorValue.minValueTimestamp ? new Date(sensorValue.minValueTimestamp).toLocaleTimeString('en-US', timeFormatOptions) : '--')
+    maxTime.text(sensorValue.maxValueTimestamp? new Date(sensorValue.maxValueTimestamp).toLocaleTimeString('en-US', timeFormatOptions): '--')
 }
 
 function calcGradientValueAndColor(gradient) {

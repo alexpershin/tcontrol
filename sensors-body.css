@@ -32,6 +32,13 @@
     display: flex;
 }
 
+.sensor_indicator_panel_bottom
+{
+    height: 30px;
+    justify-content: space-around;
+    display: flex;
+}
+
 .sensor-loader {
     z-index: 9999;
     border: 3px solid #f3f3f3;
@@ -62,11 +69,51 @@
     margin-top: 2px;
 }
 
+.sensor_item_body .sensor_min_value{
+    text-align:right;
+    font:normal 10px/10px Arial;
+    color:blue;
+    width: 4em;
+    margin-right: 1px;
+    margin-left: 4px;
+    margin-bottom: 2px;
+}
+
+.sensor_item_body .sensor_min_time{
+    text-align:left;
+    font:normal 10px/10px Arial;
+    color:blue;
+    width: 4em;
+    margin-right: 2px;
+    margin-left: 1px;
+    margin-bottom: 2px;
+}
+
+.sensor_item_body .sensor_max_value{
+    text-align:right;
+    font:normal 10px/10px Arial;
+    color:darkred;
+    width: 4em;
+    margin-left: 2px;
+    margin-right: 1px;
+    margin-bottom: 2px;
+}
+
+.sensor_item_body .sensor_max_time{
+    text-align:left;
+    font:normal 10px/10px Arial;
+    color:darkred;
+    width: 4em;
+    margin-right: 2px;
+    margin-left: 1px;
+    margin-bottom: 2px;
+}
+
 .sensor_item_body .sensor_value{
     text-align:center;
     font:normal 32px/32px Arial;
     color:black;
-    margin: 16px 0 0 0;
+    margin: 16px 0 16px 0;
 }
 
 .sensor_item .sensor_caption {

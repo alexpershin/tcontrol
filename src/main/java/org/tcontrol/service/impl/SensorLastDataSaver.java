@@ -1,5 +1,6 @@
 package org.tcontrol.service.impl;
 
+import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import org.springframework.beans.factory.annotation.Value;
@@ -69,7 +70,7 @@ public class SensorLastDataSaver implements IStatisticsSaver {
     }
 
     private static void calcMinMax(SensorValue lastValue, double value, long timestamp, long deltaT) {
-        if (deltaT <= 60 * 60 * 1000) {// 60мин
+        if (deltaT <= 60 * 60 * 1000 * 24) {// 24 hours
             if (lastValue.getMinValue() == null) {
                 lastValue.setMinValue(value);
                 lastValue.setMinValueTimestamp(timestamp);
@@ -89,7 +90,7 @@ public class SensorLastDataSaver implements IStatisticsSaver {
     }
 
     public static SensorValue.SensorState calcSate(SensorValue value,
-                                                   SensorConfig.SensorConfiguration sensorConfiguration) {
+                                                   @NonNull SensorConfig.SensorConfiguration sensorConfiguration) {
 
         SensorValue.SensorState result = NORMAL;
 
@@ -99,13 +100,13 @@ public class SensorLastDataSaver implements IStatisticsSaver {
             result = value.getValue() == 0 ? NORMAL : ALARM;
 
         } else //calculate state according to threshold
-            //low thressHold
+            //low threshold
             if (value.getValue() <= sensorConfiguration.getLowThreshold()) {
                 result = ALARM;
             } else if (v <= sensorConfiguration.getLowThreshold() + sensorConfiguration.getThresholdLag()
                     && v > sensorConfiguration.getLowThreshold()) {
                 result = WARNING;
-            } //high thressHold
+            } //high threshold
             else if (v >= sensorConfiguration.getHighThreshold()) {
                 result = ALARM;
             } else if (v >= sensorConfiguration.getHighThreshold() - sensorConfiguration.getThresholdLag()

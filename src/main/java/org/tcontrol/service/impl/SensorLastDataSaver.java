@@ -13,7 +13,6 @@ import java.util.*;
 
 import static java.util.stream.Collectors.toMap;
 import static org.tcontrol.service.models.SensorValue.SensorState.*;
-import static org.tcontrol.config.props.SensorConfig.SensorConfiguration;
 
 @Component
 @RequiredArgsConstructor

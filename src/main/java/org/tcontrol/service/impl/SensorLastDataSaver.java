@@ -44,9 +44,6 @@ public class SensorLastDataSaver implements IStatisticsSaver {
     @Override
     public Map<Integer, SensorValue> currentValues() {
 
-        final Map<Integer, SensorConfiguration> sensorConfigurationMap =
-                sensorConfig.getSensors().stream()
-                        .collect(toMap(SensorConfiguration::getId, sc -> sc));
         return cache.values().stream().map(values -> {
             SensorValue lastValue = values.getLast();
             Iterator<SensorValue> it = values.descendingIterator();
@@ -54,7 +51,7 @@ public class SensorLastDataSaver implements IStatisticsSaver {
             lastValue.setMaxValue(null);
             while (it.hasNext()) {
                 SensorValue sv = it.next();
-                SensorConfig.SensorConfiguration sensorConfiguration = sensorConfigurationMap.get(sv.getSensorId());
+                SensorConfig.SensorConfiguration sensorConfiguration = sensorConfig.getIdToSensorConfMap().get(sv.getSensorId());
                 long deltaT = lastValue.getTimestamp() - sv.getTimestamp();
                 double value = sv.getValue();
                 calcGradient(deltaT, lastValue, value);

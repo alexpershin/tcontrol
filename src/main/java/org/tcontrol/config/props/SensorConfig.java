@@ -1,32 +1,38 @@
 package org.tcontrol.config.props;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.RequiredArgsConstructor;
+import lombok.*;
 import lombok.extern.slf4j.Slf4j;
 import org.tcontrol.service.models.Sensor;
 
 import javax.annotation.PostConstruct;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
+
+import static java.util.stream.Collectors.toMap;
 
 @Slf4j
-@Data
+@Getter
 @RequiredArgsConstructor
 public class SensorConfig {
     private List<SensorConfiguration> sensors = new ArrayList<>();
+    private Map<String, SensorConfiguration> codeToSensorConfMap = new HashMap<>();
+    private Map<Integer, SensorConfiguration> idToSensorConfMap = new HashMap<>();
 
     @PostConstruct
     public void init() {
         log.info("init");
     }
 
+    public void setSensors(List<SensorConfiguration> sensors) {
+        this.sensors = sensors;
+        codeToSensorConfMap = sensors.stream().collect(Collectors.toMap(SensorConfiguration::getCode, s -> s));
+        idToSensorConfMap = sensors.stream().collect(toMap(SensorConfiguration::getId, sc -> sc));
+    }
+
     @Data
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class SensorConfiguration
-    {
+    public static class SensorConfiguration {
 
         private int id;
         private String code;

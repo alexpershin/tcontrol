@@ -7,21 +7,30 @@ import lombok.experimental.FieldNameConstants;
 
 import javax.annotation.PostConstruct;
 import java.time.LocalTime;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
-@Data
+@Getter
 @RequiredArgsConstructor
 @FieldNameConstants
 public class ThermostatsConfig {
 
     private List<ThermostatConfig> thermostats;
+    private Map<String, ThermostatConfig> nameToThermostatConfigMap = new HashMap<>();
+
+    public void setThermostats(List<ThermostatConfig> thermostatConfigs) {
+        this.thermostats = thermostatConfigs;
+        this.nameToThermostatConfigMap =
+                thermostatConfigs.stream().collect(Collectors.toMap(ThermostatConfig::getName, tc -> tc));
+    }
 
     @Data
     @RequiredArgsConstructor
     @FieldNameConstants
-    public static class ThermostatConfig implements Cloneable{
+    public static class ThermostatConfig implements Cloneable {
 
         private String name;
         private float tDay;
@@ -33,12 +42,10 @@ public class ThermostatsConfig {
         private List<String> relayPins;
 
         @Override
-        public  ThermostatConfig clone()  {
+        public ThermostatConfig clone() {
             try {
-                ThermostatConfig clone = (ThermostatConfig)super.clone();
-                clone.setRelayPins(relayPins.stream()
-                        .map(String::new)
-                        .collect(Collectors.toList()));
+                ThermostatConfig clone = (ThermostatConfig) super.clone();
+                clone.setRelayPins(relayPins.stream().map(String::new).collect(Collectors.toList()));
                 return clone;
             } catch (CloneNotSupportedException e) {
                 throw new UnsupportedOperationException("Clone not supported yet.");

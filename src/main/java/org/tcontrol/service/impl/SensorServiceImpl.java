@@ -19,8 +19,11 @@ import javax.annotation.PostConstruct;
 import java.text.MessageFormat;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
+
+import static java.util.Optional.ofNullable;
 
 /**
  * DAO stub to use while real DAO has not been completely implemented.
@@ -56,14 +59,13 @@ public class SensorServiceImpl implements SensorService {
 
     @Override
     public List<SensorValue> getCurrentValues(int userId, java.sql.Date date) {
-        return sensorLastDataSaver.currentValues().values().stream()
+        final Map<Integer, SensorValue> idToSensorValueMap = sensorLastDataSaver.currentValues();
+        return idToSensorValueMap.values().stream()
                 .map(SensorValue::getSensorCode)
-                .map(sensorCode -> sensorConfig.getSensors().stream()
-                        .filter(sensor -> sensor.getCode().equals(sensorCode)).findFirst()
-                ).filter(Optional::isPresent)
-                .map(Optional::get)
+                .map(sensorCode -> sensorConfig.getCodeToSensorConfMap().get(sensorCode)
+                ).filter(Objects::nonNull)
                 .map(sc -> {
-                    SensorValue sensorValue = sensorLastDataSaver.currentValues().get(sc.getId());
+                    SensorValue sensorValue = idToSensorValueMap.get(sc.getId());
                     return sensorValueMapper.clone(sensorValue);
                 })
                 .collect(Collectors.toList());
@@ -100,12 +102,9 @@ public class SensorServiceImpl implements SensorService {
     }
 
     private IThermostat thermostat(int sensorId) {
-        return sensorConfig.getSensors()
-                .stream()
-                .filter(sensor -> sensor.getId() == sensorId)
-                .findFirst().map(sc -> relayPinsConfig.getPins().stream()
-                        .filter(r -> String.valueOf(r.getPinId()).equals(sc.getCode()))
-                        .findFirst()
+        return ofNullable(sensorConfig.getIdToSensorConfMap().get(sensorId))
+                .filter(Objects::nonNull)
+                .map(sc -> ofNullable(relayPinsConfig.getIdToRelayPinConfigMap().get(Integer.valueOf(sc.getCode())))
                         .orElseThrow(() -> new SensorServiceException(MessageFormat.format("Relay pin not found by sensorCode: {0}", sc.getCode())))
                 )
                 .map(r -> dynamicThermostats.values().stream()

@@ -47,11 +47,11 @@ public class TemperatureMonitor implements ITemperatureMonitor {
         List<SensorConfiguration> sensors = sensorConfig.getSensors();
         List<SensorValue> values = new ArrayList<>();
 
-        for (SensorConfiguration sensor : sensors) {
-            if (sensor.getType() == Sensor.SensorType.TEMPERATURE) {
+        for (SensorConfiguration sensorConfiguration : sensors) {
+            if (sensorConfiguration.getType() == Sensor.SensorType.TEMPERATURE) {
                 try {
-                    int sensorId = sensor.getId();
-                    String sensorCode = sensor.getCode();
+                    int sensorId = sensorConfiguration.getId();
+                    String sensorCode = sensorConfiguration.getCode();
                     SensorValue value = temperatureReader.getValue(sensorCode);
                     if (value != null) {
                         value.setSensorCode(sensorCode);
@@ -60,7 +60,7 @@ public class TemperatureMonitor implements ITemperatureMonitor {
                         values.add(value);
                         successCount++;
                     } else {
-                        log.warn("No value found for sensor: {}", sensorCode);
+                        log.warn("No value found for sensorConfiguration: {}", sensorCode);
                     }
                 } catch (IOException e) {
                     log.warn(e.getMessage());

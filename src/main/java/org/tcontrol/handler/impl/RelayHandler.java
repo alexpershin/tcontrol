@@ -16,6 +16,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
+import static java.util.Optional.of;
+import static java.util.Optional.ofNullable;
 import static org.tcontrol.config.props.SensorConfig.SensorConfiguration;
 
 @Slf4j
@@ -71,17 +73,12 @@ public class RelayHandler implements IRelayHandler {
 
         SensorValue sensorValue = new SensorValue();
         Optional<RelayPinsConfig.RelayPinConfiguration> relayPinConfigOptional =
-                relayPinsConfig.getPins().stream()
-                        .filter(p -> p.getPin().equals(controlPin.getName()))
-                        .findAny();
+                ofNullable(relayPinsConfig.getNameToRelayPinConfigMap().get(controlPin.getName()));
 
         if (relayPinConfigOptional.isPresent()) {
             RelayPinsConfig.RelayPinConfiguration relayPinConfiguration = relayPinConfigOptional.get();
             Optional<SensorConfiguration> sensorConfigurationOptional =
-                    sensorConfig.getSensors()
-                            .stream()
-                            .filter(sensor -> sensor.getCode().equals(String.valueOf(relayPinConfiguration.getPinId())))
-                            .findAny();
+                    ofNullable(sensorConfig.getCodeToSensorConfMap().get(String.valueOf(relayPinConfiguration.getPinId())));
 
             sensorValue.setSensorId(sensorConfigurationOptional.map(SensorConfiguration::getId)
                     .orElseGet(relayPinConfiguration::getPinId));

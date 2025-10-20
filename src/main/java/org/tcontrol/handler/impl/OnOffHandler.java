@@ -60,11 +60,8 @@ public class OnOffHandler implements IOnOffHandler {
     }
 
     private Pin getPin() {
-        return relayPinsConfig.getPins()
-                .stream()
-                .filter(pin -> pin.getPinId() == onOfHandlerConfig.getPinId())
+        return ofNullable(relayPinsConfig.getIdToRelayPinConfigMap().get(onOfHandlerConfig.getPinId()))
                 .map(RelayPinsConfig.RelayPinConfiguration::getPin)
-                .findFirst()
                 .map(RaspiPin::getPinByName)
                 .orElseThrow(()->new SensorServiceException(MessageFormat.format("Pin config not found by id: {0}", onOfHandlerConfig.getPinId())));
     }

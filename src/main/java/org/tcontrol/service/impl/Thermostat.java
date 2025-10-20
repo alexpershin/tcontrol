@@ -20,6 +20,7 @@ import java.time.LocalTime;
 import java.util.List;
 
 import static java.lang.Float.max;
+import static java.util.Optional.ofNullable;
 import static org.tcontrol.config.props.ThermostatsConfig.ThermostatConfig;
 
 @RequiredArgsConstructor
@@ -69,9 +70,7 @@ public class Thermostat implements IThermostat {
     }
 
     public static ThermostatConfig thermostatConfig(ThermostatsConfig thermostatsConfig, String name) {
-        return thermostatsConfig.getThermostats().stream()
-                .filter(tc -> tc.getName().equals(name))
-                .findFirst()
+        return ofNullable(thermostatsConfig.getNameToThermostatConfigMap().get(name))
                 .orElseThrow(() -> new SensorServiceException(MessageFormat.format("Thermostat config not found by name: {0}", name)));
     }
 

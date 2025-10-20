@@ -56,6 +56,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import static java.util.Optional.ofNullable;
 import static org.tcontrol.config.props.SensorConfig.SensorConfiguration;
 
 @Service
@@ -135,10 +136,8 @@ public class VoltageMonitor implements IVoltageMonitor {
                 if (pin.isPresent()) {
                     int code = pin.get().getCode();
                     Optional<SensorConfiguration> sensorConfigurationOptional =
-                            sensorConfig.getSensors()
-                                    .stream()
-                                    .filter(sensor -> sensor.getCode().equals(String.valueOf(code)))
-                                    .findFirst();
+                            ofNullable(sensorConfig.getCodeToSensorConfMap().get(String.valueOf(code)));
+
                     if (sensorConfigurationOptional.isPresent()) {
                         SensorConfiguration sensorConfiguration = sensorConfigurationOptional.get();
                         values.add(new SensorValue(

@@ -22,7 +22,7 @@ import static org.tcontrol.config.props.ThermostatsConfig.ThermostatConfig;
 @Slf4j
 public class DynamicThermostatBeanCreator implements BeanDefinitionRegistryPostProcessor {
 
-    private final List<String> thermostatNames;
+    private final Set<String> thermostatNames;
 
     public DynamicThermostatBeanCreator(final Environment environment) {
         Binder binder = Binder.get(environment);
@@ -33,7 +33,7 @@ public class DynamicThermostatBeanCreator implements BeanDefinitionRegistryPostP
 
         thermostatNames = properties.stream()
                 .map(thermostatProps -> valueOf(thermostatProps.get(ThermostatConfig.Fields.name)))
-                .collect(Collectors.toList());
+                .collect(Collectors.toSet());
     }
 
     /**
@@ -41,9 +41,7 @@ public class DynamicThermostatBeanCreator implements BeanDefinitionRegistryPostP
      * @param thermostatsConfig test configuration of thermostats;
      */
     public DynamicThermostatBeanCreator(final ThermostatsConfig thermostatsConfig) {
-        thermostatNames = thermostatsConfig.getThermostats().stream()
-                .map(ThermostatConfig::getName)
-                .collect(Collectors.toList());
+        thermostatNames = thermostatsConfig.getNameToThermostatConfigMap().keySet();
     }
 
     @Override

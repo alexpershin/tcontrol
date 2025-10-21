@@ -78,8 +78,10 @@ public class RelayHandler implements IRelayHandler {
             Optional<SensorConfiguration> sensorConfigurationOptional =
                     sensorConfig.sensorConfigById(relayPinConfiguration.getPinId());
 
-            sensorValue.setSensorId(sensorConfigurationOptional.map(SensorConfiguration::getId)
-                    .orElseGet(relayPinConfiguration::getPinId));
+            sensorValue.setSensorId(sensorConfigurationOptional
+                    .map(SensorConfiguration::getId)
+                    .orElseGet(relayPinConfiguration::getPinId)
+            );
 
             sensorValue.setSensorCode(String.valueOf(relayPinConfiguration.getPinId()));
             sensorValue.setPin(controlPin.getName());

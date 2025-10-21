@@ -12,16 +12,15 @@ import static java.util.Optional.ofNullable;
 import static java.util.stream.Collectors.toMap;
 
 @Slf4j
-@RequiredArgsConstructor
+@NoArgsConstructor
 public class SensorConfig {
     @Getter
     private List<SensorConfiguration> sensors = new ArrayList<>();
     private Map<String, SensorConfiguration> codeToSensorConfMap = new HashMap<>();
     private Map<Integer, SensorConfiguration> idToSensorConfMap = new HashMap<>();
 
-    @PostConstruct
-    public void init() {
-        log.info("init");
+    public SensorConfig(List<SensorConfiguration> sensors){
+        setSensors(sensors);
     }
 
     public void setSensors(List<SensorConfiguration> sensors) {

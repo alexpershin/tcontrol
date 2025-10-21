@@ -1,3 +1,4 @@
+import org.tcontrol.config.props.SensorConfig;
 import org.tcontrol.service.impl.SensorLastDataSaver;
 import org.tcontrol.service.models.Sensor;
 import org.tcontrol.service.models.SensorValue;
@@ -6,8 +7,11 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.stream.Stream;
 
+import static java.util.Collections.singletonList;
 import static org.tcontrol.service.models.SensorValue.SensorState.NORMAL;
 import static org.tcontrol.service.models.SensorValue.SensorState.WARNING;
 import static org.tcontrol.service.models.SensorValue.SensorState.ALARM;
@@ -135,9 +139,9 @@ public class SensorStatusTest {
     @ParameterizedTest
     @MethodSource("data")
     public void calculateStateTest(SensorValue value,
-                                   SensorConfiguration sensorConfiguration,
+                                   SensorConfig.SensorConfiguration sensorConfiguration,
                                    SensorValue.SensorState state) {
 
-        assertEquals(SensorLastDataSaver.calcSate(value, sensorConfiguration), state);
+        assertEquals(SensorLastDataSaver.calcSate(value, new SensorConfig(singletonList(sensorConfiguration))), state);
     }
 }

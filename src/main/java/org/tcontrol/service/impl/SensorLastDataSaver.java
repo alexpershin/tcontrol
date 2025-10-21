@@ -53,13 +53,11 @@ public class SensorLastDataSaver implements IStatisticsSaver {
             lastValue.setMaxValue(null);
             while (it.hasNext()) {
                 SensorValue sv = it.next();
-                SensorConfig.SensorConfiguration sensorConfiguration = sensorConfig.sensorConfigById(sv.getSensorId())
-                        .orElseThrow(() -> new SensorServiceException(MessageFormat.format("SensorConfig not found by sensorId: {0}", sv.getSensorId())));
                 long deltaT = lastValue.getTimestamp() - sv.getTimestamp();
                 double value = sv.getValue();
                 calcGradient(deltaT, lastValue, value);
                 calcMinMax(lastValue, value, sv.getTimestamp(), deltaT);
-                sv.setState(calcSate(sv, sensorConfiguration));
+                sv.setState(calcSate(sv, sensorConfig));
             }
             return lastValue;
         }).collect(toMap(SensorValue::getSensorId, sv -> sv));
@@ -92,31 +90,32 @@ public class SensorLastDataSaver implements IStatisticsSaver {
         }
     }
 
-    public static SensorValue.SensorState calcSate(SensorValue value,
-                                                   @NonNull SensorConfig.SensorConfiguration sensorConfiguration) {
+    public static SensorValue.SensorState calcSate(SensorValue value, SensorConfig sensorConfig) {
+        return sensorConfig.sensorConfigById(value.getSensorId())
+                .map(sensorConfiguration -> {
+                    double v = value.getValue();
+                    SensorValue.SensorState result = NORMAL;
+                    if (Sensor.SensorType.ALARM == sensorConfiguration.getType()
+                            || Sensor.SensorType.ON_OFF == sensorConfiguration.getType()) {
+                        result = value.getValue() == 0 ? NORMAL : ALARM;
 
-        SensorValue.SensorState result = NORMAL;
-
-        double v = value.getValue();
-        if (Sensor.SensorType.ALARM == sensorConfiguration.getType()
-                || Sensor.SensorType.ON_OFF == sensorConfiguration.getType()) {
-            result = value.getValue() == 0 ? NORMAL : ALARM;
-
-        } else //calculate state according to threshold
-            //low threshold
-            if (value.getValue() <= sensorConfiguration.getLowThreshold()) {
-                result = ALARM;
-            } else if (v <= sensorConfiguration.getLowThreshold() + sensorConfiguration.getThresholdLag()
-                    && v > sensorConfiguration.getLowThreshold()) {
-                result = WARNING;
-            } //high threshold
-            else if (v >= sensorConfiguration.getHighThreshold()) {
-                result = ALARM;
-            } else if (v >= sensorConfiguration.getHighThreshold() - sensorConfiguration.getThresholdLag()
-                    && v < sensorConfiguration.getHighThreshold()) {
-                result = WARNING;
-            }
-        return result;
+                    } else //calculate state according to threshold
+                        //low threshold
+                        if (value.getValue() <= sensorConfiguration.getLowThreshold()) {
+                            result = ALARM;
+                        } else if (v <= sensorConfiguration.getLowThreshold() + sensorConfiguration.getThresholdLag()
+                                && v > sensorConfiguration.getLowThreshold()) {
+                            result = WARNING;
+                        } //high threshold
+                        else if (v >= sensorConfiguration.getHighThreshold()) {
+                            result = ALARM;
+                        } else if (v >= sensorConfiguration.getHighThreshold() - sensorConfiguration.getThresholdLag()
+                                && v < sensorConfiguration.getHighThreshold()) {
+                            result = WARNING;
+                        }
+                    return result;
+                })
+                .orElse(NORMAL);//if configuration not defined, values associated with relay-pins
     }
 
 

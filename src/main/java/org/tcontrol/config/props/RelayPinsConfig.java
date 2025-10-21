@@ -11,12 +11,10 @@ import static java.util.Optional.ofNullable;
 @Slf4j
 @RequiredArgsConstructor
 public class RelayPinsConfig {
-    private List<RelayPinConfiguration> pins = new ArrayList<>();
     private Map<Integer, RelayPinConfiguration>  idToRelayPinConfigMap = new HashMap<>();
     private Map<String, RelayPinConfiguration> pinToRelayPinConfigMap = new HashMap<>();
 
     public void setPins(List<RelayPinConfiguration> pins) {
-        this.pins = pins;
         idToRelayPinConfigMap = pins.stream().collect(Collectors.toMap(RelayPinConfiguration::getPinId, p->p));
         pinToRelayPinConfigMap = pins.stream().collect(Collectors.toMap(RelayPinConfiguration::getPin, p->p));
     }

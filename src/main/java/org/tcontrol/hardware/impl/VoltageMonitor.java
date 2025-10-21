@@ -56,7 +56,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import static java.util.Optional.ofNullable;
 import static org.tcontrol.config.props.SensorConfig.SensorConfiguration;
 
 @Service

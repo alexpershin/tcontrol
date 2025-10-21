@@ -16,7 +16,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
-import static java.util.Optional.ofNullable;
 import static org.tcontrol.config.props.SensorConfig.SensorConfiguration;
 
 @Slf4j

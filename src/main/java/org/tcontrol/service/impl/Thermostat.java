@@ -20,7 +20,6 @@ import java.time.LocalTime;
 import java.util.List;
 
 import static java.lang.Float.max;
-import static java.util.Optional.ofNullable;
 import static org.tcontrol.config.props.ThermostatsConfig.ThermostatConfig;
 
 @RequiredArgsConstructor

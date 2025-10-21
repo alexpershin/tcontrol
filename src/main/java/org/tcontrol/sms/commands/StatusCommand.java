@@ -17,7 +17,6 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Optional;
 
-import static java.util.Optional.ofNullable;
 import static org.tcontrol.config.props.SensorConfig.SensorConfiguration;
 
 @Slf4j

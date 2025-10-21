@@ -70,7 +70,7 @@ public class Thermostat implements IThermostat {
     }
 
     public static ThermostatConfig thermostatConfig(ThermostatsConfig thermostatsConfig, String name) {
-        return ofNullable(thermostatsConfig.getNameToThermostatConfigMap().get(name))
+        return thermostatsConfig.thermostatConfigByName(name)
                 .orElseThrow(() -> new SensorServiceException(MessageFormat.format("Thermostat config not found by name: {0}", name)));
     }
 

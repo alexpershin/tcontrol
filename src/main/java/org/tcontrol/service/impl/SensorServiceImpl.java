@@ -20,6 +20,7 @@ import java.text.MessageFormat;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static java.util.Optional.ofNullable;
@@ -61,8 +62,9 @@ public class SensorServiceImpl implements SensorService {
         final Map<Integer, SensorValue> idToSensorValueMap = sensorLastDataSaver.currentValues();
         return idToSensorValueMap.values().stream()
                 .map(SensorValue::getSensorCode)
-                .map(sensorCode -> sensorConfig.getCodeToSensorConfMap().get(sensorCode)
-                ).filter(Objects::nonNull)
+                .map(sensorConfig::sensorConfigByCode)
+                .filter(Optional::isPresent)
+                .map(Optional::get)
                 .map(sc -> {
                     SensorValue sensorValue = idToSensorValueMap.get(sc.getId());
                     return sensorValueMapper.clone(sensorValue);
@@ -101,9 +103,8 @@ public class SensorServiceImpl implements SensorService {
     }
 
     private IThermostat thermostat(int sensorId) {
-        return ofNullable(sensorConfig.getIdToSensorConfMap().get(sensorId))
-                .filter(Objects::nonNull)
-                .map(sc -> ofNullable(relayPinsConfig.getIdToRelayPinConfigMap().get(Integer.valueOf(sc.getCode())))
+        return sensorConfig.sensorConfigById(sensorId)
+                .map(sc -> relayPinsConfig.pinConfigurationById(Integer.valueOf(sc.getCode()))
                         .orElseThrow(() -> new SensorServiceException(MessageFormat.format("Relay pin not found by sensorCode: {0}", sc.getCode())))
                 )
                 .map(r -> dynamicThermostats.values().stream()

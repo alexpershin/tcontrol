@@ -8,12 +8,13 @@ import javax.annotation.PostConstruct;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static java.util.Optional.ofNullable;
 import static java.util.stream.Collectors.toMap;
 
 @Slf4j
-@Getter
 @RequiredArgsConstructor
 public class SensorConfig {
+    @Getter
     private List<SensorConfiguration> sensors = new ArrayList<>();
     private Map<String, SensorConfiguration> codeToSensorConfMap = new HashMap<>();
     private Map<Integer, SensorConfiguration> idToSensorConfMap = new HashMap<>();
@@ -27,6 +28,14 @@ public class SensorConfig {
         this.sensors = sensors;
         codeToSensorConfMap = sensors.stream().collect(Collectors.toMap(SensorConfiguration::getCode, s -> s));
         idToSensorConfMap = sensors.stream().collect(toMap(SensorConfiguration::getId, sc -> sc));
+    }
+
+    public Optional<SensorConfiguration> sensorConfigByCode(String code){
+        return ofNullable(codeToSensorConfMap.get(code));
+    }
+
+    public Optional<SensorConfiguration> sensorConfigById(Integer id){
+        return  ofNullable(idToSensorConfMap.get(id));
     }
 
     @Data

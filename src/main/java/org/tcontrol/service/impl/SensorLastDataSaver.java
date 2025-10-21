@@ -7,9 +7,11 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.tcontrol.config.props.SensorConfig;
 import org.tcontrol.service.IStatisticsSaver;
+import org.tcontrol.service.SensorServiceException;
 import org.tcontrol.service.models.Sensor;
 import org.tcontrol.service.models.SensorValue;
 
+import java.text.MessageFormat;
 import java.util.*;
 
 import static java.util.stream.Collectors.toMap;
@@ -51,7 +53,8 @@ public class SensorLastDataSaver implements IStatisticsSaver {
             lastValue.setMaxValue(null);
             while (it.hasNext()) {
                 SensorValue sv = it.next();
-                SensorConfig.SensorConfiguration sensorConfiguration = sensorConfig.getIdToSensorConfMap().get(sv.getSensorId());
+                SensorConfig.SensorConfiguration sensorConfiguration = sensorConfig.sensorConfigById(sv.getSensorId())
+                        .orElseThrow(() -> new SensorServiceException(MessageFormat.format("SensorConfig not found by sensorId: {0}", sv.getSensorId())));
                 long deltaT = lastValue.getTimestamp() - sv.getTimestamp();
                 double value = sv.getValue();
                 calcGradient(deltaT, lastValue, value);

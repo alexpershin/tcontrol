@@ -72,12 +72,12 @@ public class RelayHandler implements IRelayHandler {
 
         SensorValue sensorValue = new SensorValue();
         Optional<RelayPinsConfig.RelayPinConfiguration> relayPinConfigOptional =
-                ofNullable(relayPinsConfig.getNameToRelayPinConfigMap().get(controlPin.getName()));
+                relayPinsConfig.pinConfigurationByPin(controlPin.getName());
 
         if (relayPinConfigOptional.isPresent()) {
             RelayPinsConfig.RelayPinConfiguration relayPinConfiguration = relayPinConfigOptional.get();
             Optional<SensorConfiguration> sensorConfigurationOptional =
-                    ofNullable(sensorConfig.getCodeToSensorConfMap().get(String.valueOf(relayPinConfiguration.getPinId())));
+                    sensorConfig.sensorConfigById(relayPinConfiguration.getPinId());
 
             sensorValue.setSensorId(sensorConfigurationOptional.map(SensorConfiguration::getId)
                     .orElseGet(relayPinConfiguration::getPinId));

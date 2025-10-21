@@ -41,7 +41,7 @@ public class DynamicThermostatBeanCreator implements BeanDefinitionRegistryPostP
      * @param thermostatsConfig test configuration of thermostats;
      */
     public DynamicThermostatBeanCreator(final ThermostatsConfig thermostatsConfig) {
-        thermostatNames = thermostatsConfig.getNameToThermostatConfigMap().keySet();
+        thermostatNames = thermostatsConfig.thermostatNames();
     }
 
     @Override

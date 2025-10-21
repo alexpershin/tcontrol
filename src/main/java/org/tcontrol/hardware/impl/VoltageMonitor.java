@@ -136,7 +136,7 @@ public class VoltageMonitor implements IVoltageMonitor {
                 if (pin.isPresent()) {
                     int code = pin.get().getCode();
                     Optional<SensorConfiguration> sensorConfigurationOptional =
-                            ofNullable(sensorConfig.getCodeToSensorConfMap().get(String.valueOf(code)));
+                            sensorConfig.sensorConfigByCode(String.valueOf(code));
 
                     if (sensorConfigurationOptional.isPresent()) {
                         SensorConfiguration sensorConfiguration = sensorConfigurationOptional.get();

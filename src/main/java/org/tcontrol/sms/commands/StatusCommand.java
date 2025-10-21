@@ -46,8 +46,7 @@ public class StatusCommand implements ISMSCommand {
     @Override
     public CommandResult run() {
         Optional<String> res = temperatureMonitor.getSensorValueMap().values().stream().map(value -> {
-            String sensorCode = value.getSensorCode();
-            Optional<SensorConfiguration> sc = ofNullable(sensorConfig.getCodeToSensorConfMap().get(sensorCode));
+            Optional<SensorConfiguration> sc = sensorConfig.sensorConfigByCode(value.getSensorCode());
             return sc.map(sensorConfiguration -> sensorConfiguration.getName() + ": " + value.getValue())
                     .orElse("");
         }).reduce((a, b) -> a + "\n" + b);

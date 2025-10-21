@@ -7,17 +7,16 @@ import lombok.experimental.FieldNameConstants;
 
 import javax.annotation.PostConstruct;
 import java.time.LocalTime;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
-@Getter
+import static java.util.Optional.ofNullable;
+
 @RequiredArgsConstructor
 @FieldNameConstants
 public class ThermostatsConfig {
 
+    @Getter
     private List<ThermostatConfig> thermostats;
     private Map<String, ThermostatConfig> nameToThermostatConfigMap = new HashMap<>();
 
@@ -25,6 +24,14 @@ public class ThermostatsConfig {
         this.thermostats = thermostatConfigs;
         this.nameToThermostatConfigMap =
                 thermostatConfigs.stream().collect(Collectors.toMap(ThermostatConfig::getName, tc -> tc));
+    }
+
+    public Optional<ThermostatConfig> thermostatConfigByName(String name){
+        return ofNullable(nameToThermostatConfigMap.get(name));
+    }
+
+    public Set<String> thermostatNames(){
+        return nameToThermostatConfigMap.keySet();
     }
 
     @Data

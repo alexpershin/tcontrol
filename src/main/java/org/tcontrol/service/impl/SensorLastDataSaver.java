@@ -49,6 +49,7 @@ public class SensorLastDataSaver implements IStatisticsSaver {
         return cache.values().stream().map(values -> {
             SensorValue lastValue = values.getLast();
             Iterator<SensorValue> it = values.descendingIterator();
+            lastValue.setState(calcSate(lastValue, sensorConfig));
             lastValue.setMinValue(null);
             lastValue.setMaxValue(null);
             while (it.hasNext()) {
@@ -57,7 +58,6 @@ public class SensorLastDataSaver implements IStatisticsSaver {
                 double value = sv.getValue();
                 calcGradient(deltaT, lastValue, value);
                 calcMinMax(lastValue, value, sv.getTimestamp(), deltaT);
-                sv.setState(calcSate(sv, sensorConfig));
             }
             return lastValue;
         }).collect(toMap(SensorValue::getSensorId, sv -> sv));

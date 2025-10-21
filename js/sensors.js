@@ -189,6 +189,11 @@ function temperatureSensorRenderer(sensorElementId, sensorValue) {
     gradient.text(textColor.text)
     gradient.css('color', textColor.color)
 
+    fillMinMaxValue(sensorElementId, sensorValue)
+}
+
+function fillMinMaxValue(sensorElementId, sensorValue) {
+
     var minValue = $(sensorElementId + ' .sensor_item_body .sensor_min_value')
     var maxValue = $(sensorElementId + ' .sensor_item_body .sensor_max_value')
     var minTime = $(sensorElementId + ' .sensor_item_body .sensor_min_time')
@@ -204,6 +209,7 @@ function temperatureSensorRenderer(sensorElementId, sensorValue) {
 
     minTime.text(sensorValue.minValueTimestamp ? new Date(sensorValue.minValueTimestamp).toLocaleTimeString('en-US', timeFormatOptions) : '--')
     maxTime.text(sensorValue.maxValueTimestamp? new Date(sensorValue.maxValueTimestamp).toLocaleTimeString('en-US', timeFormatOptions): '--')
+
 }
 
 function calcGradientValueAndColor(gradient) {
@@ -246,6 +252,7 @@ function voltageSensorRenderer(sensorElementId, value) {
     $(sensorElementId + ' .sensor_item_body .sensor_value').text(resValue);
     sensorBody = $(sensorElementId + ' .sensor_item_body');
     sensorBody.css('background', sensorBackgroundCalc(value));
+    fillMinMaxValue(sensorElementId, value)
 }
 
 function onOffSensorRenderer(sensorElementId, sensorValue) {

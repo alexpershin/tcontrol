@@ -13,4 +13,5 @@ import lombok.Setter;
 public class StartHeatingResult {
     private Integer value;
     private String status;
+    private long timestamp;
 }

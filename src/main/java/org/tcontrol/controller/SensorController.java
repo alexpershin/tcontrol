@@ -152,11 +152,14 @@ public class SensorController {
                             schema = @Schema(maxLength = 4, example = "1"))
             )}
     )
-    public ResponseEntity<StartHeatingResult> startProcess(@RequestBody final StartHeatingRequest processChangeRequest) throws InterruptedException {
-        log.info("start process for sensor {}: {}", processChangeRequest.getSensorId(), processChangeRequest.getNewValue());
+    public ResponseEntity<StartHeatingResult> startProcess(@RequestBody final StartHeatingRequest processChangeRequest)
+            throws InterruptedException {
+        log.info("start process for sensor {}: {}", processChangeRequest.getSensorId(),
+                processChangeRequest.getNewValue());
         Thread.sleep(1000);
         int result = sensorService.startHeating(processChangeRequest.getSensorId(), processChangeRequest.getNewValue());
-        return new ResponseEntity<>(new StartHeatingResult(result, "ok"), HttpStatus.OK);
+        return new ResponseEntity<>(new StartHeatingResult(result, "ok", System.currentTimeMillis()),
+                HttpStatus.OK);
     }
 
     @PostMapping("/thermostat_current_temperature")

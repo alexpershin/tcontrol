@@ -2,6 +2,7 @@ package org.tcontrol.service.impl;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.tcontrol.config.Logging;
 import org.tcontrol.config.props.RelayPinsConfig;
 import org.tcontrol.config.props.ThermostatsConfig;
 import org.tcontrol.mappers.SensorMapper;
@@ -19,7 +20,6 @@ import javax.annotation.PostConstruct;
 import java.text.MessageFormat;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -28,6 +28,7 @@ import java.util.stream.Collectors;
  */
 @Slf4j
 @RequiredArgsConstructor
+@Logging
 public class SensorServiceImpl implements SensorService {
 
     protected final ThermostatsConfig thermostatsConfig;
@@ -40,7 +41,7 @@ public class SensorServiceImpl implements SensorService {
 
     @PostConstruct
     public void init(){
-        log.info("init");
+        log.trace("init");
     }
 
     @Override
@@ -96,7 +97,6 @@ public class SensorServiceImpl implements SensorService {
 
     @Override
     public float thermostatCurrentTemperature(int sensorId) {
-        log.info("Getting thermostat current temperature for sensor:{}", sensorId);
         return thermostat(sensorId).currentTemperature();
     }
 

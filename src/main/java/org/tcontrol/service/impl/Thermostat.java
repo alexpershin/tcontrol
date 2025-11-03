@@ -4,6 +4,7 @@ import lombok.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
+import org.tcontrol.config.Logging;
 import org.tcontrol.config.props.ThermostatsConfig;
 import org.tcontrol.hardware.ITemperatureMonitor;
 import org.tcontrol.service.SensorServiceException;
@@ -24,6 +25,7 @@ import static org.tcontrol.config.props.ThermostatsConfig.ThermostatConfig;
 
 @RequiredArgsConstructor
 @Slf4j
+@Logging
 public class Thermostat implements IThermostat {
     public static final float TEMPERATURE_MAX_ON = 28.0f;
 
@@ -63,7 +65,7 @@ public class Thermostat implements IThermostat {
 
     @PostConstruct
     public void init() {
-        log.info("init");
+        log.trace("init");
         thermostatConfig = thermostatConfig(thermostatsConfig, name);
         thermostatCurrentConfig = thermostatConfig.clone();
     }
@@ -76,8 +78,6 @@ public class Thermostat implements IThermostat {
     @Override
     @Scheduled(cron = "${thermostat.schedule}")
     public boolean checkTemperature() {
-        log.info(name + "> checkTemperature");
-
         mediumT = night() ? thermostatCurrentConfig.getTNight() : thermostatCurrentConfig.getTDay();
 
         SensorValue sensorValue = temperatureMonitor.getSensorValueMap()
@@ -102,7 +102,7 @@ public class Thermostat implements IThermostat {
                 }
             });
 
-            log.info("{}> Check temperature between({},{}), current:{}, state:{}", name, mediumT - delta, mediumT + delta, currentT, heatingOn);
+            log.info("{}> Checked temperature between({},{}), current:{}, state:{}", name, mediumT - delta, mediumT + delta, currentT, heatingOn);
         } else {
             if (firstTime) log.info("no sensor value yet");
             else log.error("temperature sensor value is null");

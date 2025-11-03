@@ -3,6 +3,7 @@ package org.tcontrol.handler.impl;
 import com.pi4j.io.gpio.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.tcontrol.config.Logging;
 import org.tcontrol.config.props.SensorConfig;
 import org.tcontrol.hardware.IPinFactory;
 import org.tcontrol.service.IStatisticsSaver;
@@ -20,6 +21,7 @@ import static org.tcontrol.config.props.SensorConfig.SensorConfiguration;
 
 @Slf4j
 @RequiredArgsConstructor
+@Logging
 public class RelayHandler implements IRelayHandler {
 
     private final CSVStatisticSaver csvStatisticSaver;

@@ -10,6 +10,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.context.annotation.Primary;
 import org.springframework.core.env.Environment;
 import org.springframework.scheduling.annotation.EnableScheduling;
@@ -46,6 +47,7 @@ import static org.tcontrol.config.props.SensorConfig.SensorConfiguration;
 @Slf4j
 @Configuration
 @EnableScheduling
+@EnableAspectJAutoProxy
 @RequiredArgsConstructor
 public class AppConfig implements BeanFactoryPostProcessor {
 

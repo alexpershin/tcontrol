@@ -37,7 +37,7 @@ sensor-config:
       type: TEMPERATURE
       user-name: Улица
       description: 'Датчик на северной стороне дома'
-      lowThreshold: 8.0
+      lowThreshold: -20.0
       highThreshold: 30.0
       thresholdLag: 2.0
     - id: 2
@@ -83,7 +83,7 @@ sensor-config:
       userName: Горячая вода
       description: 'Горячая вода'
       lowThreshold: 34.0
-      highThreshold: 45.0
+      highThreshold: 50.0
       thresholdLag: 2.0
     - id: 7
       code: '0'

@@ -40,7 +40,7 @@ public class TemperatureMonitorStub implements ITemperatureMonitor {
                 new SensorValue(4, "4", timestamp, -11.4),
                 new SensorValue(5, "5", timestamp, +23.7),
                 new SensorValue(6, "6", timestamp, -7.4),
-                new SensorValue(7, "7", timestamp, 241),
+                new SensorValue(7, "7", timestamp, 241, 240, 242),
                 new SensorValue(8, "8", timestamp, 0.0),
                 new SensorValue(9, "9", timestamp, 1.0)
         );

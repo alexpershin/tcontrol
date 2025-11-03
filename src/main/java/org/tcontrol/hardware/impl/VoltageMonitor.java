@@ -41,6 +41,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
+import org.tcontrol.config.Logging;
 import org.tcontrol.hardware.IVoltageMonitor;
 import org.tcontrol.service.IStatisticsSaver;
 import org.tcontrol.service.impl.CSVStatisticSaver;
@@ -61,6 +62,7 @@ import static org.tcontrol.config.props.SensorConfig.SensorConfiguration;
 @Service
 @Slf4j
 @RequiredArgsConstructor
+@Logging
 public class VoltageMonitor implements IVoltageMonitor {
 
     public static final int DEFAULT_PRECISION = 4;
@@ -112,7 +114,6 @@ public class VoltageMonitor implements IVoltageMonitor {
 
     @Scheduled(cron = "${voltage-monitor.schedule}")
     public void monitor() {
-
         log.info("MCP3008 ADC:");
         if (provider != null) {
             voltageResults.clear();

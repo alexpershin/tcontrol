@@ -5,6 +5,7 @@ import com.pi4j.io.gpio.PinState;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
+import org.tcontrol.config.Logging;
 import org.tcontrol.config.props.RelayAggregatorConfig;
 import org.tcontrol.handler.IRelayHandler;
 import org.tcontrol.service.IRelayAggregator;
@@ -16,6 +17,7 @@ import java.util.Map;
 
 @Slf4j
 @RequiredArgsConstructor
+@Logging
 public class RelayAggregator implements IRelayAggregator {
 
     private final RelayAggregatorConfig relayAggregatorConfig;
@@ -83,7 +85,7 @@ public class RelayAggregator implements IRelayAggregator {
             if (pinStates != null && pinStates.size() == n) {
                 boolean or = pinStates.stream().reduce(false, (a, b) -> a || b);
                 PinState pinState = or ? PinState.HIGH : PinState.LOW;
-                log.info("aggregated delegation getPinState: {}, value: {}", controlPin.getName(), pinState);
+                log.info("aggregated getPinState: {}, value: {}", controlPin.getName(), pinState);
                 return pinState;
             }
         }

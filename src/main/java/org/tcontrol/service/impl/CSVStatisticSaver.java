@@ -6,6 +6,7 @@ import org.apache.commons.csv.CSVPrinter;
 import org.apache.commons.lang3.NotImplementedException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import org.tcontrol.config.Logging;
 import org.tcontrol.service.IStatisticsSaver;
 import org.tcontrol.service.models.SensorValue;
 
@@ -20,6 +21,7 @@ import java.util.Map;
 
 @Component
 @Slf4j
+@Logging
 public class CSVStatisticSaver implements IStatisticsSaver {
 
     @Value("${dataFile}")

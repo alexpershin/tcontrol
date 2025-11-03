@@ -6,6 +6,7 @@ import com.pi4j.io.w1.W1Device;
 import com.pi4j.io.w1.W1Master;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.tcontrol.config.Logging;
 import org.tcontrol.hardware.ITemperatureReader;
 import org.tcontrol.service.models.SensorValue;
 
@@ -17,6 +18,7 @@ import java.util.Map;
 
 @Service
 @Slf4j
+@Logging
 public class W1BusTemperatureReader implements ITemperatureReader {
 
     private final Map<String, SensorValue> lastValues = new HashMap<>();

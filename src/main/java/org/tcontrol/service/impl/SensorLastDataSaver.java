@@ -1,17 +1,15 @@
 package org.tcontrol.service.impl;
 
-import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import org.tcontrol.config.Logging;
 import org.tcontrol.config.props.SensorConfig;
 import org.tcontrol.service.IStatisticsSaver;
-import org.tcontrol.service.SensorServiceException;
 import org.tcontrol.service.models.Sensor;
 import org.tcontrol.service.models.SensorValue;
 
-import java.text.MessageFormat;
 import java.util.*;
 
 import static java.util.stream.Collectors.toMap;
@@ -19,6 +17,7 @@ import static org.tcontrol.service.models.SensorValue.SensorState.*;
 
 @Component
 @RequiredArgsConstructor
+@Logging
 public class SensorLastDataSaver implements IStatisticsSaver {
 
     private final SensorConfig sensorConfig;

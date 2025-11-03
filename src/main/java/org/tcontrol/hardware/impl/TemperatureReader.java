@@ -2,6 +2,7 @@ package org.tcontrol.hardware.impl;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.tcontrol.config.Logging;
 import org.tcontrol.service.models.SensorValue;
 import org.tcontrol.hardware.ITemperatureReader;
 
@@ -14,6 +15,7 @@ import java.util.List;
 
 //@Component //
 @Slf4j
+@Logging
 public class TemperatureReader implements ITemperatureReader {
 
     private static final String TEMPERATURE_PREFIX = "t=";

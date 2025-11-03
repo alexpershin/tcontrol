@@ -5,6 +5,7 @@ import com.pi4j.io.gpio.PinState;
 import com.pi4j.io.gpio.RaspiPin;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.tcontrol.config.Logging;
 import org.tcontrol.config.props.OnOfHandlerConfig;
 import org.tcontrol.config.props.RelayPinsConfig;
 import org.tcontrol.handler.IOnOffHandler;
@@ -20,6 +21,7 @@ import static java.util.Optional.ofNullable;
 
 @RequiredArgsConstructor
 @Slf4j
+@Logging
 public class OnOffHandler implements IOnOffHandler {
     private final OnOfHandlerConfig onOfHandlerConfig;
     private final RelayPinsConfig relayPinsConfig;

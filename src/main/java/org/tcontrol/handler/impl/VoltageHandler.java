@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
+import org.tcontrol.config.Logging;
 import org.tcontrol.handler.IRelayHandler;
 import org.tcontrol.hardware.IVoltageMonitor;
 import org.tcontrol.config.props.VoltageHandlerConfig;
@@ -17,6 +18,7 @@ import java.util.List;
 @Service
 @Slf4j
 @RequiredArgsConstructor
+@Logging
 public class VoltageHandler implements IVoltageHandler {
 
   private final VoltageHandlerConfig voltageHandlerConfig;
@@ -36,8 +38,8 @@ public class VoltageHandler implements IVoltageHandler {
 
   @PostConstruct
   public void init() {
-    this.name = "Battery voltage controller";
-    log.info("Initializing voltage controller: {}", name);
+    this.name = "Battery voltage handler";
+    log.info("Initializing voltage handler: {}", name);
   }
 
   @Override

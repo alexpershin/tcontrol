@@ -159,20 +159,24 @@ function renderSensor(sensorElementId, sensor, value) {
     } else if (sensor.type === 'ALARM') {
         alertSensorRenderer(sensorElementId, value);
     }
-    if (typeof value.timestamp !== 'undefined'){
+    setSensorTime(sensorElementId, value.timestamp)
+}
 
-        const dateOpts = {
-            hour12: false, // Set to false to use 24-hour format
-            hour: '2-digit',
-            minute: '2-digit',
-            second: '2-digit' // Optional: include seconds if desired
-        };
+function setSensorTime(sensorElementId, timestamp){
+    if (typeof timestamp !== 'undefined'){
 
-        const timeWithoutAmPm = sensorValue.timestamp ?
-            new Date(sensorValue.timestamp).toLocaleTimeString('en-US', dateOpts):
-             '--';
+           const dateOpts = {
+               hour12: false, // Set to false to use 24-hour format
+               hour: '2-digit',
+               minute: '2-digit',
+               second: '2-digit' // Optional: include seconds if desired
+           };
 
-        $(sensorElementId +' .sensor_item_body .sensor_indicator_panel .sensor_time').text (timeWithoutAmPm)
+           const timeWithoutAmPm = timestamp ?
+               new Date(timestamp).toLocaleTimeString('en-US', dateOpts):
+                '--';
+
+           $(sensorElementId +' .sensor_item_body .sensor_indicator_panel .sensor_time').text (timeWithoutAmPm)
     }
 }
 
@@ -445,12 +449,13 @@ function startHeating(sensorElementId, sensorValue){
             showSensorLoader(sensorElementId)
         },
         success: function (data) {
-            console.log('on finish: ' + data.value);
+            console.log('on finish: ' + data.value)
             sensorValue.value = data.value;
             const backgroundCalcResult = onOffSensorBackgroundCalc(sensorValue)
             sensorElement.text(backgroundCalcResult.status);
             const sensorBody = $(sensorElementId + ' .sensor_item_body')
             sensorBody.css('background', backgroundCalcResult.background);
+            setSensorTime(sensorElementId, data.timestamp)
         },
         error: function (jqXHR, textStatus, errorThrown) {
             hideSensorLoader(sensorElementId)

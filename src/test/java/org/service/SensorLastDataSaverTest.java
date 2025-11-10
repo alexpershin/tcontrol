@@ -3,6 +3,7 @@ package org.service;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.tcontrol.config.props.SensorConfig;
+import org.tcontrol.service.IStatisticsLoader;
 import org.tcontrol.service.impl.SensorLastDataSaver;
 import org.tcontrol.service.models.Sensor;
 import org.tcontrol.service.models.SensorValue;
@@ -15,6 +16,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.mock;
 
 public class SensorLastDataSaverTest {
     private SensorLastDataSaver sensorLastDataSaver;
@@ -34,7 +36,8 @@ public class SensorLastDataSaverTest {
                 ).collect(Collectors.toList());
         sensorConfig = new SensorConfig();
         sensorConfig.setSensors(sensors);
-        sensorLastDataSaver = new SensorLastDataSaver(sensorConfig);
+        IStatisticsLoader statisticsLoader = mock(IStatisticsLoader.class);
+        sensorLastDataSaver = new SensorLastDataSaver(sensorConfig, statisticsLoader);
         sensorLastDataSaver.setCapacity(3);
     }
 

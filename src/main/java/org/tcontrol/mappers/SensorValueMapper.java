@@ -17,10 +17,15 @@ public interface SensorValueMapper {
     List<SensorValueDto> map(List<SensorValue> valueList);
 
     default SensorValueDto.SensorValueState map(SensorValue.SensorState state) {
-        switch (state){
-            case ALARM: return SensorValueDto.SensorValueState.ALERT;
-            case NORMAL: return SensorValueDto.SensorValueState.NORMAL;
-            case WARNING: return SensorValueDto.SensorValueState.WARNING;
+        if (state != null) {
+            switch (state) {
+                case ALARM:
+                    return SensorValueDto.SensorValueState.ALERT;
+                case NORMAL:
+                    return SensorValueDto.SensorValueState.NORMAL;
+                case WARNING:
+                    return SensorValueDto.SensorValueState.WARNING;
+            }
         }
         return null;
     }

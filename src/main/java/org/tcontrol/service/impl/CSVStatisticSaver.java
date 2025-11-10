@@ -54,9 +54,4 @@ public class CSVStatisticSaver implements IStatisticsSaver {
     public LinkedList<SensorValue> lastValues(int sensorId) {
         return new LinkedList<>();
     }
-
-    @Override
-    public SensorValue lastValue(int sensorId) {
-        throw new NotImplementedException();
-    }
 }

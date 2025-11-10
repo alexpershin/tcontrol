@@ -108,7 +108,17 @@ public class CommandConfiguration {
 
     @Bean
     public ITimer timer() {
-        return () -> LocalDateTime.of(LocalDate.now(), LocalTime.of(12, 0));
+        return new ITimer() {
+            @Override
+            public LocalDateTime getCurrentTime() {
+                return LocalDateTime.of(LocalDate.now(), LocalTime.of(12, 0));
+            }
+
+            @Override
+            public long getCurrentTimeMillis() {
+                return 1000;
+            }
+        };
     }
 
     @Bean

@@ -8,6 +8,7 @@ import org.tcontrol.config.Logging;
 import org.tcontrol.config.props.SensorConfig;
 import org.tcontrol.service.IStatisticsLoader;
 import org.tcontrol.service.IStatisticsSaver;
+import org.tcontrol.service.ITimer;
 import org.tcontrol.service.models.Sensor;
 import org.tcontrol.service.models.SensorValue;
 
@@ -25,12 +26,13 @@ public class SensorLastDataSaver implements IStatisticsSaver {
 
     private final SensorConfig sensorConfig;
     private final IStatisticsLoader statisticsLoader;
+    private final ITimer timer;
 
     @Setter
-    @Value("${main-config.sensorValuesBufferSize:10}")
-    private int capacity;
+    @Value("${main-config.sensorValuesBufferExpiredMillis:3600000}")
+    private int expiredMillis;
 
-    private final Map<Integer, LinkedList<SensorValue>> cache = new HashMap<>();
+    private final Map<Integer, Deque<SensorValue>> cache = new HashMap<>();
 
     @PostConstruct
     public void loadPrevData() throws FileNotFoundException {
@@ -40,13 +42,13 @@ public class SensorLastDataSaver implements IStatisticsSaver {
     @Override
     public void write(List<SensorValue> values) {
         for (SensorValue sensorValue : values) {
-            LinkedList<SensorValue> queue = cache.computeIfAbsent(
+            Deque<SensorValue> deque = cache.computeIfAbsent(
                     sensorValue.getSensorId(),
                     k -> new LinkedList<>()
             );
-            queue.add(sensorValue);
-            if (queue.size() > capacity) {
-                queue.removeFirst();
+            deque.addLast(sensorValue);
+            if (timer.getCurrentTimeMillis() - deque.peekFirst().getTimestamp() > expiredMillis) {
+                deque.removeFirst();
             }
         }
     }
@@ -61,19 +63,19 @@ public class SensorLastDataSaver implements IStatisticsSaver {
             lastValue.setMinValue(null);
             lastValue.setMaxValue(null);
             while (it.hasNext()) {
-                SensorValue sv = it.next();
-                long deltaT = lastValue.getTimestamp() - sv.getTimestamp();
-                double value = sv.getValue();
-                calcGradient(deltaT, lastValue, value);
-                calcMinMax(lastValue, value, sv.getTimestamp(), deltaT);
+                SensorValue curValue = it.next();
+                long deltaT = timer.getCurrentTimeMillis() - curValue.getTimestamp();
+                double value = curValue.getValue();
+                calcGradient(deltaT, lastValue, curValue);
+                calcMinMax(lastValue, value, curValue.getTimestamp(), deltaT);
             }
             return lastValue;
         }).collect(toMap(SensorValue::getSensorId, sv -> sv));
     }
 
-    private static void calcGradient(long deltaT, SensorValue lastValue, double value) {
-        if (deltaT >= 15 * 60 * 1000 && deltaT <= 20 * 60 * 1000) {// 15-20мин
-            double gradient = lastValue.getValue() - value;
+    private static void calcGradient(long deltaT, SensorValue lastValue, SensorValue curValue) {
+        if (lastValue != curValue && deltaT >= 15 * 60 * 1000 && deltaT <= 20 * 60 * 1000) {// 15-20мин
+            double gradient = lastValue.getValue() - curValue.getValue();
             lastValue.setGradient(gradient);
         }
     }
@@ -128,14 +130,8 @@ public class SensorLastDataSaver implements IStatisticsSaver {
 
 
     @Override
-    public LinkedList<SensorValue> lastValues(int sensorId) {
-        LinkedList<SensorValue> sensorValues = cache.get(sensorId);
+    public Deque<SensorValue> lastValues(int sensorId) {
+        Deque<SensorValue> sensorValues = cache.get(sensorId);
         return sensorValues != null ? sensorValues : new LinkedList<>();
-    }
-
-    @Override
-    public SensorValue lastValue(int sensorId) {
-        LinkedList<SensorValue> sensorValues = cache.get(sensorId);
-        return sensorValues != null ? sensorValues.peekLast() : null;
     }
 }

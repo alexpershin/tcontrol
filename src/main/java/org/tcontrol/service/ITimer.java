@@ -4,4 +4,6 @@ import java.time.LocalDateTime;
 
 public interface ITimer {
     LocalDateTime getCurrentTime();
+
+    long getCurrentTimeMillis();
 }

@@ -12,7 +12,7 @@ springdoc:
   enable-data-rest: true
 
 main-config:
-  sensorValuesBufferSize: 1440 #24 hours
+  sensorValuesBufferExpiredMillis: 86400000 #24 hours
   sensorsStub: false
 
 w1DevicesPath: /sys/bus/w1/devices

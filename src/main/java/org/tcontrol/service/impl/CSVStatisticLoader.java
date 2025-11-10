@@ -1,5 +1,6 @@
 package org.tcontrol.service.impl;
 
+import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.csv.*;
@@ -7,7 +8,9 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.tcontrol.config.Logging;
+import org.tcontrol.config.props.SensorConfig;
 import org.tcontrol.service.IStatisticsLoader;
+import org.tcontrol.service.ITimer;
 import org.tcontrol.service.models.SensorValue;
 
 import java.io.File;
@@ -26,18 +29,22 @@ import static org.tcontrol.service.impl.CSVOptions.*;
 @Component
 @Slf4j
 @Logging
+@RequiredArgsConstructor
 public class CSVStatisticLoader implements IStatisticsLoader {
+
+    private final SensorConfig sensorConfig;
+    private final ITimer timer;
 
     @Value("${dataFile}")
     private String dataFileName;
 
     @Setter
-    @Value("${main-config.sensorValuesBufferSize:10}")
-    private int capacity;
+    @Value("${main-config.sensorValuesBufferExpiredMillis:36000000}")
+    private int expiredMillis;
 
     @Override
     public List<SensorValue> load() throws FileNotFoundException {
-        List<SensorValue> result = new ArrayList<>(capacity);
+        List<SensorValue> result = new ArrayList<>(sensorConfig.getSensors().size() * 60 * 24);
 
         boolean fileExist = Files.exists(Paths.get(dataFileName));
         if (!fileExist) {
@@ -45,14 +52,17 @@ public class CSVStatisticLoader implements IStatisticsLoader {
         }
         File dataFile = new File(dataFileName);
 
+        log.info("Loading started");
         try (ReversedLinesFileReader reader = new ReversedLinesFileReader.Builder().setFile(dataFile).get()) {
 
             CSVFormat csvFormat = CSVFormat.EXCEL.withHeader(SENSOR_ID, SENSOR_CODE, TIMESTAMP, VALUE);
-            String csvLine;
+
+            SensorValue value;
             do {
-                csvLine = reader.readLine();
+                String csvLine = reader.readLine();
+                value = null;
                 if (StringUtils.isNotBlank(csvLine)) {
-                    SensorValue value = new SensorValue();
+                    value = new SensorValue();
                     try (StringReader stringReader = new StringReader(csvLine)) {
                         CSVParser parser = new CSVParser(stringReader, csvFormat);
                         CSVRecord record = parser.iterator().next();
@@ -64,13 +74,14 @@ public class CSVStatisticLoader implements IStatisticsLoader {
                         result.add(value);
                     }
                 }
-            } while (StringUtils.isNotBlank(csvLine) && result.size() < capacity);
+            } while (value != null && timer.getCurrentTimeMillis() - value.getTimestamp() < expiredMillis);
 
             log.info("Loaded {} records", result.size());
 
         } catch (IOException ex) {
             log.error("error while loading CSV", ex);
         }
+        Collections.reverse(result);
         return result;
     }
 }

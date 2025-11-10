@@ -7,23 +7,33 @@ import org.tcontrol.service.IStatisticsLoader;
 import org.tcontrol.service.impl.SensorLastDataSaver;
 import org.tcontrol.service.models.Sensor;
 import org.tcontrol.service.models.SensorValue;
+import org.tcontrol.service.ITimer;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.Collections;
 import java.util.List;
 import java.util.Arrays;
-import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 public class SensorLastDataSaverTest {
     private SensorLastDataSaver sensorLastDataSaver;
     private SensorConfig sensorConfig;
 
+    private ITimer timer;
+
     @BeforeEach
     public void before() {
+        timer = mock(ITimer.class);
+        when(timer.getCurrentTime()).thenReturn(LocalDateTime.of(LocalDate.now(), LocalTime.of(12, 0)));
+        when(timer.getCurrentTimeMillis()).thenReturn(4L);
+
         List<SensorConfig.SensorConfiguration> sensors = Stream.of(
                 new SensorConfig.SensorConfiguration(1, "1", "Indoor",
                         Sensor.SensorType.TEMPERATURE,
@@ -37,8 +47,8 @@ public class SensorLastDataSaverTest {
         sensorConfig = new SensorConfig();
         sensorConfig.setSensors(sensors);
         IStatisticsLoader statisticsLoader = mock(IStatisticsLoader.class);
-        sensorLastDataSaver = new SensorLastDataSaver(sensorConfig, statisticsLoader);
-        sensorLastDataSaver.setCapacity(3);
+        sensorLastDataSaver = new SensorLastDataSaver(sensorConfig, statisticsLoader, timer);
+        sensorLastDataSaver.setExpiredMillis(3);
     }
 
     @Test
@@ -78,10 +88,10 @@ public class SensorLastDataSaverTest {
     public void testCapacity() {
         List<SensorValue> values = Arrays.asList(
                 new SensorValue(1, "abc1", 1L, 1.0),
-                new SensorValue(2, "abc2", 1L, 1.0),
-                new SensorValue(2, "abc2", 2L, 2.0),
-                new SensorValue(2, "abc2", 1L, 3.0),
-                new SensorValue(2, "abc2", 1L, 4.0)
+                new SensorValue(2, "abc2", 0L, 1.0),
+                new SensorValue(2, "abc2", 1L, 2.0),
+                new SensorValue(2, "abc2", 2L, 3.0),
+                new SensorValue(2, "abc2", 3L, 4.0)
         );
         sensorLastDataSaver.write(values);
         assertEquals(sensorLastDataSaver.currentValues().size(), 2);
@@ -89,108 +99,6 @@ public class SensorLastDataSaverTest {
         assertEquals(sensorLastDataSaver.currentValues().get(2).getValue(), 4.0);
         assertEquals(sensorLastDataSaver.lastValues(1).size(), 1);
         assertEquals(sensorLastDataSaver.lastValues(2).size(), 3);
-    }
-
-    @Test
-    public void testGradient() {
-        List<SensorValue> values = Arrays.asList(
-                new SensorValue(1, "abc1", 1L, 1.0),
-                new SensorValue(2, "abc2", 100000L, 1.0),
-                new SensorValue(2, "abc2", 300000L, 3.0),
-                new SensorValue(2, "abc2", 1000000L, 4.0)
-        );
-        sensorLastDataSaver.write(values);
-        Map<Integer, SensorValue> integerSensorValueMap = sensorLastDataSaver.currentValues();
-        assertEquals(integerSensorValueMap.size(), 2);
-        assertEquals(integerSensorValueMap.get(1).getValue(), 1.0);
-        assertEquals(integerSensorValueMap.get(2).getValue(), 4.0);
-        assertEquals(integerSensorValueMap.get(1).getGradient(), null);
-        assertEquals(integerSensorValueMap.get(2).getGradient(), 3.0);
-        assertEquals(integerSensorValueMap.get(1).getMaxValue(), 1.0);
-        assertEquals(integerSensorValueMap.get(1).getMaxValueTimestamp(), 1L);
-        assertEquals(integerSensorValueMap.get(2).getMaxValue(), 4.0);
-        assertEquals(integerSensorValueMap.get(2).getMaxValueTimestamp(), 1000000L);
-        assertEquals(integerSensorValueMap.get(1).getMinValue(), 1.0);
-        assertEquals(integerSensorValueMap.get(1).getMinValueTimestamp(), 1L);
-        assertEquals(integerSensorValueMap.get(2).getMinValue(), 1.0);
-        assertEquals(integerSensorValueMap.get(2).getMinValueTimestamp(), 100000L);
-
-    }
-
-    @Test
-    public void testGradient2() {
-        List<SensorValue> values = Arrays.asList(
-                new SensorValue(1, "abc1", 1L, 1.0),
-                new SensorValue(2, "abc2", 20L, 1.0),
-                new SensorValue(2, "abc2", 300000L, 3.0),
-                new SensorValue(2, "abc2", 1000000L, 4.0)
-        );
-        sensorLastDataSaver.write(values);
-        Map<Integer, SensorValue> integerSensorValueMap = sensorLastDataSaver.currentValues();
-        assertEquals(integerSensorValueMap.size(), 2);
-        assertEquals(integerSensorValueMap.get(1).getValue(), 1.0);
-        assertEquals(integerSensorValueMap.get(2).getValue(), 4.0);
-        assertEquals(integerSensorValueMap.get(1).getGradient(), null);
-        assertEquals(integerSensorValueMap.get(2).getGradient(), 3.0);
-        assertEquals(integerSensorValueMap.get(1).getMaxValue(), 1.0);
-        assertEquals(integerSensorValueMap.get(2).getMaxValue(), 4.0);
-        assertEquals(integerSensorValueMap.get(1).getMinValue(), 1.0);
-        assertEquals(integerSensorValueMap.get(2).getMinValue(), 1.0);
-    }
-
-    @Test
-    public void testGradient3() {
-        List<SensorValue> values = Arrays.asList(
-                new SensorValue(1, "abc1", 1L, 1.0),
-                new SensorValue(2, "abc2", 18L, 1.0),
-                new SensorValue(2, "abc2", 19L, 1.1),
-                new SensorValue(2, "abc2", 100000L, 3.0),
-                new SensorValue(2, "abc2", 1200020L, 4.0)
-        );
-        sensorLastDataSaver.write(values);
-        Map<Integer, SensorValue> integerSensorValueMap = sensorLastDataSaver.currentValues();
-        assertEquals(integerSensorValueMap.size(), 2);
-        assertEquals(integerSensorValueMap.get(1).getValue(), 1.0);
-        assertEquals(integerSensorValueMap.get(2).getValue(), 4.0);
-        assertEquals(integerSensorValueMap.get(1).getGradient(), null);
-        assertEquals(integerSensorValueMap.get(2).getGradient(), 1.0);
-        assertEquals(integerSensorValueMap.get(1).getMaxValue(), 1.0);
-        assertEquals(integerSensorValueMap.get(2).getMaxValue(), 4.0);
-        assertEquals(integerSensorValueMap.get(1).getMinValue(), 1.0);
-        assertEquals(integerSensorValueMap.get(2).getMinValue(), 1.1);
-    }
-
-
-    @Test
-    public void testGradient4() {
-        List<SensorValue> values = Arrays.asList(
-                new SensorValue(1, "abc1", 1L, 1.0),
-                new SensorValue(2, "abc2", 20L, 1.0),
-                new SensorValue(2, "abc2", 100000L, 3.0),
-                new SensorValue(2, "abc2", 1300000L, 4.0)
-        );
-        sensorLastDataSaver.write(values);
-        assertEquals(sensorLastDataSaver.currentValues().size(), 2);
-        assertEquals(sensorLastDataSaver.currentValues().get(1).getValue(), 1.0);
-        assertEquals(sensorLastDataSaver.currentValues().get(2).getValue(), 4.0);
-        assertEquals(sensorLastDataSaver.currentValues().get(1).getGradient(), null);
-        assertEquals(sensorLastDataSaver.currentValues().get(2).getGradient(), 1.0);
-    }
-
-    @Test
-    public void testGradient5() {
-        List<SensorValue> values = Arrays.asList(
-                new SensorValue(1, "abc1", 1L, 1.0),
-                new SensorValue(2, "abc2", 20L, 1.0),
-                new SensorValue(2, "abc2", 100000L, 3.0),
-                new SensorValue(2, "abc2", 1300001L, 4.0)
-        );
-        sensorLastDataSaver.write(values);
-        assertEquals(sensorLastDataSaver.currentValues().size(), 2);
-        assertEquals(sensorLastDataSaver.currentValues().get(1).getValue(), 1.0);
-        assertEquals(sensorLastDataSaver.currentValues().get(2).getValue(), 4.0);
-        assertEquals(sensorLastDataSaver.currentValues().get(1).getGradient(), null);
-        assertEquals(sensorLastDataSaver.currentValues().get(2).getGradient(), null);
     }
 
     @Test

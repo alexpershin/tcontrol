@@ -13,4 +13,9 @@ public class Timer implements ITimer {
     public LocalDateTime getCurrentTime(){
         return LocalDateTime.now();
     }
+
+    @Override
+    public long getCurrentTimeMillis() {
+        return System.currentTimeMillis();
+    }
 }

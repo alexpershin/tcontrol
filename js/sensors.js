@@ -182,7 +182,7 @@ function setSensorTime(sensorElementId, timestamp){
 
 function temperatureSensorRenderer(sensorElementId, sensorValue) {
     console.log('sensorValue: ' + sensorValue);
-    var resValue = sensorValue.value? sensorValue.value.toFixed(1) + '\xB0':'--\xB0'
+    var resValue = typeof sensorValue.value !== 'undefined' ? sensorValue.value.toFixed(1) + '\xB0':'--\xB0'
     $(sensorElementId + ' .sensor_item_body .sensor_value').text(resValue)
     var sensorBody = $(sensorElementId + ' .sensor_item_body')
     const background = sensorBackgroundCalc(sensorValue)
@@ -202,8 +202,8 @@ function fillMinMaxValue(sensorElementId, sensorValue) {
     var maxValue = $(sensorElementId + ' .sensor_item_body .sensor_max_value')
     var minTime = $(sensorElementId + ' .sensor_item_body .sensor_min_time')
     var maxTime = $(sensorElementId + ' .sensor_item_body .sensor_max_time')
-    minValue.text(sensorValue.minValue? sensorValue.minValue.toFixed(1):'--')
-    maxValue.text(sensorValue.maxValue? sensorValue.maxValue.toFixed(1):'--')
+    minValue.text(typeof sensorValue.minValue !== 'undefined' ? sensorValue.minValue.toFixed(1):'--')
+    maxValue.text(typeof sensorValue.maxValue !== 'undefined' ? sensorValue.maxValue.toFixed(1):'--')
 
     const timeFormatOptions = {
         hour12: false, // Set to false to use 24-hour format
@@ -252,7 +252,7 @@ function sensorBackgroundCalc(value) {
 }
 
 function voltageSensorRenderer(sensorElementId, value) {
-    var resValue = value.value ? value.value + ' V' : '--' ;
+    var resValue = typeof value.value !== 'undefined' ? value.value + ' V' : '--' ;
     $(sensorElementId + ' .sensor_item_body .sensor_value').text(resValue);
     sensorBody = $(sensorElementId + ' .sensor_item_body');
     sensorBody.css('background', sensorBackgroundCalc(value));

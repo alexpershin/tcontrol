@@ -15,7 +15,6 @@ import org.tcontrol.models.SensorValue;
 import javax.annotation.PostConstruct;
 import java.io.FileNotFoundException;
 import java.util.*;
-import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.toMap;
 import static org.tcontrol.models.SensorValue.SensorState.*;

@@ -1,9 +1,9 @@
-package org.tcontrol.mappers;
+package org.tcontrol.controller.mappers;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.ReportingPolicy;
 import org.tcontrol.controller.dto.SensorValueDto;
-import org.tcontrol.service.models.SensorValue;
+import org.tcontrol.models.SensorValue;
 
 import java.util.List;
 

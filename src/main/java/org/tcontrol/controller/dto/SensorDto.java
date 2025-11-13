@@ -5,7 +5,7 @@ import lombok.*;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 
-import org.tcontrol.service.models.Sensor;
+import org.tcontrol.models.Sensor;
 
 /**
  * Sensor to be passed to web UI. 

@@ -1,9 +1,8 @@
 package org.tcontrol.service;
 
-import org.tcontrol.service.models.SensorValue;
+import org.tcontrol.models.SensorValue;
 
 import java.util.Deque;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 

@@ -7,8 +7,8 @@ import org.tcontrol.config.Logging;
 import org.tcontrol.hardware.ITemperatureMonitor;
 import org.tcontrol.service.IStatisticsSaver;
 import org.tcontrol.service.impl.CSVStatisticSaver;
-import org.tcontrol.service.models.Sensor;
-import org.tcontrol.service.models.SensorValue;
+import org.tcontrol.models.Sensor;
+import org.tcontrol.models.SensorValue;
 import org.tcontrol.hardware.ITemperatureReader;
 import org.tcontrol.config.props.SensorConfig;
 

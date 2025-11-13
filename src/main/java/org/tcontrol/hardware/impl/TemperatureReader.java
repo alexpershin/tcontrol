@@ -3,7 +3,7 @@ package org.tcontrol.hardware.impl;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.tcontrol.config.Logging;
-import org.tcontrol.service.models.SensorValue;
+import org.tcontrol.models.SensorValue;
 import org.tcontrol.hardware.ITemperatureReader;
 
 import java.io.IOException;

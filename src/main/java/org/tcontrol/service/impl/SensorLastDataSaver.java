@@ -9,15 +9,16 @@ import org.tcontrol.config.props.SensorConfig;
 import org.tcontrol.service.IStatisticsLoader;
 import org.tcontrol.service.IStatisticsSaver;
 import org.tcontrol.service.ITimer;
-import org.tcontrol.service.models.Sensor;
-import org.tcontrol.service.models.SensorValue;
+import org.tcontrol.models.Sensor;
+import org.tcontrol.models.SensorValue;
 
 import javax.annotation.PostConstruct;
 import java.io.FileNotFoundException;
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.toMap;
-import static org.tcontrol.service.models.SensorValue.SensorState.*;
+import static org.tcontrol.models.SensorValue.SensorState.*;
 
 @Component
 @RequiredArgsConstructor
@@ -56,21 +57,23 @@ public class SensorLastDataSaver implements IStatisticsSaver {
     @Override
     public Map<Integer, SensorValue> currentValues() {
 
-        return cache.values().stream().map(values -> {
-            SensorValue lastValue = values.getLast();
-            Iterator<SensorValue> it = values.descendingIterator();
-            lastValue.setState(calcSate(lastValue, sensorConfig));
-            lastValue.setMinValue(null);
-            lastValue.setMaxValue(null);
-            while (it.hasNext()) {
-                SensorValue curValue = it.next();
-                long deltaT = timer.getCurrentTimeMillis() - curValue.getTimestamp();
-                double value = curValue.getValue();
-                calcGradient(deltaT, lastValue, curValue);
-                calcMinMax(lastValue, value, curValue.getTimestamp(), deltaT);
-            }
-            return lastValue;
-        }).collect(toMap(SensorValue::getSensorId, sv -> sv));
+        return cache.values().stream()
+                .filter(values -> !values.isEmpty())
+                .map(values -> {
+                    SensorValue lastValue = values.getLast();
+                    Iterator<SensorValue> it = values.descendingIterator();
+                    lastValue.setState(calcSate(lastValue, sensorConfig));
+                    lastValue.setMinValue(null);
+                    lastValue.setMaxValue(null);
+                    while (it.hasNext()) {
+                        SensorValue curValue = it.next();
+                        long deltaT = timer.getCurrentTimeMillis() - curValue.getTimestamp();
+                        double value = curValue.getValue();
+                        calcGradient(deltaT, lastValue, curValue);
+                        calcMinMax(lastValue, value, curValue.getTimestamp(), deltaT);
+                    }
+                    return lastValue;
+                }).collect(toMap(SensorValue::getSensorId, sv -> sv));
     }
 
     private static void calcGradient(long deltaT, SensorValue lastValue, SensorValue curValue) {

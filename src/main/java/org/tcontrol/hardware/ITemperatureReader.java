@@ -1,6 +1,6 @@
 package org.tcontrol.hardware;
 
-import org.tcontrol.service.models.SensorValue;
+import org.tcontrol.models.SensorValue;
 
 import java.io.IOException;
 

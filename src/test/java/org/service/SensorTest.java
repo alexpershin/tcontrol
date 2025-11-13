@@ -1,7 +1,7 @@
 package org.service;
 
-import org.tcontrol.service.models.Sensor;
-import org.tcontrol.service.models.Sensor.SensorType;
+import org.tcontrol.models.Sensor;
+import org.tcontrol.models.Sensor.SensorType;
 
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;

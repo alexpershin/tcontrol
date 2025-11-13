@@ -3,7 +3,7 @@ import com.pi4j.io.gpio.PinState;
 import com.pi4j.io.gpio.RaspiPin;
 import org.junit.jupiter.api.BeforeEach;
 import org.tcontrol.config.props.ThermostatsConfig;
-import org.tcontrol.service.models.SensorValue;
+import org.tcontrol.models.SensorValue;
 import org.tcontrol.handler.IRelayHandler;
 import org.tcontrol.hardware.ITemperatureMonitor;
 import org.tcontrol.service.ITimer;

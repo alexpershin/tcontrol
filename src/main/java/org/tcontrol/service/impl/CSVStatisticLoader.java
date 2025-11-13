@@ -11,7 +11,7 @@ import org.tcontrol.config.Logging;
 import org.tcontrol.config.props.SensorConfig;
 import org.tcontrol.service.IStatisticsLoader;
 import org.tcontrol.service.ITimer;
-import org.tcontrol.service.models.SensorValue;
+import org.tcontrol.models.SensorValue;
 
 import java.io.File;
 import java.io.FileNotFoundException;

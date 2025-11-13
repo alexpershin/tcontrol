@@ -45,7 +45,7 @@ import org.tcontrol.config.Logging;
 import org.tcontrol.hardware.IVoltageMonitor;
 import org.tcontrol.service.IStatisticsSaver;
 import org.tcontrol.service.impl.CSVStatisticSaver;
-import org.tcontrol.service.models.SensorValue;
+import org.tcontrol.models.SensorValue;
 import org.tcontrol.config.props.SensorConfig;
 import org.tcontrol.config.props.VoltageMonitorConfig;
 import org.tcontrol.config.props.VoltageMonitorConfig.PinConfiguration;

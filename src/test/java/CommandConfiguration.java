@@ -7,7 +7,7 @@ import org.tcontrol.hardware.ITemperatureMonitor;
 import org.tcontrol.service.IThermostat;
 import org.tcontrol.service.ITimer;
 import org.tcontrol.service.impl.Thermostat;
-import org.tcontrol.service.models.SensorValue;
+import org.tcontrol.models.SensorValue;
 import org.tcontrol.config.props.SensorConfig;
 import org.tcontrol.handler.IRelayHandler;
 

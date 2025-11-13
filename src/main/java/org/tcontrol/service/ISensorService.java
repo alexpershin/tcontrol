@@ -1,8 +1,9 @@
 package org.tcontrol.service;
 
-import org.tcontrol.service.models.Sensor;
-import org.tcontrol.service.models.SensorValue;
-import org.tcontrol.service.models.User;
+import org.tcontrol.models.ThermostatTemperature;
+import org.tcontrol.models.Sensor;
+import org.tcontrol.models.SensorValue;
+import org.tcontrol.models.User;
 
 import java.sql.Date;
 import java.util.List;
@@ -11,7 +12,7 @@ import java.util.Map;
 /**
  *
  */
-public interface SensorService {
+public interface ISensorService {
 
     /**
      * Get all sensors in the system.
@@ -126,14 +127,18 @@ public interface SensorService {
      */
     List<SensorValue> getPrevSensorValues(final int userId, Date date, final int sensorId);
 
-    int startHeating(int sensorId, float temperature) ;
-
-    int stopHeating(int sensorId) ;
+    /**
+     * Change thermostats temperature option to start/stop heating;
+     * @param temperatures list of thermostats and its temperatures;
+     * @return 0/1 if one of thermostats stared;
+     */
+    int changeThermostatOptions(List<ThermostatTemperature> temperatures) ;
 
     /**
      * Получение текущей температуры термостата для отображения на фронте.
+     *
      * @param sensorId сенсор
      * @return temperature;
      */
-    float thermostatCurrentTemperature(int sensorId);
+    List<ThermostatTemperature> thermostatCurrentTemperature(int sensorId);
 }

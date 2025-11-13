@@ -8,7 +8,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.tcontrol.config.Logging;
 import org.tcontrol.hardware.ITemperatureReader;
-import org.tcontrol.service.models.SensorValue;
+import org.tcontrol.models.SensorValue;
 
 import javax.annotation.PostConstruct;
 import java.io.IOException;

@@ -8,7 +8,7 @@ import org.tcontrol.config.Logging;
 import org.tcontrol.config.props.ThermostatsConfig;
 import org.tcontrol.hardware.ITemperatureMonitor;
 import org.tcontrol.service.SensorServiceException;
-import org.tcontrol.service.models.SensorValue;
+import org.tcontrol.models.SensorValue;
 import org.tcontrol.handler.IRelayHandler;
 import org.tcontrol.service.IThermostat;
 import org.tcontrol.service.ITimer;

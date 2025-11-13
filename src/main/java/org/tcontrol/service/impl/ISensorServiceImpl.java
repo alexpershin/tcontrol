@@ -5,14 +5,15 @@ import lombok.extern.slf4j.Slf4j;
 import org.tcontrol.config.Logging;
 import org.tcontrol.config.props.RelayPinsConfig;
 import org.tcontrol.config.props.ThermostatsConfig;
-import org.tcontrol.mappers.SensorMapper;
-import org.tcontrol.mappers.SensorValueMapper;
+import org.tcontrol.controller.mappers.SensorMapper;
+import org.tcontrol.controller.mappers.SensorValueMapper;
+import org.tcontrol.service.ISensorService;
 import org.tcontrol.service.IThermostat;
-import org.tcontrol.service.SensorService;
 import org.tcontrol.service.SensorServiceException;
-import org.tcontrol.service.models.Sensor;
-import org.tcontrol.service.models.SensorValue;
-import org.tcontrol.service.models.User;
+import org.tcontrol.models.Sensor;
+import org.tcontrol.models.SensorValue;
+import org.tcontrol.models.ThermostatTemperature;
+import org.tcontrol.models.User;
 import org.tcontrol.service.IStatisticsSaver;
 import org.tcontrol.config.props.SensorConfig;
 
@@ -29,18 +30,18 @@ import java.util.stream.Collectors;
 @Slf4j
 @RequiredArgsConstructor
 @Logging
-public class SensorServiceImpl implements SensorService {
+public class ISensorServiceImpl implements ISensorService {
 
     protected final ThermostatsConfig thermostatsConfig;
     protected final SensorConfig sensorConfig;
     private final RelayPinsConfig relayPinsConfig;
     protected final IStatisticsSaver sensorLastDataSaver;
     protected final SensorMapper sensorMapper;
-    protected final Map<String,IThermostat> dynamicThermostats;
+    protected final Map<String, IThermostat> dynamicThermostats;
     protected final SensorValueMapper sensorValueMapper;
 
     @PostConstruct
-    public void init(){
+    public void init() {
         log.trace("init");
     }
 
@@ -85,30 +86,41 @@ public class SensorServiceImpl implements SensorService {
     }
 
     @Override
-    public int startHeating(int sensorId, float temperature) throws SensorServiceException {
-        return thermostat(sensorId).on(temperature).checkTemperature() ? 1 : 0;
+    public int changeThermostatOptions(List<ThermostatTemperature> temperatures) throws SensorServiceException {
+        return temperatures.stream()
+                .map(t->dynamicThermostats.get(t.getThermostatName()).on(t.getTemperature()).checkTemperature() ? 1 : 0)
+                .reduce((a,b)->a*b)
+                .orElseThrow(() ->
+                        new SensorServiceException(MessageFormat.format("Thermostat not found by pin: {0}",
+                                temperatures.stream().map(ThermostatTemperature::getThermostatName)).concat(",")));
     }
+
 
     @Override
-    public int stopHeating(int sensorId) throws SensorServiceException {
-        thermostat(sensorId).off().checkTemperature();
-        return 0;
+    public List<ThermostatTemperature> thermostatCurrentTemperature(int sensorId) {
+        return thermostats(sensorId).stream()
+                        .map(t-> new ThermostatTemperature(t.getName(), t.currentTemperature()))
+                        .collect(Collectors.toList());
     }
 
-    @Override
-    public float thermostatCurrentTemperature(int sensorId) {
-        return thermostat(sensorId).currentTemperature();
+    private IThermostat thermostat(int sensorId, String pin) {
+        return dynamicThermostats.values().stream()
+                .filter(t -> t.getHeatingPins().contains(pin))
+                .findFirst()
+                .orElseThrow(() -> new SensorServiceException(MessageFormat.format("Thermostat not found by pin: {0}", pin))
+                );
     }
 
-    private IThermostat thermostat(int sensorId) {
+    private List<IThermostat> thermostats(int sensorId) {
         return sensorConfig.sensorConfigById(sensorId)
-                .map(sc -> relayPinsConfig.pinConfigurationById(Integer.valueOf(sc.getCode()))
-                        .orElseThrow(() -> new SensorServiceException(MessageFormat.format("Relay pin not found by sensorCode: {0}", sc.getCode())))
+                .map(SensorConfig.SensorConfiguration::getCode)
+                .map(Integer::valueOf)
+                .map(code -> relayPinsConfig.pinConfigurationById(code)
+                        .orElseThrow(() -> new SensorServiceException(MessageFormat.format("Relay pin not found by sensorCode: {0}", code)))
                 )
                 .map(r -> dynamicThermostats.values().stream()
                         .filter(t -> t.getHeatingPins().contains(r.getPin()))
-                        .findFirst()
-                        .orElseThrow(() -> new SensorServiceException(MessageFormat.format("Thermostat not found by pin: {0}", r.getPin())))
+                        .collect(Collectors.toList())
                 )
                 .orElseThrow(() -> new SensorServiceException(MessageFormat.format("SensorConfig not found by sensorId: {0}", sensorId)));
     }

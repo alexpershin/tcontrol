@@ -6,7 +6,7 @@ import org.tcontrol.config.props.SensorConfig;
 import org.tcontrol.hardware.ITemperatureMonitor;
 import org.tcontrol.service.IStatisticsSaver;
 import org.tcontrol.service.impl.CSVStatisticSaver;
-import org.tcontrol.service.models.SensorValue;
+import org.tcontrol.models.SensorValue;
 
 import javax.annotation.PostConstruct;
 import java.util.*;
@@ -34,13 +34,14 @@ public class TemperatureMonitorStub implements ITemperatureMonitor {
         List<SensorValue> sensorValues = Arrays.asList(
                 new SensorValue(1, "1", timestamp - 900001, 24.1, -10.0, 20.0),
                 new SensorValue(1, "1", timestamp, 25.5, -10.0, 20.0),
-                new SensorValue(2, "2", timestamp-900002, -22.6),
+                new SensorValue(2, "2", timestamp - 900002, -22.6),
                 new SensorValue(2, "2", timestamp, -23.6),
                 new SensorValue(3, "3", timestamp, +2.4),
                 new SensorValue(4, "4", timestamp, -11.4),
                 new SensorValue(5, "5", timestamp, +23.7),
                 new SensorValue(6, "6", timestamp, -7.4),
-                new SensorValue(7, "7", timestamp, 241, 240, 242),
+                new SensorValue(7, "7", timestamp - 1, 0),
+                new SensorValue(7, "7", timestamp, 241),
                 new SensorValue(8, "8", timestamp, 0.0),
                 new SensorValue(9, "9", timestamp, 1.0)
         );

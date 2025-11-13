@@ -1,4 +1,4 @@
-package org.tcontrol.service.models;
+package org.tcontrol.models;
 
 import lombok.Data;
 

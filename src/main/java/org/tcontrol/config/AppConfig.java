@@ -25,15 +25,15 @@ import org.tcontrol.hardware.ITemperatureReader;
 import org.tcontrol.hardware.IVoltageMonitor;
 import org.tcontrol.hardware.impl.TemperatureMonitor;
 import org.tcontrol.hardware.impl.TemperatureMonitorStub;
-import org.tcontrol.mappers.SensorMapper;
-import org.tcontrol.mappers.SensorValueMapper;
+import org.tcontrol.controller.mappers.SensorMapper;
+import org.tcontrol.controller.mappers.SensorValueMapper;
 import org.tcontrol.service.*;
 import org.tcontrol.service.impl.CSVStatisticSaver;
+import org.tcontrol.service.impl.ISensorServiceImpl;
 import org.tcontrol.service.impl.RelayAggregator;
-import org.tcontrol.service.impl.SensorServiceImpl;
 import org.tcontrol.config.props.*;
 import org.tcontrol.handler.IRelayHandler;
-import org.tcontrol.service.models.Sensor;
+import org.tcontrol.models.Sensor;
 import org.tcontrol.sms.ISMSCommand;
 import org.tcontrol.sms.commands.*;
 
@@ -240,7 +240,7 @@ public class AppConfig implements BeanFactoryPostProcessor {
     }
 
     @Bean
-    public SensorService sensorService(
+    public ISensorService sensorService(
             final ThermostatsConfig thermostatsConfig,
             final SensorConfig sensorConfig,
             final RelayPinsConfig relayPinsConfig,
@@ -249,7 +249,7 @@ public class AppConfig implements BeanFactoryPostProcessor {
             final Map<String, IThermostat> dynamicThermostats,
             final SensorValueMapper sensorValueMapper
             ) {
-        return new SensorServiceImpl(
+        return new ISensorServiceImpl(
                 thermostatsConfig,
                 sensorConfig,
                 relayPinsConfig,

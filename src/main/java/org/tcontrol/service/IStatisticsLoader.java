@@ -1,6 +1,6 @@
 package org.tcontrol.service;
 
-import org.tcontrol.service.models.SensorValue;
+import org.tcontrol.models.SensorValue;
 
 import java.io.FileNotFoundException;
 import java.util.List;

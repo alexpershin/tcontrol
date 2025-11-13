@@ -10,7 +10,7 @@ import org.tcontrol.hardware.ITemperatureMonitor;
 import org.tcontrol.service.ITimer;
 import org.tcontrol.service.impl.RelayAggregator;
 import org.tcontrol.service.impl.Thermostat;
-import org.tcontrol.service.models.SensorValue;
+import org.tcontrol.models.SensorValue;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;

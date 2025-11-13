@@ -3,12 +3,14 @@ package org.tcontrol.controller;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
+import org.tcontrol.config.Logging;
 import org.tcontrol.controller.dto.*;
-import org.tcontrol.mappers.SensorValueMapper;
+import org.tcontrol.controller.mappers.SensorValueMapper;
+import org.tcontrol.controller.mappers.ThermostatCurrentTemperatureMapper;
 import org.tcontrol.service.SensorServiceException;
-import org.tcontrol.service.SensorService;
-import org.tcontrol.service.models.Sensor;
-import org.tcontrol.service.models.SensorValue;
+import org.tcontrol.service.ISensorService;
+import org.tcontrol.models.Sensor;
+import org.tcontrol.models.SensorValue;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -33,9 +35,11 @@ import static java.net.HttpURLConnection.HTTP_OK;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("tcontrol/api")
+@Logging
 public class SensorController {
-    private final SensorService sensorService;
+    private final ISensorService ISensorService;
     private final SensorValueMapper sensorValueMapper;
+    private final ThermostatCurrentTemperatureMapper thermostatCurrentTemperatureMapper;
 
     //Temp user
     private static final int CURRENT_USER_ID = 1;
@@ -69,7 +73,7 @@ public class SensorController {
         SensorValueDto.SensorsResult result = new SensorValueDto.SensorsResult();
         Collection<Sensor> sensors;
         try {
-            sensors = sensorService.getUserSensors(CURRENT_USER_ID).values();
+            sensors = ISensorService.getUserSensors(CURRENT_USER_ID).values();
         } catch (SensorServiceException ex) {
             throw buildWebApplicationException(ex);
         }
@@ -98,7 +102,7 @@ public class SensorController {
                             content = @Content(mediaType = "application/json"))})
     public SensorValuesResult getSensorValues() throws SensorServiceException {
         log.info("get values");
-        final List<SensorValue> values = sensorService.getCurrentValues(CURRENT_USER_ID, null);
+        final List<SensorValue> values = ISensorService.getCurrentValues(CURRENT_USER_ID, null);
 
         final SensorValuesResult result = new SensorValuesResult();
         result.setTime(System.currentTimeMillis());
@@ -132,9 +136,8 @@ public class SensorController {
             )}
     )
     public SensorValuesResult getSensorPrevValues(@RequestParam(name = "sensorId") Integer sensorId) throws SensorServiceException {
-        log.info("get previous values for sensor {}", sensorId);
         SensorValuesResult result = new SensorValuesResult();
-        List<SensorValue> values = sensorService.getPrevSensorValues(CURRENT_USER_ID, null, sensorId);
+        List<SensorValue> values = ISensorService.getPrevSensorValues(CURRENT_USER_ID, null, sensorId);
         List<SensorValueDto> webValues = sensorValueMapper.map(values);
         result.setValues(webValues.toArray(new SensorValueDto[]{}));
         return result;
@@ -154,10 +157,8 @@ public class SensorController {
     )
     public ResponseEntity<StartHeatingResult> startProcess(@RequestBody final StartHeatingRequest processChangeRequest)
             throws InterruptedException {
-        log.info("start process for sensor {}: {}", processChangeRequest.getSensorId(),
-                processChangeRequest.getNewValue());
         Thread.sleep(1000);
-        int result = sensorService.startHeating(processChangeRequest.getSensorId(), processChangeRequest.getNewValue());
+        int result = ISensorService.changeThermostatOptions(thermostatCurrentTemperatureMapper.mapToModel(processChangeRequest.getNewTemperatures()));
         return new ResponseEntity<>(new StartHeatingResult(result, "ok", System.currentTimeMillis()),
                 HttpStatus.OK);
     }
@@ -171,32 +172,14 @@ public class SensorController {
             requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
                     description = "Тело запроса для старта отопления", required = true)
     )
-    public ResponseEntity<Float> thermostatCurrentTemperature(@RequestParam(name = "sensorId") Integer sensorId) {
+    public ResponseEntity<List<ThermostatTemperatureDto>> thermostatCurrentTemperature(@RequestParam(name = "sensorId") Integer sensorId) {
         log.info("current temperature for sensor: {}", sensorId);
         if (sensorId == null || sensorId < 0) {
             throw new IllegalArgumentException("sensorId has to be not null and positive number");
         }
-        float result = sensorService.thermostatCurrentTemperature(sensorId);
+        List<ThermostatTemperatureDto> result = thermostatCurrentTemperatureMapper.mapToDto(ISensorService.thermostatCurrentTemperature(sensorId));
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
-
-    @PostMapping("/stop_process")
-    @CrossOrigin(origins = {"http://localhost:8090", "http://localhost"})
-    @Operation(summary = "Останов отопления",
-            description = "Останов отопления",
-            responses = {@ApiResponse(responseCode = "" + HTTP_BAD_REQUEST, content = @Content(mediaType = "application/json"))
-            },
-            requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
-                    description = "Тело запроса для останова отопления", required = true)
-    )
-    public ResponseEntity<StopHeatingResult> stopProcess(@RequestBody final StopHeatingRequest processChangeRequest) throws InterruptedException {
-        log.info("stop process for sensor {}", processChangeRequest.getSensorId());
-        Thread.sleep(1000);
-        int result = sensorService.stopHeating(processChangeRequest.getSensorId());
-        return new ResponseEntity<>(new StopHeatingResult(result == -1 ? null : result, "ok"),
-                result == -1 ? HttpStatus.INTERNAL_SERVER_ERROR : HttpStatus.OK);
-    }
-
 
     private ResponseStatusException buildWebApplicationException(SensorServiceException ex) {
         Logger.getLogger(SensorController.class.getName()).log(Level.SEVERE, null, ex);
@@ -220,5 +203,4 @@ public class SensorController {
         }
         return webSensors;
     }
-
 }

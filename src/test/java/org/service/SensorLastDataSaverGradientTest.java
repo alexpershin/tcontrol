@@ -6,8 +6,8 @@ import org.tcontrol.config.props.SensorConfig;
 import org.tcontrol.service.IStatisticsLoader;
 import org.tcontrol.service.ITimer;
 import org.tcontrol.service.impl.SensorLastDataSaver;
-import org.tcontrol.service.models.Sensor;
-import org.tcontrol.service.models.SensorValue;
+import org.tcontrol.models.Sensor;
+import org.tcontrol.models.SensorValue;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;

@@ -2,7 +2,7 @@ package org.tcontrol.config.props;
 
 import lombok.*;
 import lombok.extern.slf4j.Slf4j;
-import org.tcontrol.service.models.Sensor;
+import org.tcontrol.models.Sensor;
 
 import java.util.*;
 import java.util.stream.Collectors;

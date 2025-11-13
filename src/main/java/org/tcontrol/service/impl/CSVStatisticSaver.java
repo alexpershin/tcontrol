@@ -2,12 +2,11 @@ package org.tcontrol.service.impl;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.csv.CSVPrinter;
-import org.apache.commons.lang3.NotImplementedException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.tcontrol.config.Logging;
 import org.tcontrol.service.IStatisticsSaver;
-import org.tcontrol.service.models.SensorValue;
+import org.tcontrol.models.SensorValue;
 
 import java.io.FileWriter;
 import java.io.IOException;

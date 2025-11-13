@@ -5,7 +5,7 @@ import org.tcontrol.config.props.ThermostatsConfig;
 import org.tcontrol.hardware.ITemperatureMonitor;
 import org.tcontrol.service.ITimer;
 import org.tcontrol.service.impl.Thermostat;
-import org.tcontrol.service.models.SensorValue;
+import org.tcontrol.models.SensorValue;
 import org.tcontrol.hardware.IVoltageMonitor;
 import org.tcontrol.hardware.IVoltageMonitor.VoltageResult;
 import org.tcontrol.sms.commands.CommandResult;
@@ -24,7 +24,6 @@ import static org.tcontrol.config.props.ThermostatsConfig.ThermostatConfig;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-
 
 public class StatusCommandTest {
 

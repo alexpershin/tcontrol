@@ -30,7 +30,7 @@ import java.util.stream.Collectors;
 @Slf4j
 @RequiredArgsConstructor
 @Logging
-public class ISensorServiceImpl implements ISensorService {
+public class SensorServiceImpl implements ISensorService {
 
     protected final ThermostatsConfig thermostatsConfig;
     protected final SensorConfig sensorConfig;
@@ -88,27 +88,30 @@ public class ISensorServiceImpl implements ISensorService {
     @Override
     public int changeThermostatOptions(List<ThermostatTemperature> temperatures) throws SensorServiceException {
         return temperatures.stream()
-                .map(t->dynamicThermostats.get(t.getThermostatName()).on(t.getTemperature()).checkTemperature() ? 1 : 0)
-                .reduce((a,b)->a*b)
-                .orElseThrow(() ->
-                        new SensorServiceException(MessageFormat.format("Thermostat not found by pin: {0}",
-                                temperatures.stream().map(ThermostatTemperature::getThermostatName)).concat(",")));
+                .map(temp -> dynamicThermostats.values().stream()
+                        .filter(t -> t.getCode().equals(temp.getThermostatCode())).findFirst()
+                        .map(t -> t.on(temp.getTemperature()).checkTemperature() ? 1 : 0)
+                        .orElseThrow(() ->
+                                new SensorServiceException(MessageFormat.format("Thermostat not found by pin: {0}",
+                                        joining(temperatures))))
+                )
+                .reduce((a, b) -> a * b).orElseThrow(() ->
+                        new SensorServiceException(MessageFormat.format("No thermostat activated: {0}",
+                                joining(temperatures))));
+
     }
 
+    private static String joining(List<ThermostatTemperature> temperatures) {
+        return temperatures.stream().map(ThermostatTemperature::getThermostatName).collect(Collectors.joining("'"));
+    }
 
     @Override
     public List<ThermostatTemperature> thermostatCurrentTemperature(int sensorId) {
         return thermostats(sensorId).stream()
-                        .map(t-> new ThermostatTemperature(t.getName(), t.currentTemperature()))
-                        .collect(Collectors.toList());
-    }
-
-    private IThermostat thermostat(int sensorId, String pin) {
-        return dynamicThermostats.values().stream()
-                .filter(t -> t.getHeatingPins().contains(pin))
-                .findFirst()
-                .orElseThrow(() -> new SensorServiceException(MessageFormat.format("Thermostat not found by pin: {0}", pin))
-                );
+                .map(t -> {
+                    return new ThermostatTemperature(t.getCode(), t.getName(), t.currentTemperature());
+                })
+                .collect(Collectors.toList());
     }
 
     private List<IThermostat> thermostats(int sensorId) {
@@ -121,8 +124,8 @@ public class ISensorServiceImpl implements ISensorService {
                 .map(r -> dynamicThermostats.values().stream()
                         .filter(t -> t.getHeatingPins().contains(r.getPin()))
                         .collect(Collectors.toList())
-                )
-                .orElseThrow(() -> new SensorServiceException(MessageFormat.format("SensorConfig not found by sensorId: {0}", sensorId)));
+
+                ).orElseThrow(() -> new SensorServiceException(MessageFormat.format("SensorConfig not found by sensorId: {0}", sensorId)));
     }
 
     @Override

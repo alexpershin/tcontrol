@@ -24,5 +24,9 @@ public interface IThermostat {
 
   String getName();
 
+  Integer getId();
+
+  String  getCode();
+
   String getSensorCode();
 }

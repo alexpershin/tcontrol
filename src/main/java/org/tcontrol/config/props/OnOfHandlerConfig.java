@@ -8,5 +8,5 @@ import lombok.RequiredArgsConstructor;
 public class OnOfHandlerConfig {
   private int pinId;
   private int sensorId;
-  private String thermostat;
+  private String thermostatCode;
 }

@@ -29,6 +29,9 @@ import static org.tcontrol.config.props.ThermostatsConfig.ThermostatConfig;
 public class Thermostat implements IThermostat {
     public static final float TEMPERATURE_MAX_ON = 28.0f;
 
+    @Getter
+    private final Integer id;
+
     @Autowired
     @Setter
     private ThermostatsConfig thermostatsConfig;
@@ -50,9 +53,6 @@ public class Thermostat implements IThermostat {
     private ThermostatsConfig.ThermostatConfig thermostatConfig;
 
     @Getter
-    private final String name;
-
-    @Getter
     boolean heatingOn;
 
     @Getter
@@ -66,13 +66,13 @@ public class Thermostat implements IThermostat {
     @PostConstruct
     public void init() {
         log.trace("init");
-        thermostatConfig = thermostatConfig(thermostatsConfig, name);
+        thermostatConfig = thermostatConfig(thermostatsConfig, id);
         thermostatCurrentConfig = thermostatConfig.clone();
     }
 
-    public static ThermostatConfig thermostatConfig(ThermostatsConfig thermostatsConfig, String name) {
-        return thermostatsConfig.thermostatConfigByName(name)
-                .orElseThrow(() -> new SensorServiceException(MessageFormat.format("Thermostat config not found by name: {0}", name)));
+    public static ThermostatConfig thermostatConfig(ThermostatsConfig thermostatsConfig, Integer id) {
+        return thermostatsConfig.thermostatConfigById(id)
+                .orElseThrow(() -> new SensorServiceException(MessageFormat.format("Thermostat config not found by id: {0}", id)));
     }
 
     @Override
@@ -102,7 +102,8 @@ public class Thermostat implements IThermostat {
                 }
             });
 
-            log.info("{}> Checked temperature between({},{}), current:{}, state:{}", name, mediumT - delta, mediumT + delta, currentT, heatingOn);
+            log.info("{}> Checked temperature between({},{}), current:{}, state:{}",
+                    thermostatCurrentConfig.getName(), mediumT - delta, mediumT + delta, currentT, heatingOn);
         } else {
             if (firstTime) log.info("no sensor value yet");
             else log.error("temperature sensor value is null");
@@ -121,7 +122,7 @@ public class Thermostat implements IThermostat {
             clone.setTDay(temperature);
             thermostatCurrentConfig = clone;
         }
-        log.info("{}> thermostat is ON: {}", name, temperature);
+        log.info("{}> thermostat is ON: {}", thermostatCurrentConfig.getName(), temperature);
         return this;
     }
 
@@ -134,13 +135,23 @@ public class Thermostat implements IThermostat {
     public Thermostat off() {
         this.on = false;
         thermostatCurrentConfig = thermostatConfig.clone();
-        log.info("{}> thermostat is back OFF", name);
+        log.info("{}> thermostat is back OFF", thermostatCurrentConfig.getName());
         return this;
     }
 
     @Override
     public List<String> getHeatingPins() {
         return thermostatCurrentConfig.getRelayPins();
+    }
+
+    @Override
+    public String getName() {
+        return thermostatCurrentConfig.getName();
+    }
+
+    @Override
+    public String getCode() {
+        return thermostatCurrentConfig.getCode();
     }
 
     @Override

@@ -50,6 +50,7 @@ public class StatusCommandTest {
     @BeforeEach
     public void before() {
         thermostatConfig = new ThermostatConfig();
+        thermostatConfig.setId(1);
         thermostatConfig.setDelta(0.5f);
         thermostatConfig.setNightBegin(60 * 60 * 23);
         thermostatConfig.setNightEnd(60 * 60 * 7);
@@ -62,6 +63,7 @@ public class StatusCommandTest {
         thermostatConfig.init();
 
         thermostatConfig2 = new ThermostatConfig();
+        thermostatConfig2.setId(2);
         thermostatConfig2.setDelta(0.5f);
         thermostatConfig2.setNightBegin(60 * 60 * 23);
         thermostatConfig2.setNightEnd(60 * 60 * 7);
@@ -74,6 +76,7 @@ public class StatusCommandTest {
         thermostatConfig2.init();
 
         thermostatConfig3 = new ThermostatConfig();
+        thermostatConfig3.setId(3);
         thermostatConfig3.setDelta(0.5f);
         thermostatConfig3.setNightBegin(60 * 60 * 23);
         thermostatConfig3.setNightEnd(60 * 60 * 7);
@@ -86,6 +89,7 @@ public class StatusCommandTest {
         thermostatConfig3.init();
 
         thermostatConfig4 = new ThermostatConfig();
+        thermostatConfig4.setId(4);
         thermostatConfig4.setDelta(0.5f);
         thermostatConfig4.setNightBegin(60 * 60 * 23);
         thermostatConfig4.setNightEnd(60 * 60 * 7);
@@ -154,21 +158,21 @@ public class StatusCommandTest {
                 LocalDateTime.of(LocalDate.now(), LocalTime.of(12, 0))
         );
 
-        thermostat1 = new Thermostat("termo1");
+        thermostat1 = new Thermostat(1);
         thermostat1.setThermostatsConfig(thermostatsConfig);
         thermostat1.setTemperatureMonitor(temperatureMonitor);
         thermostat1.setRelayAggregator(relayHandler);
         thermostat1.setTimer(timer);
         thermostat1.init();
 
-        thermostat2 = new Thermostat("termo2");
+        thermostat2 = new Thermostat(2);
         thermostat2.setThermostatsConfig(thermostatsConfig);
         thermostat2.setTemperatureMonitor(temperatureMonitor);
         thermostat2.setRelayAggregator(relayHandler);
         thermostat2.setTimer(timer);
         thermostat2.init();
 
-        thermostat3 = new Thermostat("termo3");
+        thermostat3 = new Thermostat(3);
         thermostat3.setThermostatsConfig(thermostatsConfig);
         thermostat3.setTemperatureMonitor(temperatureMonitor);
         thermostat3.setRelayAggregator(relayHandler);
@@ -176,7 +180,7 @@ public class StatusCommandTest {
         thermostat3.init();
 
 
-        thermostat4 = new Thermostat("termo4");
+        thermostat4 = new Thermostat(4);
         thermostat4.setThermostatsConfig(thermostatsConfig);
         thermostat4.setTemperatureMonitor(temperatureMonitor);
         thermostat4.setRelayAggregator(relayHandler);

@@ -29,7 +29,7 @@ import org.tcontrol.controller.mappers.SensorMapper;
 import org.tcontrol.controller.mappers.SensorValueMapper;
 import org.tcontrol.service.*;
 import org.tcontrol.service.impl.CSVStatisticSaver;
-import org.tcontrol.service.impl.ISensorServiceImpl;
+import org.tcontrol.service.impl.SensorServiceImpl;
 import org.tcontrol.service.impl.RelayAggregator;
 import org.tcontrol.config.props.*;
 import org.tcontrol.handler.IRelayHandler;
@@ -68,6 +68,8 @@ public class AppConfig implements BeanFactoryPostProcessor {
         ThermostatConfig thermostatElectroConfigStub =
                 new ThermostatConfig();
 
+        thermostatElectroConfigStub.setId(1);
+        thermostatElectroConfigStub.setCode("termo1-electro");
         thermostatElectroConfigStub.setName("termo1(electro)");
         thermostatElectroConfigStub.setSensor("8");
         thermostatElectroConfigStub.setRelayPins(Collections.singletonList("GPIO 8"));
@@ -249,7 +251,7 @@ public class AppConfig implements BeanFactoryPostProcessor {
             final Map<String, IThermostat> dynamicThermostats,
             final SensorValueMapper sensorValueMapper
             ) {
-        return new ISensorServiceImpl(
+        return new SensorServiceImpl(
                 thermostatsConfig,
                 sensorConfig,
                 relayPinsConfig,
@@ -267,14 +269,14 @@ public class AppConfig implements BeanFactoryPostProcessor {
             final IRelayHandler relayHandler,
             final Map<String, IThermostat> dynamicThermostats
     ) {
-        IThermostat thermostat = dynamicThermostats.get(onOfHandlerConfig.getThermostat());
+        IThermostat thermostat = dynamicThermostats.get(onOfHandlerConfig.getThermostatCode());
         return new OnOffHandler(onOfHandlerConfig, relayPinsConfig, relayHandler, thermostat);
     }
 
     @Bean
     public ButtonGasOnOffHandler buttonGasOnOffHandler(ButtonHandlerConfig buttonHandlerConfig,
                                                        final Map<String, IThermostat> dynamicThermostats) {
-        IThermostat thermostat = dynamicThermostats.get(buttonHandlerConfig.getThermostat());
+        IThermostat thermostat = dynamicThermostats.get(buttonHandlerConfig.getThermostatCode());
         return new ButtonGasOnOffHandler(buttonHandlerConfig, thermostat);
     }
 
@@ -291,7 +293,6 @@ public class AppConfig implements BeanFactoryPostProcessor {
     @Qualifier("thermostatOnCommand")
     public ISMSCommand thermostatOnCommand(
             final Map<String, IThermostat> dynamicThermostats) {
-        IThermostat thermostat = dynamicThermostats.get("thermostat-electro");
         return new ThermostatOnCommand(dynamicThermostats);
     }
 

@@ -27,6 +27,7 @@ public class CommandConfiguration {
     @Bean
     public ThermostatConfig thermostatConfig() {
         ThermostatConfig thermostatConfig = new ThermostatConfig();
+        thermostatConfig.setId(1);
         thermostatConfig.setDelta(0.5f);
         thermostatConfig.setNightBegin(60 * 60 * 23);
         thermostatConfig.setNightEnd(60 * 60 * 7);
@@ -42,6 +43,7 @@ public class CommandConfiguration {
     @Bean
     public ThermostatConfig thermostatConfig2() {
         ThermostatConfig thermostatConfig = new ThermostatConfig();
+        thermostatConfig.setId(2);
         thermostatConfig.setDelta(0.5f);
         thermostatConfig.setNightBegin(60 * 60 * 23);
         thermostatConfig.setNightEnd(60 * 60 * 7);
@@ -128,14 +130,14 @@ public class CommandConfiguration {
                                                        ITimer timer) {
         Map<String, IThermostat> thermostatMap = new HashMap<>();
 
-        Thermostat t1 = new Thermostat("elect");
+        Thermostat t1 = new Thermostat(1);
         t1.setThermostatsConfig(thermostatsConfig);
         t1.setTemperatureMonitor(temperatureMonitor);
         t1.setRelayAggregator(relayHandler);
         t1.setTimer(timer);
         t1.init();
 
-        Thermostat t2 = new Thermostat("gast");
+        Thermostat t2 = new Thermostat(1);
         t2.setThermostatsConfig(thermostatsConfig);
         t2.setTemperatureMonitor(temperatureMonitor);
         t2.setRelayAggregator(relayHandler);

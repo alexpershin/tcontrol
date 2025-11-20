@@ -44,6 +44,7 @@ public class ThermostatAggregatorTest {
     @BeforeEach
     public void before() {
         thermostatConfig1 = new ThermostatConfig();
+        thermostatConfig1.setId(1);
         thermostatConfig1.setDelta(0.5f);
         thermostatConfig1.setNightBegin(60 * 60 * 23);
         thermostatConfig1.setNightEnd(60 * 60 * 7);
@@ -55,6 +56,7 @@ public class ThermostatAggregatorTest {
         thermostatConfig1.setName("termo1");
 
         thermostatConfig2 = new ThermostatConfig();
+        thermostatConfig2.setId(2);
         thermostatConfig2.setDelta(0.5f);
         thermostatConfig2.setNightBegin(60 * 60 * 23);
         thermostatConfig2.setNightEnd(60 * 60 * 7);
@@ -66,6 +68,7 @@ public class ThermostatAggregatorTest {
         thermostatConfig2.setName("termo2");
 
         thermostatConfig3 = new ThermostatConfig();
+        thermostatConfig3.setId(3);
         thermostatConfig3.setDelta(0.5f);
         thermostatConfig3.setNightBegin(60 * 60 * 23);
         thermostatConfig3.setNightEnd(60 * 60 * 7);
@@ -127,21 +130,21 @@ public class ThermostatAggregatorTest {
         timer = mock(ITimer.class);
         when(timer.getCurrentTime()).thenReturn(LocalDateTime.of(LocalDate.now(), LocalTime.of(12, 0)));
 
-        thermostat1 = new Thermostat("termo1");
+        thermostat1 = new Thermostat(1);
         thermostat1.setThermostatsConfig(thermostatsConfig);
         thermostat1.setTemperatureMonitor(temperatureMonitor);
         thermostat1.setRelayAggregator(relayAggregator);
         thermostat1.setTimer(timer);
         thermostat1.init();
 
-        thermostat2 = new Thermostat("termo2");
+        thermostat2 = new Thermostat(2);
         thermostat2.setThermostatsConfig(thermostatsConfig);
         thermostat2.setTemperatureMonitor(temperatureMonitor);
         thermostat2.setRelayAggregator(relayAggregator);
         thermostat2.setTimer(timer);
         thermostat2.init();
 
-        thermostat3 = new Thermostat("termo3");
+        thermostat3 = new Thermostat(3);
         thermostat3.setThermostatsConfig(thermostatsConfig);
         thermostat3.setTemperatureMonitor(temperatureMonitor);
         thermostat3.setRelayAggregator(relayAggregator);

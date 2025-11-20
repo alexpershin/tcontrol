@@ -13,7 +13,7 @@ springdoc:
 
 main-config:
   sensorValuesBufferExpiredMillis: 86400000 #24 hours
-  sensorsStub: true
+  sensorsStub: false
 
 w1DevicesPath: /sys/bus/w1/devices
 
@@ -170,7 +170,9 @@ thermostat.schedule: '5 0/1 * * * ?'
 
 thermostats-config:
   thermostats:
-    - name: 'thermostat-electro'
+    - id: 1
+      code: 'thermostat-electro'
+      name: 'Термостат электро'
       tDay: 14.0
       tNight: 16.0
       delta: 0.5
@@ -179,7 +181,9 @@ thermostats-config:
       sensor: 28-000002c7c3ee
       relayPins:
         - 'GPIO 0'
-    - name: thermostat-gas
+    - id: 2
+      code: thermostat-gas
+      name: 'Термостат коридор'
       tDay: 22.0
       tNight: 19.0
       delta: 0.3
@@ -189,7 +193,9 @@ thermostats-config:
       relayPins:
         - 'GPIO 1'
         - 'GPIO 4'
-    - name: thermostat-veranda
+    - id: 3
+      code: thermostat-veranda
+      name: 'Термостат веранда циркуляция'
       tDay: 6.0
       tNight: 6.0
       delta: 0.5
@@ -198,7 +204,9 @@ thermostats-config:
       sensor: 28-0417019b15ff
       relayPins:
         - 'GPIO 2'
-    - name: thermostat-veranda-em
+    - id: 4
+      code: thermostat-veranda-em
+      name: 'Термостат веранда'
       tDay: 4.0
       tNight: 4.0
       delta: 0.3
@@ -207,8 +215,10 @@ thermostats-config:
       sensor: 28-0417019b15ff
       relayPins:
         - 'GPIO 1'
-    - name: thermostat-my-room
-      tDay: 23.5
+    - id: 5
+      code: thermostat-my-room
+      name: 'Термостат комната Алексея'
+      tDay: 23.0
       tNight: 20.0
       delta: 0.3
       nightBegin: 22:00:00
@@ -217,7 +227,9 @@ thermostats-config:
       relayPins:
         - 'GPIO 3'
         - 'GPIO 1'
-    - name: thermostat-hot-watter
+    - id: 6
+      code: thermostat-hot-watter
+      name: 'Термостат горячей воды'
       tDay: 38.5
       tNight: 38.5
       delta: 4.0

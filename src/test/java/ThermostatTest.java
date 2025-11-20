@@ -36,6 +36,7 @@ public class ThermostatTest {
     @BeforeEach
     public void before() {
         thermostatConfig = new ThermostatsConfig.ThermostatConfig();
+        thermostatConfig.setId(1);
         thermostatConfig.setDelta(0.5f);
         thermostatConfig.setNightBegin(60 * 60 * 23);
         thermostatConfig.setNightEnd(60 * 60 * 7);
@@ -91,7 +92,7 @@ public class ThermostatTest {
         timer = mock(ITimer.class);
         when(timer.getCurrentTime()).thenReturn(LocalDateTime.of(LocalDate.now(), LocalTime.of(12, 0)));
 
-        thermostat = new Thermostat("termo");
+        thermostat = new Thermostat(1);
         thermostat.setThermostatsConfig(thermostatsConfig);
         thermostat.setTemperatureMonitor(temperatureMonitor);
         thermostat.setRelayAggregator(relayHandler);

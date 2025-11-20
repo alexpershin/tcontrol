@@ -18,19 +18,19 @@ public class ThermostatsConfig {
 
     @Getter
     private List<ThermostatConfig> thermostats;
-    private Map<String, ThermostatConfig> nameToThermostatConfigMap = new HashMap<>();
+    private Map<Integer, ThermostatConfig> nameToThermostatConfigMap = new HashMap<>();
 
     public void setThermostats(List<ThermostatConfig> thermostatConfigs) {
         this.thermostats = thermostatConfigs;
         this.nameToThermostatConfigMap =
-                thermostatConfigs.stream().collect(Collectors.toMap(ThermostatConfig::getName, tc -> tc));
+                thermostatConfigs.stream().collect(Collectors.toMap(ThermostatConfig::getId, tc -> tc));
     }
 
-    public Optional<ThermostatConfig> thermostatConfigByName(String name){
-        return ofNullable(nameToThermostatConfigMap.get(name));
+    public Optional<ThermostatConfig> thermostatConfigById(Integer id){
+        return ofNullable(nameToThermostatConfigMap.get(id));
     }
 
-    public Set<String> thermostatNames(){
+    public Set<Integer> thermostatIds(){
         return nameToThermostatConfigMap.keySet();
     }
 
@@ -39,6 +39,8 @@ public class ThermostatsConfig {
     @FieldNameConstants
     public static class ThermostatConfig implements Cloneable {
 
+        private Integer id;
+        private String code;
         private String name;
         private float tDay;
         private float tNight;

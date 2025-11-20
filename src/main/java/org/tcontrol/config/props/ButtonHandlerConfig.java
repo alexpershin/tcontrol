@@ -13,7 +13,7 @@ public class ButtonHandlerConfig {
 
   private String buttonPinId;
   private String buttonPinName;
-  private String thermostat;
+  private String thermostatCode;
 
   @PostConstruct
   public void init() {

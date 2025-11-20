@@ -16,13 +16,12 @@ import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.support.GenericBeanDefinition;
 
-import static java.lang.String.valueOf;
 import static org.tcontrol.config.props.ThermostatsConfig.ThermostatConfig;
 
 @Slf4j
 public class DynamicThermostatBeanCreator implements BeanDefinitionRegistryPostProcessor {
 
-    private final Set<String> thermostatNames;
+    private final Set<Integer> thermostatIds;
 
     public DynamicThermostatBeanCreator(final Environment environment) {
         Binder binder = Binder.get(environment);
@@ -31,30 +30,31 @@ public class DynamicThermostatBeanCreator implements BeanDefinitionRegistryPostP
                         Bindable.listOf(HashMap.class)
                 ).get();
 
-        thermostatNames = properties.stream()
-                .map(thermostatProps -> valueOf(thermostatProps.get(ThermostatConfig.Fields.name)))
+        thermostatIds = properties.stream()
+                .map(thermostatProps -> (int)(thermostatProps.get(ThermostatConfig.Fields.id)))
                 .collect(Collectors.toSet());
     }
 
     /**
      * For test mode!
+     *
      * @param thermostatsConfig test configuration of thermostats;
      */
     public DynamicThermostatBeanCreator(final ThermostatsConfig thermostatsConfig) {
-        thermostatNames = thermostatsConfig.thermostatNames();
+        thermostatIds = thermostatsConfig.thermostatIds();
     }
 
     @Override
     public void postProcessBeanDefinitionRegistry(BeanDefinitionRegistry registry)
             throws BeansException {
-        thermostatNames.forEach(thermostatName -> {
-            log.info("register my bean: {}", thermostatName);
-            Thermostat thermostat = new Thermostat(thermostatName);
+        thermostatIds.forEach(thermostatId -> {
+            log.info("register my bean: {}", thermostatId);
+            Thermostat thermostat = new Thermostat(thermostatId);
 
             GenericBeanDefinition beanDefinition = new GenericBeanDefinition();
             beanDefinition.setBeanClass(Thermostat.class);
             beanDefinition.setInstanceSupplier(() -> thermostat);
-            registry.registerBeanDefinition(thermostatName, beanDefinition);
+            registry.registerBeanDefinition("tcontrol-thermostat-" + thermostatId, beanDefinition);
         });
     }
 

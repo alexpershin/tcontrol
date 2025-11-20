@@ -259,6 +259,7 @@ relay-aggregator:
   schedule: '10 0/1 * * * ?'
   pinAggregates:
     '[GPIO 1]': 3
+    '[GPIO 2]': 2
 
 voltage-handler:
   schedule: '0/30 * * * * ?'

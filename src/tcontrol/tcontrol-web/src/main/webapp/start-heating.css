@@ -30,6 +30,12 @@
     margin-left: 10px;
     margin-bottom: 10px;
 }
+
+.thermostat-table-row{
+    visibility: visible;
+    display: none;
+}
+
 .start-heating-input{
     font:bold 16px/16px Arial;
     padding-block: 5px;

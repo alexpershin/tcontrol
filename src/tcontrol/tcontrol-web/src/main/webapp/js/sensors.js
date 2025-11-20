@@ -130,7 +130,6 @@ function layoutSensors(sensorsJsonData) {
         clone.attr("id", sensorElementId);
         sensorTitle = $('#' + sensorElementId + ' #sensor_title');
         sensorTitle.text(value.name);
-        //clone.show();
     });
 }
 
@@ -281,8 +280,8 @@ function onOffSensorRenderer(sensorElementId, sensorValue) {
                 beforeSend: function () {
                     showSensorLoader(sensorElementId)
                 },
-                success: function (currentTemperature) {
-                     startHeatingDialog(sensorElementId, sensorValue, currentTemperature)
+                success: function (currentTemperatures) {
+                     startHeatingDialog(sensorElementId, sensorValue, currentTemperatures)
                 },
                 error: function (jqXHR, textStatus, errorThrown) {
                     hideSensorLoader(sensorElementId)
@@ -299,7 +298,7 @@ function onOffSensorRenderer(sensorElementId, sensorValue) {
     sensorBody.css('border-radius', 57.5);
 }
 
-function startHeatingDialog(sensorElementId, sensorValue, currentTemperature){
+function startHeatingDialog(sensorElementId, sensorValue, currentTemperatures){
     const startHeatingDialog = document.getElementById('start-heating');
 
     var applyBtn = document.getElementById('start-heating-apply-btn');
@@ -307,19 +306,41 @@ function startHeatingDialog(sensorElementId, sensorValue, currentTemperature){
     const clone = applyBtn.cloneNode(true);
     applyBtn.parentNode.replaceChild(clone, applyBtn);
 
-    applyBtn = document.getElementById('start-heating-apply-btn');
-    const titleComponent = document.getElementById('start-heating-dialog-title');
+    const startHeatingDialogRow = document.getElementById("thermostat-table-row");
+
+    const thermostatRowBaseId = 'thermostat-table-row'
+    $(currentTemperatures).each(function (key, currentTemperature) {
+        cloneRow = $('#' + thermostatRowBaseId).clone()
+        cloneRow.appendTo('.thermostat-table')
+        thermostatRowId =  cloneRow.attr('id') + '-' + currentTemperature.thermostatCode
+        cloneRow.attr("id", thermostatRowId)
+        const startHeatingDialogInput = $('#' + thermostatRowId + ' #start-heating-input')
+
+        const startHeatingDialogInputCaption = $('#' + thermostatRowId + ' #start-heating-input-caption')
+
+        startHeatingDialogInput.val(currentTemperature.temperature)
+        startHeatingDialogInputCaption.text(currentTemperature.thermostatName)
+        $('#' + thermostatRowId).show();
+    })
+
+    applyBtn = document.getElementById('start-heating-apply-btn')
+    closeBtn = document.getElementById('start-heating-close-btn')
+    const titleComponent = document.getElementById('start-heating-dialog-title')
     titleComponent.textContent = $(sensorElementId + ' #sensor_title').text()
-    const startHeatingDialogInput = document.getElementById("start-heating-input")
 
     applyBtn.addEventListener('click', () => {
-         if(validateSensorTemperature(startHeatingDialogInput)){
-               startHeating(sensorElementId, sensorValue)
-         }
-    });
-    console.log('current temperature: ' + currentTemperature);
-
-    startHeatingDialogInput.value = currentTemperature
+         $(currentTemperatures).each(function (key, currentTemperature) {
+            thermostatRowId =  thermostatRowBaseId + '-' + currentTemperature.thermostatCode
+            const startHeatingDialogInput = $('#' + thermostatRowId + ' #start-heating-input')
+            if(validateSensorTemperature(startHeatingDialogInput)){
+                currentTemperatures[key].temperature = startHeatingDialogInput.val()
+            }
+         })
+        startHeating(sensorElementId, sensorValue, currentTemperatures)
+    })
+    closeBtn.addEventListener('click', () => {
+         closeHeatingDialog()
+    })
 
     showHeatingDialog()
 }
@@ -330,6 +351,8 @@ function showHeatingDialog(){
 }
 
 function closeHeatingDialog(){
+    const thermostatRowBaseId = 'thermostat-table-row'
+    $("[id^='" + thermostatRowBaseId + "-']").remove()
     document.getElementById('start-heating').style.visibility='hidden'
     document.getElementById('overlay').style.visibility='hidden'
 }
@@ -419,22 +442,20 @@ function hideSensorLoader(sensorElementId){
    $('.sensor_item').find('.sensor_item_body').css('pointer-events', 'all')
 }
 
-function startHeating(sensorElementId, sensorValue){
+function startHeating(sensorElementId, sensorValue, currentTemperatures){//sensorElementId, sensorValue
     const sensorElement = $(sensorElementId + ' .sensor_item_body .sensor_value')
     const startHeatingDialog = document.getElementById('start-heating');
 
     const popUpElement = document.getElementById("pop-up");
     popUpElement.style.visibility='visible';
 
-    const startHeatingDialogInput = document.getElementById("start-heating-input");
-
     let onOffUrl = window.location.protocol
         +'//'+window.location.host
         +'/tcontrol/api/start_process';
 
-   var onOffRequest = {
+   var changeThermostatTemperatureRequest = {
         sensorId: sensorValue.sensorId,
-        newValue: startHeatingDialogInput.value
+        newTemperatures: currentTemperatures
     }
 
     closeHeatingDialog()
@@ -443,7 +464,7 @@ function startHeating(sensorElementId, sensorValue){
         type: 'POST',
         dataType: 'json',
         contentType: 'application/json',
-        data: JSON.stringify(onOffRequest),
+        data: JSON.stringify(changeThermostatTemperatureRequest),
         url: onOffUrl,
         beforeSend: function () {
             showSensorLoader(sensorElementId)
@@ -459,14 +480,12 @@ function startHeating(sensorElementId, sensorValue){
         },
         error: function (jqXHR, textStatus, errorThrown) {
             hideSensorLoader(sensorElementId)
-//            popUpElement.close();
             popUpElement.style.visibility='hidden'
             closeHeatingDialog()
             alert("Error try again later: " + textStatus)
         },
         complete: function () {
             hideSensorLoader(sensorElementId)
-//            popUpElement.close();
             popUpElement.style.visibility='hidden'
             closeHeatingDialog()
         }

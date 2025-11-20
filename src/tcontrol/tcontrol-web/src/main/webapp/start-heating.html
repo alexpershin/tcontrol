@@ -3,13 +3,24 @@
 <dialog id="start-heating">
     <div id="start-heating-dialog-title" class="dialog-title"></div>
     <div class="start-heating-form-group">
-        <label for="start-heating-input" class="dialog-input">Целевая температура:</label>
-        <input
-                id="start-heating-input"
-                type="number"
-                name="start-heating-input"
-                class="start-heating-input"
-                min="6" max="30" value="20" maxlength="2" pattern="\d*">
+
+
+        <table id="thermostat-table" class="thermostat-table">
+            <tr id="thermostat-table-row" class="thermostat-table-row">
+                <td><label for="start-heating-input"
+                           id="start-heating-input-caption"
+                           class="start-heating-input-caption"
+                >
+                    Целевая температура:
+                </label></td>
+                <td><input
+                        id="start-heating-input"
+                        type="number"
+                        name="start-heating-input"
+                        class="start-heating-input"
+                        min="6" max="30" value="20" maxlength="2" pattern="\d*"></td>
+            </tr>
+        </table>
     </div>
     <button id="start-heating-apply-btn" class="dialog-button">Применить</button>
     <button id="start-heating-close-btn" class="dialog-button">Закрыть</button>

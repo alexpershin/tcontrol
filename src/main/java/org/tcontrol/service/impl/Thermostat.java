@@ -78,10 +78,9 @@ public class Thermostat implements IThermostat {
     @Override
     @Scheduled(cron = "${thermostat.schedule}")
     public boolean checkTemperature() {
-        mediumT = night() ? thermostatCurrentConfig.getTNight() : thermostatCurrentConfig.getTDay();
+        mediumT = currentTemperature();
 
-        SensorValue sensorValue = temperatureMonitor.getSensorValueMap()
-                .get(thermostatCurrentConfig.getSensor());
+        SensorValue sensorValue = temperatureMonitor.getSensorValueMap().get(thermostatCurrentConfig.getSensor());
         if (sensorValue != null) {
 
             float currentT = (float) sensorValue.getValue();
@@ -118,8 +117,11 @@ public class Thermostat implements IThermostat {
         if (temperature != null) {
             ThermostatConfig clone;
             clone = thermostatCurrentConfig.clone();
-            clone.setTNight(temperature);
-            clone.setTDay(temperature);
+            if(night()){
+                clone.setTNight(temperature);
+            } else {
+                clone.setTDay(temperature);
+            }
             thermostatCurrentConfig = clone;
         }
         log.info("{}> thermostat is ON: {}", thermostatCurrentConfig.getName(), temperature);
@@ -128,7 +130,7 @@ public class Thermostat implements IThermostat {
 
     @Override
     public float currentTemperature() {
-        return max(thermostatCurrentConfig.getTDay(), thermostatCurrentConfig.getTNight());
+        return night() ? thermostatCurrentConfig.getTNight() : thermostatCurrentConfig.getTDay();
     }
 
     @Override

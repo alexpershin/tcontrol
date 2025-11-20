@@ -95,10 +95,9 @@ public class SensorServiceImpl implements ISensorService {
                                 new SensorServiceException(MessageFormat.format("Thermostat not found by pin: {0}",
                                         joining(temperatures))))
                 )
-                .reduce((a, b) -> a * b).orElseThrow(() ->
+                .reduce((a, b) -> a | b).orElseThrow(() ->
                         new SensorServiceException(MessageFormat.format("No thermostat activated: {0}",
                                 joining(temperatures))));
-
     }
 
     private static String joining(List<ThermostatTemperature> temperatures) {
@@ -108,9 +107,7 @@ public class SensorServiceImpl implements ISensorService {
     @Override
     public List<ThermostatTemperature> thermostatCurrentTemperature(int sensorId) {
         return thermostats(sensorId).stream()
-                .map(t -> {
-                    return new ThermostatTemperature(t.getCode(), t.getName(), t.currentTemperature());
-                })
+                .map(t -> new ThermostatTemperature(t.getCode(), t.getName(), t.currentTemperature()))
                 .collect(Collectors.toList());
     }
 

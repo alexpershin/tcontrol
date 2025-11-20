@@ -215,6 +215,7 @@ thermostats-config:
       sensor: 28-0417019b15ff
       relayPins:
         - 'GPIO 1'
+        - 'GPIO 2'
     - id: 5
       code: thermostat-my-room
       name: 'Термостат комната Алексея'

@@ -184,11 +184,11 @@ thermostats-config:
     - id: 2
       code: thermostat-gas
       name: 'Термостат коридор'
-      tDay: 22.0
-      tNight: 19.0
+      tDay: 21.5
+      tNight: 18.5
       delta: 0.3
       nightBegin: 22:00:00
-      nightEnd: 8:00:00
+      nightEnd: 9:00:00
       sensor: 28-000002c7c3ee
       relayPins:
         - 'GPIO 1'
@@ -200,7 +200,7 @@ thermostats-config:
       tNight: 6.0
       delta: 0.5
       nightBegin: 21:00:00
-      nightEnd: 8:00:00
+      nightEnd: 9:00:00
       sensor: 28-0417019b15ff
       relayPins:
         - 'GPIO 2'
@@ -211,7 +211,7 @@ thermostats-config:
       tNight: 4.0
       delta: 0.3
       nightBegin: 22:00:00
-      nightEnd: 7:00:00
+      nightEnd: 9:00:00
       sensor: 28-0417019b15ff
       relayPins:
         - 'GPIO 1'
@@ -219,11 +219,11 @@ thermostats-config:
     - id: 5
       code: thermostat-my-room
       name: 'Термостат комната Алексея'
-      tDay: 23.0
-      tNight: 20.0
+      tDay: 22.0
+      tNight: 19.0
       delta: 0.3
       nightBegin: 22:00:00
-      nightEnd: 8:00:00
+      nightEnd: 9:00:00
       sensor: 28-0317017a6aff
       relayPins:
         - 'GPIO 3'
@@ -235,7 +235,7 @@ thermostats-config:
       tNight: 38.5
       delta: 4.0
       nightBegin: 23:10:00
-      nightEnd: 7:10:00
+      nightEnd: 9:10:00
       sensor: 28-031701e06cff
       relayPins:
         - 'GPIO 6'

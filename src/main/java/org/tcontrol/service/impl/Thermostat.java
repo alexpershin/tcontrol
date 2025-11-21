@@ -101,11 +101,15 @@ public class Thermostat implements IThermostat {
                 }
             });
 
-            log.info("{}> Checked temperature between({},{}), current:{}, state:{}",
-                    thermostatCurrentConfig.getName(), mediumT - delta, mediumT + delta, currentT, heatingOn);
+            log.info("{}> Checked temperature [{},{}], current:{}, state:{}",
+                    thermostatCurrentConfig.getCode(), mediumT - delta, mediumT + delta, currentT, heatingOn);
         } else {
-            if (firstTime) log.info("no sensor value yet");
-            else log.error("temperature sensor value is null");
+            if (firstTime) {
+                log.info("no sensor value yet");
+            }
+            else {
+                log.error("temperature sensor value is null");
+            }
         }
         firstTime = false;
         return heatingOn;
@@ -124,7 +128,7 @@ public class Thermostat implements IThermostat {
             }
             thermostatCurrentConfig = clone;
         }
-        log.info("{}> thermostat is ON: {}", thermostatCurrentConfig.getName(), temperature);
+        log.info("{}> thermostat is ON: {}", thermostatCurrentConfig.getCode(), temperature);
         return this;
     }
 
@@ -137,7 +141,7 @@ public class Thermostat implements IThermostat {
     public Thermostat off() {
         this.on = false;
         thermostatCurrentConfig = thermostatConfig.clone();
-        log.info("{}> thermostat is back OFF", thermostatCurrentConfig.getName());
+        log.info("{}> thermostat setting returned to default", thermostatCurrentConfig.getCode());
         return this;
     }
 

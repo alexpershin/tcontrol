@@ -44,7 +44,7 @@ public class PinFactoryImpl implements IPinFactory {
             pins.put(controlPin.getName(), gpioPinDigitalOutput);
             log.info("Initializing output pin (" + controlPin.getName() + ") COMPLETE");
         }
-        log.info("Output pin provided: " + gpioPinDigitalOutput.getName());
+        log.info("Output pin returned: {}", gpioPinDigitalOutput.getName());
 
         return gpioPinDigitalOutput;
     }

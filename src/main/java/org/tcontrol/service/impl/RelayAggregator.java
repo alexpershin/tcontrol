@@ -33,16 +33,16 @@ public class RelayAggregator implements IRelayAggregator {
     @Override
     public PinState turnOnRelay(Pin controlPin) {
         Integer n = relayAggregatorConfig.getPinAggregates().get(controlPin.getName());
-        if (n == null) {
-            log.info("delegated turnOnRelay: {}", controlPin.getName());
+        if (n == null || n == 1) {
+            log.info("delegate turn on: {}", controlPin.getName());
             return relayHandler.turnOnRelay(controlPin);
         } else {
             List<Boolean> pinStates = currentState
                     .computeIfAbsent(controlPin.getName(), k -> new ArrayList<>());
             pinStates.add(true);
-            log.info("aggregating turnOnRelay: {}  size {}", controlPin.getName(), pinStates.size());
+            log.info("aggregate turn on: {}  size {}", controlPin.getName(), pinStates.size());
             if (pinStates.size() == n) {
-                log.info("aggregated delegation turnOnRelay: {}", controlPin.getName());
+                log.info("aggregated delegate turn on: {}", controlPin.getName());
                 return relayHandler.turnOnRelay(controlPin);
             }
         }

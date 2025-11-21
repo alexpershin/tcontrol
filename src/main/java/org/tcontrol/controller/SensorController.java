@@ -37,7 +37,7 @@ import static java.net.HttpURLConnection.HTTP_OK;
 @RequestMapping("tcontrol/api")
 @Logging
 public class SensorController {
-    private final ISensorService ISensorService;
+    private final ISensorService sensorService;
     private final SensorValueMapper sensorValueMapper;
     private final ThermostatCurrentTemperatureMapper thermostatCurrentTemperatureMapper;
 
@@ -73,7 +73,7 @@ public class SensorController {
         SensorValueDto.SensorsResult result = new SensorValueDto.SensorsResult();
         Collection<Sensor> sensors;
         try {
-            sensors = ISensorService.getUserSensors(CURRENT_USER_ID).values();
+            sensors = sensorService.getUserSensors(CURRENT_USER_ID).values();
         } catch (SensorServiceException ex) {
             throw buildWebApplicationException(ex);
         }
@@ -102,7 +102,7 @@ public class SensorController {
                             content = @Content(mediaType = "application/json"))})
     public SensorValuesResult getSensorValues() throws SensorServiceException {
         log.info("get values");
-        final List<SensorValue> values = ISensorService.getCurrentValues(CURRENT_USER_ID, null);
+        final List<SensorValue> values = sensorService.getCurrentValues(CURRENT_USER_ID, null);
 
         final SensorValuesResult result = new SensorValuesResult();
         result.setTime(System.currentTimeMillis());
@@ -137,7 +137,7 @@ public class SensorController {
     )
     public SensorValuesResult getSensorPrevValues(@RequestParam(name = "sensorId") Integer sensorId) throws SensorServiceException {
         SensorValuesResult result = new SensorValuesResult();
-        List<SensorValue> values = ISensorService.getPrevSensorValues(CURRENT_USER_ID, null, sensorId);
+        List<SensorValue> values = sensorService.getPrevSensorValues(CURRENT_USER_ID, null, sensorId);
         List<SensorValueDto> webValues = sensorValueMapper.map(values);
         result.setValues(webValues.toArray(new SensorValueDto[]{}));
         return result;
@@ -158,7 +158,7 @@ public class SensorController {
     public ResponseEntity<StartHeatingResult> startProcess(@RequestBody final StartHeatingRequest processChangeRequest)
             throws InterruptedException {
         Thread.sleep(1000);
-        int result = ISensorService.changeThermostatOptions(thermostatCurrentTemperatureMapper.mapToModel(processChangeRequest.getNewTemperatures()));
+        int result = sensorService.changeThermostatOptions(thermostatCurrentTemperatureMapper.mapToModel(processChangeRequest.getNewTemperatures()));
         return new ResponseEntity<>(new StartHeatingResult(result, "ok", System.currentTimeMillis()),
                 HttpStatus.OK);
     }
@@ -177,8 +177,26 @@ public class SensorController {
         if (sensorId == null || sensorId < 0) {
             throw new IllegalArgumentException("sensorId has to be not null and positive number");
         }
-        List<ThermostatTemperatureDto> result = thermostatCurrentTemperatureMapper.mapToDto(ISensorService.thermostatCurrentTemperature(sensorId));
+        List<ThermostatTemperatureDto> result = thermostatCurrentTemperatureMapper.mapToDto(sensorService.thermostatCurrentTemperature(sensorId));
         return new ResponseEntity<>(result, HttpStatus.OK);
+    }
+
+    @PostMapping("/thermostat_rollback")
+    @CrossOrigin(origins = {"http://localhost:8090", "http://localhost"})
+    @Operation(summary = "Текущая температура",
+            description = "Текущая температура",
+            responses = {@ApiResponse(responseCode = "" + HTTP_BAD_REQUEST, content = @Content(mediaType = "application/json"))
+            },
+            requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
+                    description = "Тело запроса для старта отопления", required = true)
+    )
+    public ResponseEntity<Void> thermostatRollback(@RequestParam(name = "sensorId") Integer sensorId) {
+        log.info("thermostats rollback for sensor: {}", sensorId);
+        if (sensorId == null || sensorId < 0) {
+            throw new IllegalArgumentException("sensorId has to be not null and positive number");
+        }
+        sensorService.thermostatsRollback(sensorId);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     private ResponseStatusException buildWebApplicationException(SensorServiceException ex) {

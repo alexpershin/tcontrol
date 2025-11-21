@@ -16,7 +16,7 @@ public class GasOnCommand implements ISMSCommand {
     @Override
     public CommandResult run() {
 
-        thermostatGas.on(TEMPERATURE_MAX_ON);
+        thermostatGas.temperature(TEMPERATURE_MAX_ON);
 
         log.info("Executed");
         return new CommandResult(STATUS.OK, "Gas thermostat is on");

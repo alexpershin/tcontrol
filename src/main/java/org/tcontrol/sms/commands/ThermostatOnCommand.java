@@ -19,7 +19,7 @@ public class ThermostatOnCommand implements ISMSCommand {
     public CommandResult run() {
 
         IThermostat thermostatElectro = dynamicThermostats.get("thermostat-electro");
-        thermostatElectro.on(TEMPERATURE_MAX_ON);
+        thermostatElectro.temperature(TEMPERATURE_MAX_ON);
 
         log.info("Executed");
         return new CommandResult(STATUS.OK, "Thermostat is on");

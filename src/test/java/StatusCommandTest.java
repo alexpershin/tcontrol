@@ -212,8 +212,8 @@ public class StatusCommandTest {
         thermostat3.checkTemperature();
 
         CommandResult result = statusCommand.run();
-        assertTrue(result.getMessage().contains("termo1(12.0): ON, heating: ON"));
-        assertTrue(result.getMessage().contains("termo2(18.0): ON, heating: ON"));
+        assert(result.getMessage().contains("termo1(12.0): Modified, heating: ON"));
+        assertTrue(result.getMessage().contains("termo2(18.0): Modified, heating: ON"));
         assertTrue(result.getMessage().contains("socket: 220.1V"));
     }
 }

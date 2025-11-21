@@ -37,21 +37,21 @@ public class HeatingOnOffCommandsTest {
         HeatingOnCommand heatingOnCommand = new HeatingOnCommand(thermostat);
         ISMSCommand heatingOffCommand = new HeatingOffCommand(thermostat);
 
-        assertTrue(thermostat.isOn());
+        assertTrue(thermostat.isChanged());
         assertFalse(thermostat.isHeatingOn());
 
         CommandResult result = heatingOnCommand.run();
         assertNotNull(result);
-        assertTrue(thermostat.isOn());
+        assertTrue(thermostat.isChanged());
         assertFalse(thermostat.isHeatingOn());
 
         thermostat.checkTemperature();
 
-        assertTrue(thermostat.isOn());
+        assertTrue(thermostat.isChanged());
         assertTrue(thermostat.isHeatingOn());
 
         heatingOffCommand.run();
-        assertFalse(thermostat.isOn());
+        assertFalse(thermostat.isChanged());
     }
 
     @Test
@@ -59,14 +59,14 @@ public class HeatingOnOffCommandsTest {
 
         HeatingOnCommand heatingOnCommand = new HeatingOnCommand(thermostat);
 
-        thermostat.off();
+        thermostat.rollback();
         thermostat.checkTemperature();
 
-        assertFalse(thermostat.isOn());
+        assertFalse(thermostat.isChanged());
 
         CommandResult result = heatingOnCommand.run();
         assertNotNull(result);
 
-        assertTrue(thermostat.isOn());
+        assertTrue(thermostat.isChanged());
     }
 }

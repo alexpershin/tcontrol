@@ -14,7 +14,7 @@ public class GasOffCommand implements ISMSCommand {
   @Override
   public CommandResult run() {
 
-    thermostatGas.off();
+    thermostatGas.rollback();
 
     log.info("Executed");
     return new CommandResult(STATUS.OK, "Gas thermostat is off");

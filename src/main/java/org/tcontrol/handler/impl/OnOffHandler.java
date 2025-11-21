@@ -40,7 +40,7 @@ public class OnOffHandler implements IOnOffHandler {
                 .filter(Objects::nonNull)
                 .map(PinState::isHigh).map(e->{
                     if(e){
-                        thermostat.off();
+                        thermostat.rollback();
                     }
                     return e;
                 })
@@ -54,7 +54,7 @@ public class OnOffHandler implements IOnOffHandler {
                 .map(PinState::isHigh)
                 .map(e->{
                     if(e){
-                        thermostat.off();
+                        thermostat.rollback();
                     }
                     return e;
                 })

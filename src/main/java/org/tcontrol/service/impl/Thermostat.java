@@ -20,7 +20,6 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
 
-import static java.lang.Float.max;
 import static org.tcontrol.config.props.ThermostatsConfig.ThermostatConfig;
 
 @RequiredArgsConstructor
@@ -56,7 +55,7 @@ public class Thermostat implements IThermostat {
     boolean heatingOn;
 
     @Getter
-    boolean on = true;
+    boolean changed = true;
 
     @Getter
     float mediumT;
@@ -116,8 +115,8 @@ public class Thermostat implements IThermostat {
     }
 
     @Override
-    public Thermostat on(Float temperature) {
-        this.on = true;
+    public Thermostat temperature(Float temperature) {
+        this.changed = true;
         if (temperature != null) {
             ThermostatConfig clone;
             clone = thermostatCurrentConfig.clone();
@@ -138,8 +137,8 @@ public class Thermostat implements IThermostat {
     }
 
     @Override
-    public Thermostat off() {
-        this.on = false;
+    public Thermostat rollback() {
+        this.changed = false;
         thermostatCurrentConfig = thermostatConfig.clone();
         log.info("{}> thermostat setting returned to default", thermostatCurrentConfig.getCode());
         return this;

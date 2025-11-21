@@ -85,7 +85,7 @@ public class StatusCommand implements ISMSCommand {
         res = Optional.of(
                 res.orElse("")
                         + "\n" + thermostat.getName() + "(" + thermostat.getMediumT() + "): "
-                        + (thermostat.isOn() ? "ON" : "OFF") + ", heating:" + resultString);
+                        + (thermostat.isChanged() ? "Modified" : "Intact") + ", heating:" + resultString);
         return res;
     }
 }

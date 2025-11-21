@@ -90,7 +90,7 @@ public class SensorServiceImpl implements ISensorService {
         return temperatures.stream()
                 .map(temp -> dynamicThermostats.values().stream()
                         .filter(t -> t.getCode().equals(temp.getThermostatCode())).findFirst()
-                        .map(t -> t.on(temp.getTemperature()).checkTemperature() ? 1 : 0)
+                        .map(t -> t.temperature(temp.getTemperature()).checkTemperature() ? 1 : 0)
                         .orElseThrow(() ->
                                 new SensorServiceException(MessageFormat.format("Thermostat not found by pin: {0}",
                                         joining(temperatures))))
@@ -109,6 +109,11 @@ public class SensorServiceImpl implements ISensorService {
         return thermostats(sensorId).stream()
                 .map(t -> new ThermostatTemperature(t.getCode(), t.getName(), t.currentTemperature()))
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public void thermostatsRollback(Integer sensorId) {
+        thermostats(sensorId).forEach(IThermostat::rollback);
     }
 
     private List<IThermostat> thermostats(int sensorId) {

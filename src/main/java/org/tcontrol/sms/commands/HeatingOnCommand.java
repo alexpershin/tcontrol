@@ -15,7 +15,7 @@ public class HeatingOnCommand implements ISMSCommand {
 
     @Override
     public CommandResult run() {
-        thermostatElectro.on(TEMPERATURE_MAX_ON);
+        thermostatElectro.temperature(TEMPERATURE_MAX_ON);
 
         log.info("Executed");
         return new CommandResult(STATUS.OK, "heating is on");

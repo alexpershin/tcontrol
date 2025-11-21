@@ -10,15 +10,15 @@ public interface IThermostat {
 
   boolean isHeatingOn();
 
-  boolean isOn();
+  boolean isChanged();
 
   float getMediumT();
 
-  Thermostat on(Float temperature) ;
+  Thermostat temperature(Float temperature) ;
 
   float currentTemperature();
 
-  Thermostat off();
+  Thermostat rollback();
 
   List<String> getHeatingPins();
 

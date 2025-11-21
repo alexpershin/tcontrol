@@ -137,8 +137,15 @@ public interface ISensorService {
     /**
      * Получение текущей температуры термостата для отображения на фронте.
      *
-     * @param sensorId сенсор
+     * @param sensorId сенсор;
      * @return temperature;
      */
     List<ThermostatTemperature> thermostatCurrentTemperature(int sensorId);
+
+    /**
+     * Откат термостата на дефолтные настройки.
+     *
+     * @param sensorId сенсор;
+     */
+    void thermostatsRollback(Integer sensorId);
 }

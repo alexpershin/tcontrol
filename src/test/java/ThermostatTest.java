@@ -219,7 +219,7 @@ public class ThermostatTest {
     }
 
     @Test
-    public void testOnOff(){
+    public void testTemperatureRollback(){
         when(timer.getCurrentTime()).thenReturn(LocalDateTime.of(LocalDate.now(), LocalTime.of(3, 0)));
 
         Pin heatingPin = RaspiPin.getPinByName(thermostatConfig.getRelayPins().get(0));
@@ -229,26 +229,26 @@ public class ThermostatTest {
         assertTrue(thermostat.isHeatingOn());
         assertTrue(relayHandler.getPinState(heatingPin).isHigh());
 
-        thermostat.on(40.0f);
+        thermostat.temperature(40.0f);
         thermostat.checkTemperature();
         assertTrue(relayHandler.getPinState(heatingPin).isHigh());
         assertEquals(40.0, thermostat.getMediumT());
 
-        thermostat.on(10.0f);
+        thermostat.temperature(10.0f);
         thermostat.checkTemperature();
         assertFalse(relayHandler.getPinState(heatingPin).isHigh());
 
-        thermostat.off();
+        thermostat.rollback();
         thermostat.checkTemperature();
         assertTrue(relayHandler.getPinState(heatingPin).isHigh());
         assertEquals(16.0, thermostat.getMediumT());
 
-        thermostat.on(40.0f);
+        thermostat.temperature(40.0f);
         thermostat.checkTemperature();
         assertTrue(relayHandler.getPinState(heatingPin).isHigh());
         assertEquals(40.0, thermostat.getMediumT());
 
-        thermostat.off();
+        thermostat.rollback();
         thermostat.checkTemperature();
         assertTrue(relayHandler.getPinState(heatingPin).isHigh());
         assertEquals(16.0, thermostat.getMediumT());

@@ -13,7 +13,7 @@ public class HeatingOffCommand implements ISMSCommand {
     @Override
     public CommandResult run() {
 
-        thermostatElectro.off();
+        thermostatElectro.rollback();
         log.info("Executed");
         return new CommandResult(STATUS.OK,"heating is on");
     }

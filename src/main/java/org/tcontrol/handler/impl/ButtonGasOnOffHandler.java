@@ -31,12 +31,12 @@ public class ButtonGasOnOffHandler {
                 // display output
                 log.info("BUTTON state: {}", value.isHigh());
                 if(value.isLow()){
-                    boolean thermostatNewState = !thermostatGas.isOn();
+                    boolean thermostatNewState = !thermostatGas.isChanged();
                     log.info("Thermostat new state: {}", thermostatNewState);
                     if(thermostatNewState)
-                        thermostatGas.on(TEMPERATURE_MAX_ON);
+                        thermostatGas.temperature(TEMPERATURE_MAX_ON);
                     else
-                        thermostatGas.off();
+                        thermostatGas.rollback();
                 }
             };
 

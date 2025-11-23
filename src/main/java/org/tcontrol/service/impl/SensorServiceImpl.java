@@ -96,12 +96,14 @@ public class SensorServiceImpl implements ISensorService {
                                         joining(temperatures))))
                 )
                 .reduce((a, b) -> a | b).orElseThrow(() ->
-                        new SensorServiceException(MessageFormat.format("No thermostat activated: {0}",
+                        new SensorServiceException(MessageFormat.format("No thermostat processed: {0}",
                                 joining(temperatures))));
     }
 
     private static String joining(List<ThermostatTemperature> temperatures) {
-        return temperatures.stream().map(ThermostatTemperature::getThermostatName).collect(Collectors.joining("'"));
+        return temperatures.stream()
+                .map(ThermostatTemperature::getThermostatName)
+                .collect(Collectors.joining("'"));
     }
 
     @Override
@@ -112,8 +114,14 @@ public class SensorServiceImpl implements ISensorService {
     }
 
     @Override
-    public void thermostatsRollback(Integer sensorId) {
-        thermostats(sensorId).forEach(IThermostat::rollback);
+    public Boolean thermostatsRollback(Integer sensorId) {
+        return thermostats(sensorId).stream()
+                .map(thermostat -> thermostat.rollback().checkTemperature()? 0: 1)
+                .reduce((a, b) -> a | b)
+                .map(r-> r == 1)
+                .orElseThrow(() ->
+                        new SensorServiceException(MessageFormat.format("No thermostat found: {0}",
+                                sensorId)));
     }
 
     private List<IThermostat> thermostats(int sensorId) {

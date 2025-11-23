@@ -181,7 +181,7 @@ public class SensorController {
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
-    @PostMapping("/thermostat_rollback")
+    @PutMapping("/thermostat_rollback")
     @CrossOrigin(origins = {"http://localhost:8090", "http://localhost"})
     @Operation(summary = "Текущая температура",
             description = "Текущая температура",
@@ -190,13 +190,13 @@ public class SensorController {
             requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
                     description = "Тело запроса для старта отопления", required = true)
     )
-    public ResponseEntity<Void> thermostatRollback(@RequestParam(name = "sensorId") Integer sensorId) {
+    public ResponseEntity<Boolean> thermostatRollback(@RequestParam(name = "sensorId") Integer sensorId) throws InterruptedException {
         log.info("thermostats rollback for sensor: {}", sensorId);
+        Thread.sleep(1000);
         if (sensorId == null || sensorId < 0) {
             throw new IllegalArgumentException("sensorId has to be not null and positive number");
         }
-        sensorService.thermostatsRollback(sensorId);
-        return new ResponseEntity<>(HttpStatus.OK);
+        return new ResponseEntity<>(sensorService.thermostatsRollback(sensorId), HttpStatus.OK);
     }
 
     private ResponseStatusException buildWebApplicationException(SensorServiceException ex) {

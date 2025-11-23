@@ -147,5 +147,5 @@ public interface ISensorService {
      *
      * @param sensorId сенсор;
      */
-    void thermostatsRollback(Integer sensorId);
+    Boolean thermostatsRollback(Integer sensorId);
 }

@@ -190,13 +190,15 @@ public class SensorController {
             requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
                     description = "Тело запроса для старта отопления", required = true)
     )
-    public ResponseEntity<Boolean> thermostatRollback(@RequestParam(name = "sensorId") Integer sensorId) throws InterruptedException {
+    public ResponseEntity<StartHeatingResult> thermostatRollback(@RequestParam(name = "sensorId") Integer sensorId) throws InterruptedException {
         log.info("thermostats rollback for sensor: {}", sensorId);
         Thread.sleep(1000);
         if (sensorId == null || sensorId < 0) {
             throw new IllegalArgumentException("sensorId has to be not null and positive number");
         }
-        return new ResponseEntity<>(sensorService.thermostatsRollback(sensorId), HttpStatus.OK);
+        int result = sensorService.thermostatsRollback(sensorId);
+        return new ResponseEntity<>(new StartHeatingResult(result, "ok", System.currentTimeMillis()),
+                HttpStatus.OK);
     }
 
     private ResponseStatusException buildWebApplicationException(SensorServiceException ex) {

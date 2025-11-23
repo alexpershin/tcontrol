@@ -146,6 +146,7 @@ public interface ISensorService {
      * Откат термостата на дефолтные настройки.
      *
      * @param sensorId сенсор;
+     * @return 0/1 if one of thermostats stared;
      */
-    Boolean thermostatsRollback(Integer sensorId);
+    int thermostatsRollback(Integer sensorId);
 }

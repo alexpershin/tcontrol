@@ -114,11 +114,10 @@ public class SensorServiceImpl implements ISensorService {
     }
 
     @Override
-    public Boolean thermostatsRollback(Integer sensorId) {
+    public int thermostatsRollback(Integer sensorId) {
         return thermostats(sensorId).stream()
-                .map(thermostat -> thermostat.rollback().checkTemperature()? 0: 1)
+                .map(thermostat -> thermostat.rollback().checkTemperature()? 1: 0)
                 .reduce((a, b) -> a | b)
-                .map(r-> r == 1)
                 .orElseThrow(() ->
                         new SensorServiceException(MessageFormat.format("No thermostat found: {0}",
                                 sensorId)));

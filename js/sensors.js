@@ -302,9 +302,13 @@ function startHeatingDialog(sensorElementId, sensorValue, currentTemperatures){
     const startHeatingDialog = document.getElementById('start-heating');
 
     var applyBtn = document.getElementById('start-heating-apply-btn');
+    var rollbackBtn = document.getElementById('start-heating-rollback-btn')
+
     //remove previous listeners
-    const clone = applyBtn.cloneNode(true);
-    applyBtn.parentNode.replaceChild(clone, applyBtn);
+    const applyButtonClone = applyBtn.cloneNode(true);
+    applyBtn.parentNode.replaceChild(applyButtonClone, applyBtn);
+    const rollbackButtonClone = rollbackBtn.cloneNode(true);
+    rollbackBtn.parentNode.replaceChild(rollbackButtonClone, rollbackBtn);
 
     const startHeatingDialogRow = document.getElementById("thermostat-table-row");
 
@@ -437,6 +441,7 @@ function setupDialogs(){
 }
 
 function showSensorLoader(sensorElementId){
+   console.log('sensorElementId: ' + sensorElementId)
    $(sensorElementId + ' .sensor_item_body .sensor-loader').css('visibility', 'visible')
    $('.sensor_item').find('.sensor_item_body').css('pointer-events', 'none')
 }
@@ -506,11 +511,6 @@ function rollbackHeating(sensorElementId, sensorValue, currentTemperatures){
     let rollbackUrl = window.location.protocol
         + '//' + window.location.host
         + '/tcontrol/api/thermostat_rollback?sensorId='  + sensorValue.sensorId;
-
-   var changeThermostatTemperatureRequest = {
-        sensorId: sensorValue.sensorId,
-        newTemperatures: currentTemperatures
-    }
 
     closeHeatingDialog()
 

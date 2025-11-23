@@ -162,7 +162,7 @@ function renderSensor(sensorElementId, sensor, value) {
 }
 
 function setSensorTime(sensorElementId, timestamp){
-    if (typeof timestamp !== 'undefined'){
+    if (timestamp !== null){
 
            const dateOpts = {
                hour12: false, // Set to false to use 24-hour format
@@ -181,7 +181,7 @@ function setSensorTime(sensorElementId, timestamp){
 
 function temperatureSensorRenderer(sensorElementId, sensorValue) {
     console.log('sensorValue: ' + sensorValue);
-    var resValue = typeof sensorValue.value !== 'undefined' ? sensorValue.value.toFixed(1) + '\xB0':'--\xB0'
+    var resValue = sensorValue.value == null ? '--\xB0' : sensorValue.value.toFixed(1) + '\xB0'
     $(sensorElementId + ' .sensor_item_body .sensor_value').text(resValue)
     var sensorBody = $(sensorElementId + ' .sensor_item_body')
     const background = sensorBackgroundCalc(sensorValue)
@@ -201,8 +201,8 @@ function fillMinMaxValue(sensorElementId, sensorValue) {
     var maxValue = $(sensorElementId + ' .sensor_item_body .sensor_max_value')
     var minTime = $(sensorElementId + ' .sensor_item_body .sensor_min_time')
     var maxTime = $(sensorElementId + ' .sensor_item_body .sensor_max_time')
-    minValue.text(typeof sensorValue.minValue !== 'undefined' ? sensorValue.minValue.toFixed(1):'--')
-    maxValue.text(typeof sensorValue.maxValue !== 'undefined' ? sensorValue.maxValue.toFixed(1):'--')
+    minValue.text(sensorValue.minValue == null ? '--': sensorValue.minValue.toFixed(1))
+    maxValue.text(sensorValue.maxValue == null ? '--': sensorValue.maxValue.toFixed(1))
 
     const timeFormatOptions = {
         hour12: false, // Set to false to use 24-hour format
@@ -251,7 +251,7 @@ function sensorBackgroundCalc(value) {
 }
 
 function voltageSensorRenderer(sensorElementId, value) {
-    var resValue = typeof value.value !== 'undefined' ? value.value + ' V' : '--' ;
+    var resValue = value.value == null ? '--' : value.value + ' V';
     $(sensorElementId + ' .sensor_item_body .sensor_value').text(resValue);
     sensorBody = $(sensorElementId + ' .sensor_item_body');
     sensorBody.css('background', sensorBackgroundCalc(value));
@@ -325,6 +325,7 @@ function startHeatingDialog(sensorElementId, sensorValue, currentTemperatures){
 
     applyBtn = document.getElementById('start-heating-apply-btn')
     closeBtn = document.getElementById('start-heating-close-btn')
+    rollbackBtn = document.getElementById('start-heating-rollback-btn')
     const titleComponent = document.getElementById('start-heating-dialog-title')
     titleComponent.textContent = $(sensorElementId + ' #sensor_title').text()
 
@@ -340,6 +341,9 @@ function startHeatingDialog(sensorElementId, sensorValue, currentTemperatures){
     })
     closeBtn.addEventListener('click', () => {
          closeHeatingDialog()
+    })
+    rollbackBtn.addEventListener('click', () => {
+        rollbackHeating(sensorElementId, sensorValue, currentTemperatures)
     })
 
     showHeatingDialog()
@@ -491,6 +495,55 @@ function startHeating(sensorElementId, sensorValue, currentTemperatures){//senso
         }
     });
 }
+
+function rollbackHeating(sensorElementId, sensorValue, currentTemperatures){
+    const sensorElement = $(sensorElementId + ' .sensor_item_body .sensor_value')
+    const startHeatingDialog = document.getElementById('start-heating');
+
+    const popUpElement = document.getElementById("pop-up");
+    popUpElement.style.visibility='visible';
+
+    let rollbackUrl = window.location.protocol
+        + '//' + window.location.host
+        + '/tcontrol/api/thermostat_rollback?sensorId='  + sensorValue.sensorId;
+
+   var changeThermostatTemperatureRequest = {
+        sensorId: sensorValue.sensorId,
+        newTemperatures: currentTemperatures
+    }
+
+    closeHeatingDialog()
+
+    $.ajax({
+        type: 'PUT',
+        dataType: 'json',
+        contentType: 'application/json',
+        data: sensorValue.sensorId,
+        url: rollbackUrl,
+        beforeSend: function () {
+            showSensorLoader(sensorElementId)
+        },
+        success: function (data) {
+            console.log('rollback success: ' + data.value)
+            sensorValue.value = data.value;
+            const backgroundCalcResult = onOffSensorBackgroundCalc(sensorValue)
+            sensorElement.text(backgroundCalcResult.status);
+            const sensorBody = $(sensorElementId + ' .sensor_item_body')
+            sensorBody.css('background', backgroundCalcResult.background);
+            setSensorTime(sensorElementId, data.timestamp)
+        },
+        error: function (jqXHR, textStatus, errorThrown) {
+            hideSensorLoader(sensorElementId)
+            popUpElement.style.visibility='hidden'
+            alert("Error try again later: " + textStatus)
+        },
+        complete: function () {
+            hideSensorLoader(sensorElementId)
+            popUpElement.style.visibility='hidden'
+        }
+    });
+}
+
 
 function validateSensorTemperature(input){
     if(input.value<4 || input.value>30){

@@ -61,13 +61,32 @@
     display: block;
 }
 
+#button {
+     line-height: 12px;
+     width: 18px;
+     font-size: 8pt;
+     font-family: tahoma;
+     margin-top: 1px;
+     margin-right: 2px;
+     position:absolute;
+     top:0;
+     right:0;
+ }
 .close-button {
+  line-height: 12px;
+  width: 18px;
+  font-size: 8pt;
+  font-family: tahoma;
+  margin-top: 1px;
+  margin-right: 2px;
   position: absolute;
   right: 32px;
   top: 32px;
   width: 32px;
   height: 32px;
   opacity: 0.3;
+  top:0;
+  right:0;
 }
 .close-button:hover {
   opacity: 1;

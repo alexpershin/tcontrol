@@ -193,6 +193,8 @@ function temperatureSensorRenderer(sensorElementId, sensorValue) {
     gradient.css('color', textColor.color)
 
     fillMinMaxValue(sensorElementId, sensorValue)
+
+    setupPlot(sensorElementId,sensorValue)
 }
 
 function fillMinMaxValue(sensorElementId, sensorValue) {
@@ -256,6 +258,7 @@ function voltageSensorRenderer(sensorElementId, value) {
     sensorBody = $(sensorElementId + ' .sensor_item_body');
     sensorBody.css('background', sensorBackgroundCalc(value));
     fillMinMaxValue(sensorElementId, value)
+    setupPlot(sensorElementId, value)
 }
 
 function onOffSensorRenderer(sensorElementId, sensorValue) {
@@ -264,7 +267,7 @@ function onOffSensorRenderer(sensorElementId, sensorValue) {
     const sensorElement = $(sensorElementId + ' .sensor_item_body .sensor_value')
     const sensorBody = $(sensorElementId + ' .sensor_item_body')
 
-    sensorBody.click(function (ev) {
+    sensorElement.click(function (ev) {
 
         const currentTemperatureURL =
             window.location.protocol
@@ -293,9 +296,43 @@ function onOffSensorRenderer(sensorElementId, sensorValue) {
             });
     })
 
+    setupPlot(sensorElementId,sensorValue)
+
     sensorBody.css('background', backgroundCalcResult.background);
     sensorElement.text(backgroundCalcResult.status)
     sensorBody.css('border-radius', 57.5);
+}
+
+function setupPlot(sensorElementId, sensorValue) {
+ const sensorPlot = $(sensorElementId + ' .sensor_item_body .sensor_indicator_panel .sensor_plot')
+    sensorPlot.click(function (ev) {
+
+        const lastValueURL =
+            window.location.protocol
+            + "//" + window.location.host
+            + ":/tcontrol/api/sensor_previous_values?sensorId="
+            + sensorValue.sensorId
+
+        $.ajax({
+                type: 'POST',
+                dataType: 'json',
+                contentType: 'application/json',
+                url: lastValueURL,
+                beforeSend: function () {
+                    showSensorLoader(sensorElementId)
+                },
+                success: function (data) {
+                     startPlotDialog(sensorElementId, sensorValue, data)
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    hideSensorLoader(sensorElementId)
+                    alert("Error try again later: " + textStatus)
+                },
+                complete: function () {
+                    hideSensorLoader(sensorElementId)
+                }
+            });
+    })
 }
 
 function startHeatingDialog(sensorElementId, sensorValue, currentTemperatures){
@@ -353,6 +390,69 @@ function startHeatingDialog(sensorElementId, sensorValue, currentTemperatures){
     showHeatingDialog()
 }
 
+function startPlotDialog(sensorElementId, sensorValue, data){
+     closeBtn = document.getElementById('plot-dialog-close-btn')
+     closeBtn.addEventListener('click', () => {
+         closePlotDialog()
+     })
+
+     var trace1 =
+       {
+         type: 'scatter',
+         mode: "lines",
+         x: ['2013-10-04 22:23:00', '2013-11-06 22:23:00', '2013-12-04 22:23:00', '2013-12-10 22:23:00', '2013-12-13 22:23:00'],
+         y: [1, 3, 6, 1.5, 3.14],
+         line: {color: 'red'},
+         name: 'Комната'
+       }
+     ;
+
+     var trace2 =
+       {
+         type: 'scatter',
+         line: {shape: 'spline'},
+         x: ['2013-10-04 22:23:00', '2013-11-06 22:23:00', '2013-12-04 22:23:00', '2013-12-10 22:23:00', '2013-12-13 22:23:00'],
+         y: [4, 8, 11, 9, 6],
+         line: {color: 'blue'},
+         name: 'Коридор',
+         line: {shape: 'spline'},
+       }
+     ;
+
+     var trace3 =
+       {
+         type: 'scatter',
+         mode: "lines",
+         x: ['2013-10-04 22:23:00', '2013-11-06 22:23:00', '2013-12-04 22:23:00', '2013-12-10 22:23:00', '2013-12-13 22:23:00'],
+         y: [0, 1, 1, 0, 1],
+         line: {color: 'blue'},
+         name: 'Котел',
+         line: {shape: 'hv'}
+       }
+     ;
+
+     var data = [trace1, trace2, trace3];
+
+     var layout = {
+       title: {
+         text: 'Sensor home'
+       },
+       xaxis: {
+         range: ['2013-10-01 22:23:00', '2013-12-31 23:59:59'],
+         type: 'date'
+       },
+       yaxis: {
+         autorange: true,
+         range: [0,12],
+         type: 'linear'
+       },
+     }
+
+     Plotly.newPlot('plot-dialog-diagram', data, layout);
+
+     showPlotDialog()
+}
+
 function showHeatingDialog(){
     document.getElementById('start-heating').style.visibility='visible'
     document.getElementById('overlay').style.visibility='visible'
@@ -364,6 +464,17 @@ function closeHeatingDialog(){
     document.getElementById('start-heating').style.visibility='hidden'
     document.getElementById('overlay').style.visibility='hidden'
 }
+
+function showPlotDialog(){
+    document.getElementById('plot-dialog').style.visibility='visible'
+    document.getElementById('overlay').style.visibility='visible'
+}
+
+function closePlotDialog(){
+    document.getElementById('plot-dialog').style.visibility='hidden'
+    document.getElementById('overlay').style.visibility='hidden'
+}
+
 
 function onOffSensorBackgroundCalc(value) {
     var statusText;

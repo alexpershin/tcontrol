@@ -60,6 +60,15 @@
     margin-top: 2px;
 }
 
+.sensor_item_body .sensor_plot{
+    text-align:left;
+    font:normal 10px/10px Arial;
+    color:red;
+    width: 2em;
+    margin-right: 10px;
+    margin-top: 2px;
+}
+
 .sensor_item_body .sensor_time{
     text-align:center;
     font:normal 10px/10px Arial;

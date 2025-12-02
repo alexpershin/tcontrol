@@ -477,7 +477,9 @@ function startPlotDialog(sensorElementId, sensorValue, values, shape){
      }
 
      showSensorLoader(sensorElementId)
+     console.log("ploty lib loading.. if need")
      import("../plotly-3.3.0.min.js").then((mod2) => {
+        console.log("ploty lib loaded")
         Plotly.newPlot('plot-dialog-diagram', data, layout, {scrollZoom: true});
         hideSensorLoader(sensorElementId)
         showPlotDialog()

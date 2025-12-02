@@ -26,7 +26,7 @@ import org.apache.commons.csv.CSVParser;
 
 import static org.tcontrol.service.impl.CSVOptions.*;
 
-@Component
+
 @Slf4j
 @Logging
 @RequiredArgsConstructor

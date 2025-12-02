@@ -27,7 +27,9 @@ import org.tcontrol.hardware.impl.TemperatureMonitor;
 import org.tcontrol.hardware.impl.TemperatureMonitorStub;
 import org.tcontrol.controller.mappers.SensorMapper;
 import org.tcontrol.controller.mappers.SensorValueMapper;
+import org.tcontrol.models.SensorValue;
 import org.tcontrol.service.*;
+import org.tcontrol.service.impl.CSVStatisticLoader;
 import org.tcontrol.service.impl.CSVStatisticSaver;
 import org.tcontrol.service.impl.SensorServiceImpl;
 import org.tcontrol.service.impl.RelayAggregator;
@@ -37,6 +39,7 @@ import org.tcontrol.models.Sensor;
 import org.tcontrol.sms.ISMSCommand;
 import org.tcontrol.sms.commands.*;
 
+import java.io.FileNotFoundException;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -223,6 +226,24 @@ public class AppConfig implements BeanFactoryPostProcessor {
             CSVStatisticSaver csvWriter,
             IStatisticsSaver sensorLastDataSaver) {
         return new TemperatureMonitor(temperatureReader, sensorConfig, csvWriter, sensorLastDataSaver);
+    }
+
+    @Bean
+    @ConditionalOnProperty(value = "main-config.sensorsStub", havingValue = "false")
+    public IStatisticsLoader statisticsLoader(SensorConfig sensorConfig, ITimer timer){
+        return new CSVStatisticLoader(sensorConfig, timer);
+    }
+
+    @Bean
+    @ConditionalOnProperty(value = "main-config.sensorsStub", havingValue = "true")
+    public IStatisticsLoader statisticsLoaderStub(SensorConfig sensorConfig, ITimer timer){
+        return new IStatisticsLoader(){
+
+            @Override
+            public List<SensorValue> load() throws FileNotFoundException {
+                return Collections.emptyList();
+            }
+        };
     }
 
 

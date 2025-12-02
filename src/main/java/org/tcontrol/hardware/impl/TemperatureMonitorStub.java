@@ -32,8 +32,10 @@ public class TemperatureMonitorStub implements ITemperatureMonitor {
         List<SensorValue> values = new ArrayList<>();
         long timestamp = System.currentTimeMillis();
         List<SensorValue> sensorValues = Arrays.asList(
-                new SensorValue(1, "1", timestamp - 900001, 24.1, -10.0, 20.0),
-                new SensorValue(1, "1", timestamp, 25.5, -10.0, 20.0),
+                new SensorValue(1, "1", timestamp - 900000*4, 24.1, -10.0, 20.0),
+                new SensorValue(1, "1", timestamp- 900000*3, 25.5, -10.0, 20.0),
+                new SensorValue(1, "1", timestamp- 900000*2, 26.5, -10.0, 20.0),
+                new SensorValue(1, "1", timestamp, 24.5, -10.0, 20.0),
                 new SensorValue(2, "2", timestamp - 900002, -22.6),
                 new SensorValue(2, "2", timestamp, -23.6),
                 new SensorValue(3, "3", timestamp, +2.4),
@@ -42,7 +44,10 @@ public class TemperatureMonitorStub implements ITemperatureMonitor {
                 new SensorValue(6, "6", timestamp, -7.4),
                 new SensorValue(7, "7", timestamp - 1, 0),
                 new SensorValue(7, "7", timestamp, 241),
-                new SensorValue(8, "8", timestamp, 0.0),
+                new SensorValue(8, "8", timestamp - 300000 * 4, 0.0),
+                new SensorValue(8, "8", timestamp - 300000 * 3, 1.0),
+                new SensorValue(8, "8", timestamp - 300000 * 2, 0.0),
+                new SensorValue(8, "8", timestamp, 1.0),
                 new SensorValue(9, "9", timestamp, 1.0)
         );
         for (SensorConfiguration sensor : sensors) {

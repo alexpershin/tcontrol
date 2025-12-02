@@ -163,21 +163,24 @@ function renderSensor(sensorElementId, sensor, value) {
 
 function setSensorTime(sensorElementId, timestamp){
     if (timestamp !== null){
-
-           const dateOpts = {
-               hour12: false, // Set to false to use 24-hour format
-               hour: '2-digit',
-               minute: '2-digit',
-               second: '2-digit' // Optional: include seconds if desired
-           };
-
-           const timeWithoutAmPm = timestamp ?
-               new Date(timestamp).toLocaleTimeString('en-US', dateOpts):
-                '--';
+           var tadeTime = timestampToTime(timestamp)
+           const timeWithoutAmPm = tadeTime ? tadeTime: '--'
 
            $(sensorElementId +' .sensor_item_body .sensor_indicator_panel .sensor_time').text (timeWithoutAmPm)
     }
 }
+
+function timestampToTime(timestamp){
+         const dateOpts = {
+                       hour12: false, // Set to false to use 24-hour format
+                       hour: '2-digit',
+                       minute: '2-digit',
+                       second: '2-digit' // Optional: include seconds if desired
+                   };
+
+         return timestamp ? new Date(timestamp).toLocaleTimeString('en-US', dateOpts) : null
+}
+
 
 function temperatureSensorRenderer(sensorElementId, sensorValue) {
     console.log('sensorValue: ' + sensorValue);
@@ -194,7 +197,7 @@ function temperatureSensorRenderer(sensorElementId, sensorValue) {
 
     fillMinMaxValue(sensorElementId, sensorValue)
 
-    setupPlot(sensorElementId,sensorValue)
+    setupPlot(sensorElementId, sensorValue, 'spline')
 }
 
 function fillMinMaxValue(sensorElementId, sensorValue) {
@@ -258,7 +261,7 @@ function voltageSensorRenderer(sensorElementId, value) {
     sensorBody = $(sensorElementId + ' .sensor_item_body');
     sensorBody.css('background', sensorBackgroundCalc(value));
     fillMinMaxValue(sensorElementId, value)
-    setupPlot(sensorElementId, value)
+    setupPlot(sensorElementId, value, 'spline')
 }
 
 function onOffSensorRenderer(sensorElementId, sensorValue) {
@@ -296,14 +299,14 @@ function onOffSensorRenderer(sensorElementId, sensorValue) {
             });
     })
 
-    setupPlot(sensorElementId,sensorValue)
+    setupPlot(sensorElementId, sensorValue, 'hv')
 
     sensorBody.css('background', backgroundCalcResult.background);
     sensorElement.text(backgroundCalcResult.status)
     sensorBody.css('border-radius', 57.5);
 }
 
-function setupPlot(sensorElementId, sensorValue) {
+function setupPlot(sensorElementId, sensorValue, shape) {
  const sensorPlot = $(sensorElementId + ' .sensor_item_body .sensor_indicator_panel .sensor_plot')
     sensorPlot.click(function (ev) {
 
@@ -322,7 +325,7 @@ function setupPlot(sensorElementId, sensorValue) {
                     showSensorLoader(sensorElementId)
                 },
                 success: function (data) {
-                     startPlotDialog(sensorElementId, sensorValue, data)
+                     startPlotDialog(sensorElementId, sensorValue, data.values, shape)
                 },
                 error: function (jqXHR, textStatus, errorThrown) {
                     hideSensorLoader(sensorElementId)
@@ -390,13 +393,38 @@ function startHeatingDialog(sensorElementId, sensorValue, currentTemperatures){
     showHeatingDialog()
 }
 
-function startPlotDialog(sensorElementId, sensorValue, data){
+function startPlotDialog(sensorElementId, sensorValue, values, shape){
      closeBtn = document.getElementById('plot-dialog-close-btn')
      closeBtn.addEventListener('click', () => {
          closePlotDialog()
      })
+     var data = [trace1/*, trace2, trace3*/];
+     sensorTitle = $(sensorElementId + ' #sensor_title');
 
-     var trace1 =
+     var x = []
+     var y = []
+     var i = 0
+     var xMin = Number.MAX_SAFE_INTEGER
+     var xMax = 0
+     $(values).each(function (key, value) {
+          x[i] = new Date(value.timestamp)
+          if(x[i] > xMax) xMax = x[i]
+          if(x[i] < xMin) xMin= x[i]
+          y[i] = value.value
+          i++
+     });
+
+      var trace1 =
+             {
+               type: 'scatter',
+               line: {shape: shape, color: 'red'},
+               x: x,
+               y: y,
+               name: sensorTitle.text()
+             }
+       console.log(trace1)
+
+ /*    var trace1 =
        {
          type: 'scatter',
          mode: "lines",
@@ -429,16 +457,16 @@ function startPlotDialog(sensorElementId, sensorValue, data){
          name: 'Котел',
          line: {shape: 'hv'}
        }
-     ;
+     ;*/
 
-     var data = [trace1, trace2, trace3];
+     var data = [trace1/*, trace2, trace3*/];
 
      var layout = {
        title: {
-         text: 'Sensor home'
+         text: 'Исторические данные' + (data.length == 1 ? ' (' + sensorTitle.text() + ')' : '')
        },
        xaxis: {
-         range: ['2013-10-01 22:23:00', '2013-12-31 23:59:59'],
+         range: [new Date(xMin), new Date(xMax)],
          type: 'date'
        },
        yaxis: {

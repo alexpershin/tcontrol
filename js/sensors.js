@@ -332,7 +332,8 @@ function setupPlot(sensorElementId, sensorValue, shape) {
                     alert("Error try again later: " + textStatus)
                 },
                 complete: function () {
-                    hideSensorLoader(sensorElementId)
+                   // close inside startPlotDialog()
+                   // hideSensorLoader(sensorElementId)
                 }
             });
     })
@@ -476,7 +477,6 @@ function startPlotDialog(sensorElementId, sensorValue, values, shape){
        },
      }
 
-     showSensorLoader(sensorElementId)
      console.log("ploty lib loading.. if need")
      import("../plotly-3.3.0.min.js").then((mod2) => {
         console.log("ploty lib loaded")

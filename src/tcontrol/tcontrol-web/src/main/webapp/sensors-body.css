@@ -51,21 +51,12 @@
     visibility: hidden;
 }
 
-.sensor_item_body .sensor_gradient{
-    text-align:right;
-    font:normal 10px/10px Arial; 
-    color:red;
-    width: 2em;
-    margin-right: 10px;
-    margin-top: 2px;
-}
-
 .sensor_item_body .sensor_plot{
     text-align:left;
     font:normal 10px/10px Arial;
     color:red;
-    width: 2em;
-    margin-right: 10px;
+    width: 16px;
+    margin-right: 2px;
     margin-top: 2px;
 }
 
@@ -74,7 +65,16 @@
     font:normal 10px/10px Arial;
     color:blue;
     width: 4em;
-    margin-left: 10px;
+    margin-left: 2px;
+    margin-top: 2px;
+}
+
+.sensor_item_body .sensor_gradient{
+    text-align:right;
+    font:normal 10px/10px Arial;
+    color:red;
+    width: 2em;
+    margin-right: 10px;
     margin-top: 2px;
 }
 

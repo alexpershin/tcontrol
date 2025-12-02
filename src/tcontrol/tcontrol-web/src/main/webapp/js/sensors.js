@@ -476,8 +476,10 @@ function startPlotDialog(sensorElementId, sensorValue, values, shape){
        },
      }
 
+     showSensorLoader(sensorElementId)
      import("../plotly-3.3.0.min.js").then((mod2) => {
         Plotly.newPlot('plot-dialog-diagram', data, layout, {scrollZoom: true});
+        hideSensorLoader(sensorElementId)
         showPlotDialog()
      });
 }

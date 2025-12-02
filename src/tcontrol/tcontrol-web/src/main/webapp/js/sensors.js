@@ -476,9 +476,20 @@ function startPlotDialog(sensorElementId, sensorValue, values, shape){
        },
      }
 
-     Plotly.newPlot('plot-dialog-diagram', data, layout, {scrollZoom: true});
+     import("../plotly-3.3.0.min.js").then((mod2) => {
+        Plotly.newPlot('plot-dialog-diagram', data, layout, {scrollZoom: true});
+        showPlotDialog()
+     });
+}
 
-     showPlotDialog()
+function showPlotDialog(){
+    document.getElementById('plot-dialog').style.visibility='visible'
+    document.getElementById('overlay').style.visibility='visible'
+}
+
+function closePlotDialog(){
+    document.getElementById('plot-dialog').style.visibility='hidden'
+    document.getElementById('overlay').style.visibility='hidden'
 }
 
 function showHeatingDialog(){
@@ -492,17 +503,6 @@ function closeHeatingDialog(){
     document.getElementById('start-heating').style.visibility='hidden'
     document.getElementById('overlay').style.visibility='hidden'
 }
-
-function showPlotDialog(){
-    document.getElementById('plot-dialog').style.visibility='visible'
-    document.getElementById('overlay').style.visibility='visible'
-}
-
-function closePlotDialog(){
-    document.getElementById('plot-dialog').style.visibility='hidden'
-    document.getElementById('overlay').style.visibility='hidden'
-}
-
 
 function onOffSensorBackgroundCalc(value) {
     var statusText;

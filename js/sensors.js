@@ -476,7 +476,7 @@ function startPlotDialog(sensorElementId, sensorValue, values, shape){
        },
      }
 
-     Plotly.newPlot('plot-dialog-diagram', data, layout);
+     Plotly.newPlot('plot-dialog-diagram', data, layout, {scrollZoom: true});
 
      showPlotDialog()
 }

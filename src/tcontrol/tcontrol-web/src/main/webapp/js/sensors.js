@@ -460,27 +460,56 @@ function startPlotDialog(sensorElementId, sensorValue, values, shape){
        }
      ;*/
 
+//      document.getElementById('graf-dialog-dialog-title').textContent =' '
+//        'Исторические данные' + (data.length == 1 ? ' (' + sensorTitle.text() + ')' : '')
+
      var data = [trace1/*, trace2, trace3*/];
 
-     var layout = {
-       title: {
-         text: 'Исторические данные' + (data.length == 1 ? ' (' + sensorTitle.text() + ')' : '')
-       },
-       xaxis: {
-         range: [new Date(xMin), new Date(xMax)],
-         type: 'date'
-       },
-       yaxis: {
-         autorange: true,
-         range: [0,12],
-         type: 'linear'
-       },
-     }
+
 
      console.log("ploty lib loading.. if need")
      import("../plotly-3.3.0.min.js").then((mod2) => {
         console.log("ploty lib loaded")
-        Plotly.newPlot('plot-dialog-diagram', data, layout, {scrollZoom: true});
+
+        var layout = {
+               title: {
+                 text: 'Исторические данные' + (data.length == 1 ? ' (' + sensorTitle.text() + ')' : '')
+               },
+               xaxis: {
+                 range: [new Date(xMin), new Date(xMax)],
+                 type: 'date'
+               },
+               yaxis: {
+                 autorange: true,
+                 range: [0,12],
+                 type: 'linear'
+               },
+               showlegend: false,
+               margin: {
+                  l: 30,
+                  r: 10,
+                  b: 30,
+                  t: 30,
+                  pad: 1
+               },
+               paper_bgcolor: 'lightgray',
+               plot_bgcolor: 'lightgray',
+         }
+
+         var config = {
+                scrollZoom: true,
+                displayModeBar: true,
+//                modeBarButtonsToAdd: [
+//                     {
+//                           name: 'apply',
+//                           icon: Plotly.Icons.pencil,
+//                           direction: 'up',
+//                           click: function(gd) {alert('apply')}
+//                     }
+//                ],
+              //  modeBarButtonsToRemove: ['pan2d','select2d','lasso2d','resetScale2d','zoomOut2d']
+         }
+        Plotly.newPlot('plot-dialog-diagram', data, layout, config)
         hideSensorLoader(sensorElementId)
         showPlotDialog()
      });

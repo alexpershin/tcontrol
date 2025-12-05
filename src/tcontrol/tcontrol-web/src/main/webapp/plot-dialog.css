@@ -6,7 +6,7 @@
 #plot-dialog {
     /* modal dialog styling */
     border: 1px solid #ccc;
-    padding: 25px;
+    padding: 12px 0px 12px 10px;
     position: fixed; /* or absolute */
     top: 55%;
     left: 50%;
@@ -14,7 +14,7 @@
     height: calc(90% - 50px);
     transform: translate(-50%, -50%);
     z-index: 1000;
-    border-radius: 20px;
+    border-radius: 10px;
     margin-left: 0px;
     margin-top: -25px;
     background-color: lightgray;
@@ -24,6 +24,25 @@
 }
 
 #plot-dialog-diagram{
-    width: calc(100% - 10px);
+    margin-top: 25px;
+    width: calc(100% - 5px);
     height: calc(100% - 10px);
 }
+
+.search-activate-btn {
+    line-height: 10px;
+    font-size: 14pt;
+    font-family: arial;
+    margin-top: 2px;
+    margin-left: 2px;
+    position: absolute;
+    height: 24px;
+    opacity: 0.3;
+    top: 3px;
+    left: 5px;
+}
+
+.search-activate-btn:hover {
+  opacity: 1;
+}
+

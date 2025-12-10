@@ -3,6 +3,8 @@ package org.tcontrol.sms;
 import com.pi4j.util.StringUtil;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.tuple.Pair;
+import org.apache.commons.lang3.tuple.Triple;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.tcontrol.sms.commands.CommandExecutor;
@@ -16,6 +18,7 @@ import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.text.MessageFormat;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -35,11 +38,11 @@ public class SMSProcessor {
     private CommandExecutor commandExecutor;
 
     @PostConstruct
-    private void init(){
+    private void init() {
         log.info("init");
     }
 
-   @Scheduled(cron = "${sms-config.schedule}")
+    @Scheduled(cron = "${sms-config.schedule}")
     public void inputSmsScan() {
         log.info("Scanning input SMS to process..");
         processInputFolderSMS();
@@ -58,8 +61,8 @@ public class SMSProcessor {
                 }
             }
         } catch (IOException e) {
-           log.error("reading file exception: " +
-                   "{}", e.getMessage());
+            log.error("reading file exception: " +
+                    "{}", e.getMessage());
         }
     }
 
@@ -77,11 +80,26 @@ public class SMSProcessor {
                     .anyMatch(phone -> phone.getPhone().equals(incomingPhoneNumberMatch));
 
             if (inList) {
-                String commandName = readCommandFromFile(inconingSmsFilePath);
-                if (commandName != null) {
-                    CommandResult result = commandExecutor.run(commandName);
+                Triple<String, String, String> commandParams = readCommandFromFile(inconingSmsFilePath);
+               if (commandParams != null) {
+                   String commandName = commandParams.getLeft();
+                   String commandParam = commandParams.getMiddle();
+                   log.info("Command: {}", commandName);
+                    CommandResult result = commandExecutor.run(commandName, commandParam);
                     writeCommandAnswer(fileName, incomingPhoneNumber, result, commandName);
+                } else {
+                    CommandResult result = new CommandResult(
+                            STATUS.FAILURE,
+                            MessageFormat.format("invalid argument: {0}", commandParams.getRight())
+                    );
+                    writeCommandAnswer(fileName, incomingPhoneNumber, result,  commandParams.getRight());
                 }
+            }else{//redirect to first number
+                List<String> lines = Files.readAllLines(inconingSmsFilePath, Charset.defaultCharset());
+                writeCommandAnswer(fileName, smsConfig.getPhones().get(0).getPhone(), new CommandResult(
+                        STATUS.REDIRECT,
+                        lines.stream().reduce((a,b)->a+'\n'+b).orElse("")
+                ),  "not parsed");
             }
 
         }
@@ -139,17 +157,23 @@ public class SMSProcessor {
         Files.write(path, resultText.getBytes());
     }
 
-    private String readCommandFromFile(Path filePath) {
+    private Triple<String, String, String> readCommandFromFile(Path filePath) {
         try {
             String command = null;
+            String[] args = new String[]{};
+            String commandText = null;
             List<String> lines = Files.readAllLines(filePath, Charset.defaultCharset());
             if (lines.size() == 1) {
-                String commandText = lines.get(0);
+                commandText = lines.get(0);
+                args = commandText.split(" ");
+                if (args.length > 2) {
+                    log.info("Error parsing argument of command: {}", commandText);
+                }
                 command = StringUtil.trim(commandText).toUpperCase();
             } else {
                 log.info("Error while found command: {}", lines);
             }
-            return command;
+            return Triple.of(command, args.length > 1 ? args[1] : null, commandText);
         } catch (IOException ex) {
             log.info("Error while reading file " + filePath);
         }

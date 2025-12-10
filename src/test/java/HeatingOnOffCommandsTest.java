@@ -3,15 +3,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.support.AnnotationConfigContextLoader;
+import org.tcontrol.config.AppConfig;
+import org.tcontrol.config.props.CommandConfig;
 import org.tcontrol.service.IThermostat;
 import org.tcontrol.sms.*;
 import org.tcontrol.sms.commands.CommandResult;
-import org.tcontrol.sms.commands.HeatingOffCommand;
-import org.tcontrol.sms.commands.HeatingOnCommand;
 
 import org.junit.jupiter.api.Test;
 import org.tcontrol.handler.IRelayHandler;
 
+import java.util.Collections;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -33,40 +34,44 @@ public class HeatingOnOffCommandsTest {
     }
 
     @Test
-    public void thermostatWasOnTest() {
-        HeatingOnCommand heatingOnCommand = new HeatingOnCommand(thermostat);
-        ISMSCommand heatingOffCommand = new HeatingOffCommand(thermostat);
+    public void thermostatOnTest() {
+        AppConfig appConfig= new AppConfig();
+        ISMSCommand heatingOnCommand = appConfig.heatingOnCommand(
+                dynamicThermostats,
+                new CommandConfig("turn on", Collections.singletonList("elect"))
+        );
+        ISMSCommand heatingOffCommand = appConfig.heatingOffCommand(
+                dynamicThermostats,
+                new CommandConfig("turn off", Collections.singletonList("elect"))
+        );
 
-        assertTrue(thermostat.isChanged());
+        assertFalse(thermostat.isChanged());
         assertFalse(thermostat.isHeatingOn());
 
-        CommandResult result = heatingOnCommand.run();
+        CommandResult result = heatingOnCommand.run("22");
         assertNotNull(result);
-        assertTrue(thermostat.isChanged());
-        assertFalse(thermostat.isHeatingOn());
-
-        thermostat.checkTemperature();
 
         assertTrue(thermostat.isChanged());
         assertTrue(thermostat.isHeatingOn());
 
-        heatingOffCommand.run();
+        heatingOffCommand.run("5");
         assertFalse(thermostat.isChanged());
     }
 
     @Test
-    public void thermostatWasOffTest() {
+    public void thermostatOffTest() {
 
-        HeatingOnCommand heatingOnCommand = new HeatingOnCommand(thermostat);
-
-        thermostat.rollback();
-        thermostat.checkTemperature();
+        AppConfig appConfig= new AppConfig();
+        ISMSCommand heatingOffCommand = appConfig.heatingOffCommand(
+                dynamicThermostats,
+                new CommandConfig("turn off", Collections.singletonList("elect"))
+        );
 
         assertFalse(thermostat.isChanged());
 
-        CommandResult result = heatingOnCommand.run();
+        CommandResult result = heatingOffCommand.run("10");
         assertNotNull(result);
 
-        assertTrue(thermostat.isChanged());
+        assertFalse(thermostat.isChanged());
     }
 }

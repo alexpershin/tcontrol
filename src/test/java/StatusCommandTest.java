@@ -1,8 +1,10 @@
 import com.pi4j.io.gpio.Pin;
 import com.pi4j.io.gpio.PinState;
 import org.junit.jupiter.api.BeforeEach;
+import org.tcontrol.config.props.CommandConfig;
 import org.tcontrol.config.props.ThermostatsConfig;
 import org.tcontrol.hardware.ITemperatureMonitor;
+import org.tcontrol.service.IThermostat;
 import org.tcontrol.service.ITimer;
 import org.tcontrol.service.impl.Thermostat;
 import org.tcontrol.models.SensorValue;
@@ -60,6 +62,7 @@ public class StatusCommandTest {
         thermostatConfig.setRelayPins(new ArrayList<>());
         thermostatConfig.getRelayPins().add(GPIO_00);
         thermostatConfig.setName("termo1");
+        thermostatConfig.setCode("t1");
         thermostatConfig.init();
 
         thermostatConfig2 = new ThermostatConfig();
@@ -73,6 +76,7 @@ public class StatusCommandTest {
         thermostatConfig2.setRelayPins(new ArrayList<>());
         thermostatConfig2.getRelayPins().add(GPIO_01);
         thermostatConfig2.setName("termo2");
+        thermostatConfig2.setCode("t2");
         thermostatConfig2.init();
 
         thermostatConfig3 = new ThermostatConfig();
@@ -86,6 +90,7 @@ public class StatusCommandTest {
         thermostatConfig3.setRelayPins(new ArrayList<>());
         thermostatConfig3.getRelayPins().add(GPIO_02);
         thermostatConfig3.setName("termo3");
+        thermostatConfig3.setCode("t3");
         thermostatConfig3.init();
 
         thermostatConfig4 = new ThermostatConfig();
@@ -99,6 +104,7 @@ public class StatusCommandTest {
         thermostatConfig4.setRelayPins(new ArrayList<>());
         thermostatConfig4.getRelayPins().add(GPIO_03);
         thermostatConfig4.setName("termo4");
+        thermostatConfig4.setCode("t4");
         thermostatConfig4.init();
 
         thermostatsConfig = new ThermostatsConfig();
@@ -173,6 +179,7 @@ public class StatusCommandTest {
         thermostat2.init();
 
         thermostat3 = new Thermostat(3);
+
         thermostat3.setThermostatsConfig(thermostatsConfig);
         thermostat3.setTemperatureMonitor(temperatureMonitor);
         thermostat3.setRelayAggregator(relayHandler);
@@ -198,8 +205,16 @@ public class StatusCommandTest {
 
         final IVoltageMonitor voltageMonitor = () -> Collections.singletonList(new VoltageResult("socket", 220.1, "V"));
 
-        statusCommand = new StatusCommand(temperatureMonitor, sensorConfig,
-                relayHandler, thermostat1, thermostat2, thermostat3, thermostat4, voltageMonitor);
+        CommandConfig statusCommandConfig = new CommandConfig();
+        statusCommandConfig.setThermostats(Arrays.asList("t1","t2","t3","t4"));
+
+        Map<String, IThermostat> dynamicThermostats = new HashMap<>();
+        dynamicThermostats.put("t1", thermostat1);
+        dynamicThermostats.put("t2", thermostat2);
+        dynamicThermostats.put("t3", thermostat3);
+        dynamicThermostats.put("t4", thermostat4);
+
+        statusCommand = new StatusCommand(relayHandler, dynamicThermostats, voltageMonitor, statusCommandConfig);
 
     }
 
@@ -211,9 +226,9 @@ public class StatusCommandTest {
         thermostat2.checkTemperature();
         thermostat3.checkTemperature();
 
-        CommandResult result = statusCommand.run();
-        assert(result.getMessage().contains("termo1(12.0): Modified, heating: ON"));
-        assertTrue(result.getMessage().contains("termo2(18.0): Modified, heating: ON"));
+        CommandResult result = statusCommand.run("");
+        assert(result.getMessage().contains("termo1(12.0): Default, heating: ON"));
+        assertTrue(result.getMessage().contains("termo2(18.0): Default, heating: ON"));
         assertTrue(result.getMessage().contains("socket: 220.1V"));
     }
 }

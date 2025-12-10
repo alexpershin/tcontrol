@@ -149,4 +149,14 @@ public interface ISensorService {
      * @return 0/1 if one of thermostats stared;
      */
     int thermostatsRollback(Integer sensorId);
+
+    /**
+     * Подгрузка исторических данных по сенсору.
+     * @param currentUserId
+     * @param from время от, мс;
+     * @param to время до, мс;
+     * @param sensorId идентификатор сенсора;
+     * @return list of sensor values;
+     */
+    List<SensorValue>  getHistorySensorValues(int currentUserId, long from, long to, Integer sensorId);
 }

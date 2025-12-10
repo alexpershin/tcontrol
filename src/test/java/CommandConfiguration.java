@@ -37,6 +37,7 @@ public class CommandConfiguration {
         thermostatConfig.setRelayPins(new ArrayList<>());
         thermostatConfig.getRelayPins().add(GPIO_00);
         thermostatConfig.setName("elect");
+        thermostatConfig.setCode("elect");
         return thermostatConfig;
     }
 
@@ -53,6 +54,7 @@ public class CommandConfiguration {
         thermostatConfig.setRelayPins(new ArrayList<>());
         thermostatConfig.getRelayPins().add(GPIO_00);
         thermostatConfig.setName("gast");
+        thermostatConfig.setCode("gast");
         return thermostatConfig;
     }
 

@@ -2,6 +2,7 @@ package org.tcontrol.controller;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.*;
 import org.tcontrol.config.Logging;
 import org.tcontrol.controller.dto.*;
@@ -24,6 +25,8 @@ import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.bind.annotation.RequestBody;
 
 import javax.annotation.PostConstruct;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -111,7 +114,7 @@ public class SensorController {
     }
 
     /**
-     * Current values.
+     * Previous values daily .
      *
      * @return list of values;
      * @throws SensorServiceException if some exeption;
@@ -138,6 +141,60 @@ public class SensorController {
     public SensorValuesResult getSensorPrevValues(@RequestParam(name = "sensorId") Integer sensorId) throws SensorServiceException {
         SensorValuesResult result = new SensorValuesResult();
         List<SensorValue> values = sensorService.getPrevSensorValues(CURRENT_USER_ID, null, sensorId);
+        List<SensorValueDto> webValues = sensorValueMapper.map(values);
+        result.setValues(webValues.toArray(new SensorValueDto[]{}));
+        return result;
+    }
+
+    /**
+     * Previous values for period .
+     *
+     * @return list of values;
+     * @throws SensorServiceException if some exeption;
+     */
+    @PostMapping("/sensor_history_values")
+    @CrossOrigin(origins = {"http://localhost:8090", "http://localhost"})
+    @Operation(summary = "Получение предыдущих значений сенсора",
+            description = "Получение предыдущих значений сенсора",
+            responses = {@ApiResponse(responseCode = "" + HTTP_OK,
+                    description = "Список значений сенсоров",
+                    content = @Content(
+                            mediaType = "application/json",
+                            array = @ArraySchema(schema = @Schema(implementation = SensorValuesResult.class))
+                    )),
+                    @ApiResponse(responseCode = "" + HTTP_BAD_REQUEST,
+                            content = @Content(mediaType = "application/json"))
+            },
+            parameters = {@Parameter(name = "sensorId", description = "Идентификатор сенсора",
+                    in = ParameterIn.QUERY,
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(maxLength = 4, example = "1"))
+                    ),
+                    @Parameter(name = "from", description = "Дата и время от",
+                            in = ParameterIn.QUERY,
+                            content = @Content(mediaType = "application/json",
+                                    schema = @Schema(maxLength = 22, example = "2025.12.05T19:27+3:00"))
+                    ),
+                    @Parameter(name = "to", description = "Дата и время до",
+                            in = ParameterIn.QUERY,
+                            content = @Content(mediaType = "application/json",
+                                    schema = @Schema(maxLength = 22, example = "2025.11.05T19:27+3:00"))
+                    ),
+            }
+    )
+    public SensorValuesResult getSensorHistoryValues(
+            @RequestParam(name = "sensorId") Integer sensorId,
+            @RequestParam(name = "from")  @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime from,
+            @RequestParam(name = "to") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime  to
+        ) throws SensorServiceException {
+        SensorValuesResult result = new SensorValuesResult();
+        ZoneId zoneId = ZoneId.systemDefault();
+        List<SensorValue> values = sensorService.getHistorySensorValues(
+                CURRENT_USER_ID,
+                from.atZone(zoneId).toInstant().toEpochMilli(),
+                to.atZone(zoneId).toInstant().toEpochMilli(),
+                sensorId
+        );
         List<SensorValueDto> webValues = sensorValueMapper.map(values);
         result.setValues(webValues.toArray(new SensorValueDto[]{}));
         return result;

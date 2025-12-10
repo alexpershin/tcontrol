@@ -55,7 +55,7 @@ public class Thermostat implements IThermostat {
     boolean heatingOn;
 
     @Getter
-    boolean changed = true;
+    boolean changed = false;
 
     @Getter
     float mediumT;

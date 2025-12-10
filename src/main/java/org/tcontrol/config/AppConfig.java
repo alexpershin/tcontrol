@@ -217,6 +217,35 @@ public class AppConfig implements BeanFactoryPostProcessor {
         return new OnOfHandlerConfig();
     }
 
+    @Bean
+    @ConfigurationProperties(prefix = "gas-on-command")
+    public CommandConfig gasOnCommandConfig(){
+        return new CommandConfig();
+    }
+
+    @Bean
+    @ConfigurationProperties(prefix = "gas-off-command")
+    public CommandConfig gasOffCommandConfig(){
+        return new CommandConfig();
+    }
+
+    @Bean
+    @ConfigurationProperties(prefix = "electro-on-command")
+    public CommandConfig electroOnCommandConfig(){
+        return new CommandConfig();
+    }
+
+    @Bean
+    @ConfigurationProperties(prefix = "electro-off-command")
+    public CommandConfig electroOffCommandConfig(){
+        return new CommandConfig();
+    }
+
+    @Bean
+    @ConfigurationProperties(prefix = "status-command")
+    public CommandConfig statusCommandConfig(){
+        return new CommandConfig();
+    }
 
     @Bean
     @ConditionalOnProperty(value = "main-config.sensorsStub", havingValue = "false")
@@ -305,62 +334,58 @@ public class AppConfig implements BeanFactoryPostProcessor {
     @Primary
     @Qualifier("heatingOnCommand")
     public ISMSCommand heatingOnCommand(
-            final Map<String, IThermostat> dynamicThermostats) {
-        IThermostat thermostat = dynamicThermostats.get("thermostat-electro");
-        return new HeatingOnCommand(thermostat);
+            final Map<String, IThermostat> dynamicThermostats,
+            CommandConfig electroOnCommandConfig) {
+        return new ThermostatCommand(
+                dynamicThermostats,
+                electroOnCommandConfig,
+                (newTemperature, thermostat)-> thermostat.temperature(newTemperature));
     }
 
     @Bean
-    @Qualifier("thermostatOnCommand")
-    public ISMSCommand thermostatOnCommand(
-            final Map<String, IThermostat> dynamicThermostats) {
-        return new ThermostatOnCommand(dynamicThermostats);
-    }
-
-    @Bean
-    @Qualifier("thermostatOffCommand")
-    public ISMSCommand thermostatOffCommand(
-            final Map<String, IThermostat> dynamicThermostats) {
-        IThermostat thermostat = dynamicThermostats.get("thermostat-electro");
-        return new ThermostatOffCommand(thermostat);
+    @Primary
+    @Qualifier("heatingOnCommand")
+    public ISMSCommand heatingOffCommand(
+            final Map<String, IThermostat> dynamicThermostats,
+            CommandConfig electroOffCommandConfig) {
+        return new ThermostatCommand(
+                dynamicThermostats,
+                electroOffCommandConfig,
+                (newTemperature, thermostat)-> thermostat.rollback()
+        );
     }
 
     @Bean
     @Qualifier("gasOnCommand")
     public ISMSCommand gasOnCommand(
-            final Map<String, IThermostat> dynamicThermostats) {
-        IThermostat thermostat = dynamicThermostats.get("thermostat-gas");
-        return new GasOnCommand(thermostat);
+            final Map<String, IThermostat> dynamicThermostats,
+            final CommandConfig gasOnCommandConfig) {
+        return new ThermostatCommand(dynamicThermostats,
+                gasOnCommandConfig,
+                (newTemperature, thermostat)-> thermostat.temperature(newTemperature)
+        );
     }
 
     @Bean
     @Qualifier("gasOffCommand")
-    public GasOffCommand gasOffCommand(
-            final Map<String, IThermostat> dynamicThermostats) {
-        IThermostat thermostat = dynamicThermostats.get("thermostat-gas");
-        return new GasOffCommand(thermostat);
+    public ISMSCommand gasOffCommand(
+            final Map<String, IThermostat> dynamicThermostats,
+            CommandConfig gasOffCommandConfig) {
+        return new ThermostatCommand(dynamicThermostats,
+                gasOffCommandConfig,
+                (newTemperature, thermostat)-> thermostat.rollback()
+        );
     }
 
     @Bean
     public ISMSCommand statusCommand(
-            final ITemperatureMonitor temperatureMonitor,
-            final SensorConfig sensorConfig,
             final IRelayHandler relayHandler,
             final Map<String, IThermostat> dynamicThermostats,
-            final IVoltageMonitor voltageMonitor) {
+            final IVoltageMonitor voltageMonitor,
+            final CommandConfig statusCommandConfig) {
 
-        final IThermostat thermostatElectro = dynamicThermostats.get("thermostat-electro");
-
-        final IThermostat thermostatGas = dynamicThermostats.get("thermostat-gas");
-
-        final IThermostat thermostatVeranda = dynamicThermostats.get("thermostat-veranda");
-
-        final IThermostat thermostatMyRoom = dynamicThermostats.get("thermostat-my-room");
-
-        return new StatusCommand(temperatureMonitor, sensorConfig, relayHandler,
-                thermostatElectro, thermostatGas, thermostatVeranda, thermostatMyRoom, voltageMonitor);
+        return new StatusCommand(relayHandler, dynamicThermostats, voltageMonitor, statusCommandConfig);
     }
-
 
     @Override
     public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) throws BeansException {

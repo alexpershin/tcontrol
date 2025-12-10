@@ -3,21 +3,19 @@ package org.tcontrol.sms.commands;
 import com.pi4j.io.gpio.Pin;
 import com.pi4j.io.gpio.PinState;
 import com.pi4j.io.gpio.RaspiPin;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.tcontrol.hardware.ITemperatureMonitor;
+import org.tcontrol.config.props.CommandConfig;
 import org.tcontrol.service.IThermostat;
 import org.tcontrol.sms.*;
 import org.tcontrol.hardware.IVoltageMonitor;
 import org.tcontrol.hardware.IVoltageMonitor.VoltageResult;
-import org.tcontrol.config.props.SensorConfig;
 import org.tcontrol.handler.IRelayHandler;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.Optional;
-
-import static org.tcontrol.config.props.SensorConfig.SensorConfiguration;
+import java.util.Map;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -25,55 +23,44 @@ public class StatusCommand implements ISMSCommand {
 
     private static final SimpleDateFormat simpleDateFormat = new SimpleDateFormat(
             "yyyy.MM.dd HH:mm:ss");
-
-    private final ITemperatureMonitor temperatureMonitor;
-
-    private final SensorConfig sensorConfig;
+    public static final String DEFAULT = "Default";
+    public static final String MODIFIED = "Modified";
 
     private final IRelayHandler relayHandler;
 
-    private final IThermostat thermostatElectro;
-
-    private final IThermostat thermostatGas;
-
-    private final IThermostat thermostatVeranda;
-
-    private final IThermostat thermostatMyRoom;
+    private final Map<String, IThermostat> dynamicThermostats;
 
     private final IVoltageMonitor voltageMonitor;
 
+    @Getter
+    private final CommandConfig commandConfig;
+
     @Override
-    public CommandResult run() {
-        Optional<String> res = temperatureMonitor.getSensorValueMap().values().stream().map(value -> {
-            Optional<SensorConfiguration> sc = sensorConfig.sensorConfigByCode(value.getSensorCode());
-            return sc.map(sensorConfiguration -> sensorConfiguration.getName() + ": " + value.getValue())
-                    .orElse("");
-        }).reduce((a, b) -> a + "\n" + b);
+    public CommandResult run(String par) {
 
-        res = thermostatStatus(res, thermostatElectro, relayHandler);
-        res = thermostatStatus(res, thermostatGas, relayHandler);
-        res = thermostatStatus(res, thermostatVeranda, relayHandler);
-        res = thermostatStatus(res, thermostatMyRoom, relayHandler);
-        res = voltageStatus(res, voltageMonitor);
+        String res = dynamicThermostats.values().stream()
+                .filter(t -> commandConfig.getThermostats().contains(t.getCode()))
+                .map(t -> thermostatStatus(t, relayHandler))
+                .reduce((a, b) -> a + "\n" + b).orElse("");
 
-        res = Optional.of(res.orElse("") + "\n" + simpleDateFormat.format(new Date()));
 
-        String text = res.orElse("status not ready");
+        res += (res.isEmpty() ? "": "\n" ) + voltageStatus(voltageMonitor);
+
+        res +=  "\n" + simpleDateFormat.format(new Date());
+
         log.info("Executed");
-        return new CommandResult(res.isPresent() ? STATUS.OK : STATUS.FAILURE, text);
+        return new CommandResult( STATUS.OK , res);
     }
 
-    private Optional<String> voltageStatus(Optional<String> res, IVoltageMonitor voltageMonitor) {
+    private String voltageStatus(IVoltageMonitor voltageMonitor) {
+        String res="";
         for (VoltageResult vr : voltageMonitor.getVoltageResults()) {
-            res = Optional.of(
-                    res.orElse("")
-                            + "\n" + vr.getName() + ": " + vr.getValue() + vr.getUnit());
+            res = vr.getName() + ": " + vr.getValue() + vr.getUnit();
         }
         return res;
     }
 
-    private static Optional<String> thermostatStatus(Optional<String> res,
-                                                     IThermostat thermostat, IRelayHandler relayHandler) {
+    private static String thermostatStatus(IThermostat thermostat, IRelayHandler relayHandler) {
 
         StringBuilder resultString = new StringBuilder(" ");
         for (String heatingPin : thermostat.getHeatingPins()) {
@@ -82,10 +69,7 @@ public class StatusCommand implements ISMSCommand {
             resultString.append(heatingState == null ? "UNDEFINED" : (heatingState.isHigh() ? "ON" : "OFF"));
         }
 
-        res = Optional.of(
-                res.orElse("")
-                        + "\n" + thermostat.getName() + "(" + thermostat.getMediumT() + "): "
-                        + (thermostat.isChanged() ? "Modified" : "Intact") + ", heating:" + resultString);
-        return res;
+        return thermostat.getName() + "(" + thermostat.getMediumT() + "): "
+                        + (thermostat.isChanged() ? MODIFIED : DEFAULT) + ", heating:" + resultString;
     }
 }

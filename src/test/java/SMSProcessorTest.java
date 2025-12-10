@@ -1,4 +1,6 @@
 import org.junit.jupiter.api.BeforeEach;
+import org.tcontrol.config.props.CommandConfig;
+import org.tcontrol.sms.ISMSCommand;
 import org.tcontrol.sms.SMSProcessor;
 import org.tcontrol.sms.commands.CommandExecutor;
 import org.tcontrol.config.props.SMSConfig;
@@ -8,12 +10,16 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.junit.jupiter.api.Test;
+import org.tcontrol.sms.commands.CommandResult;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 public class SMSProcessorTest {
@@ -40,7 +46,18 @@ public class SMSProcessorTest {
     }
 
     CommandExecutor commandExecutor = new CommandExecutor(
-        () -> null, () -> null, () -> null, () -> null, () -> null, () -> null, () -> null);
+            Collections.singletonList(new ISMSCommand() {
+              @Override
+              public CommandConfig getCommandConfig() {
+                return null;
+              }
+
+              @Override
+              public CommandResult run(String param) {
+                return null;
+              }
+            })
+    );
 
     smsProcessor = new SMSProcessor(smsConfig, commandExecutor);
   }

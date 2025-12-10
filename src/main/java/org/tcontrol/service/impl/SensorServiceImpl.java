@@ -18,7 +18,9 @@ import org.tcontrol.service.IStatisticsSaver;
 import org.tcontrol.config.props.SensorConfig;
 
 import javax.annotation.PostConstruct;
+import java.sql.Date;
 import java.text.MessageFormat;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -121,6 +123,11 @@ public class SensorServiceImpl implements ISensorService {
                 .orElseThrow(() ->
                         new SensorServiceException(MessageFormat.format("No thermostat found: {0}",
                                 sensorId)));
+    }
+
+    @Override
+    public List<SensorValue> getHistorySensorValues(int currentUserId, long from, long to, Integer sensorId) {
+        return Collections.emptyList();
     }
 
     private List<IThermostat> thermostats(int sensorId) {

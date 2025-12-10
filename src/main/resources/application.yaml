@@ -240,6 +240,26 @@ thermostats-config:
       relayPins:
         - 'GPIO 6'
 
+gas-on-command:
+  name: 'GAS_ON'
+  thermostats: ['thermostat-gas']
+
+gas-off-command:
+  name: 'GAS_OFF'
+  thermostats: ['thermostat-gas']
+
+electro-on-command:
+  name: 'ELECTRO_ON'
+  thermostats: ['thermostat-electro', 'thermostat-my-room']
+
+electro-off-command:
+  name: 'ELECTRO_OFF'
+  thermostats: ['thermostat-electro', 'thermostat-my-room']
+
+status-command:
+  name: 'STATUS'
+  thermostats: ['thermostat-electro', 'thermostat-gas', 'thermostat-my-room', 'thermostat-veranda']
+
 voltage-monitor:
   schedule: '0/30 * * * * ?'
   pins:

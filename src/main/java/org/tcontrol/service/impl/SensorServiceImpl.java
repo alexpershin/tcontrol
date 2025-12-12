@@ -18,7 +18,6 @@ import org.tcontrol.service.IStatisticsSaver;
 import org.tcontrol.config.props.SensorConfig;
 
 import javax.annotation.PostConstruct;
-import java.sql.Date;
 import java.text.MessageFormat;
 import java.util.Collections;
 import java.util.List;

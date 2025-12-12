@@ -4,7 +4,6 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.tcontrol.config.props.CommandConfig;
-import org.tcontrol.service.impl.Thermostat;
 import org.tcontrol.sms.ISMSCommand;
 import org.tcontrol.service.IThermostat;
 

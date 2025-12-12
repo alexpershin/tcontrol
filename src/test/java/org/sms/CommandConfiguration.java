@@ -1,7 +1,10 @@
+package org.sms;
+
 import com.pi4j.io.gpio.Pin;
 import com.pi4j.io.gpio.PinState;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.tcontrol.config.props.CommandConfig;
 import org.tcontrol.config.props.ThermostatsConfig;
 import org.tcontrol.hardware.ITemperatureMonitor;
 import org.tcontrol.service.IThermostat;
@@ -10,6 +13,9 @@ import org.tcontrol.service.impl.Thermostat;
 import org.tcontrol.models.SensorValue;
 import org.tcontrol.config.props.SensorConfig;
 import org.tcontrol.handler.IRelayHandler;
+import org.tcontrol.sms.ISMSCommand;
+import org.tcontrol.sms.commands.CommandExecutor;
+import org.tcontrol.sms.commands.ThermostatCommand;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -163,4 +169,18 @@ public class CommandConfiguration {
         sensorConfig.setSensors(Collections.singletonList(sensorConfiguration));
         return sensorConfig;
     }
+
+    @Bean
+    public CommandExecutor commandExecutor(Map<String, IThermostat> dynamicThermostats){
+
+        CommandConfig commandConfig = new CommandConfig("on", Collections.singletonList("elect"));
+
+        ThermostatCommand command = new ThermostatCommand(
+                dynamicThermostats,
+                commandConfig,
+                (newTemperature, thermostat)-> thermostat.temperature(newTemperature));
+        List<ISMSCommand> commands = Collections.singletonList(command);
+        return new CommandExecutor(commands);
+    }
+
 }

@@ -1,3 +1,5 @@
+package org.sms;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -16,6 +18,7 @@ import java.util.Collections;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.tcontrol.sms.commands.STATUS.FAILURE;
 
 @ContextConfiguration(classes = CommandConfiguration.class, loader = AnnotationConfigContextLoader.class)
 @SpringBootTest
@@ -71,6 +74,35 @@ public class HeatingOnOffCommandsTest {
 
         CommandResult result = heatingOffCommand.run("10");
         assertNotNull(result);
+
+        assertFalse(thermostat.isChanged());
+    }
+
+    @Test
+    public void thermostatInvalidArgumentTest() {
+
+        AppConfig appConfig= new AppConfig();
+        ISMSCommand heatingOffCommand = appConfig.heatingOffCommand(
+                dynamicThermostats,
+                new CommandConfig("turn off", Collections.singletonList("elect"))
+        );
+
+        assertFalse(thermostat.isChanged());
+
+        CommandResult result = heatingOffCommand.run("35");
+        assertNotNull(result);
+        assertEquals(FAILURE, result.getStatus());
+        assertTrue(result.getMessage().contains("invalid argument: 35"));
+
+        result = heatingOffCommand.run("0");
+        assertNotNull(result);
+        assertEquals(FAILURE, result.getStatus());
+        assertTrue(result.getMessage().contains("invalid argument: 0"));
+
+        result = heatingOffCommand.run("abc");
+        assertNotNull(result);
+        assertEquals(FAILURE, result.getStatus());
+        assertTrue(result.getMessage().contains("invalid argument: abc"));
 
         assertFalse(thermostat.isChanged());
     }

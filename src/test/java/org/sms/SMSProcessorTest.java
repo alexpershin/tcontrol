@@ -1,3 +1,5 @@
+package org.sms;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.tcontrol.config.props.CommandConfig;
 import org.tcontrol.sms.ISMSCommand;

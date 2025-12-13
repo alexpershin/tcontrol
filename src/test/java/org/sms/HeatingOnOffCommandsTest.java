@@ -26,14 +26,12 @@ public class HeatingOnOffCommandsTest {
     @Autowired
     private Map<String,IThermostat> dynamicThermostats;
 
-    @Autowired
-    private IRelayHandler relayHandler;
-
     private IThermostat thermostat;
 
     @BeforeEach
     public void befoEach(){
         thermostat = dynamicThermostats.get("elect");
+        thermostat.rollback();
     }
 
     @Test

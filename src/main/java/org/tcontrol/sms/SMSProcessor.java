@@ -60,8 +60,7 @@ public class SMSProcessor {
                 }
             }
         } catch (IOException e) {
-            log.error("reading file exception: " +
-                    "{}", e.getMessage());
+            log.error("reading file exception: {}", e.getMessage());
         }
     }
 
@@ -174,7 +173,7 @@ public class SMSProcessor {
             }
             return Triple.of(command, args.length > 1 ? args[1] : null, commandText);
         } catch (IOException ex) {
-            log.info("Error while reading file " + filePath);
+            log.info("Error while reading file {}, {}",filePath, ex.getMessage());
         }
         return null;
     }
@@ -184,7 +183,7 @@ public class SMSProcessor {
             List<String> lines = Files.readAllLines(filePath, Charset.defaultCharset());
             return lines.stream().reduce((s1, s2) -> s1 + "\n" + s2).orElse("");
         } catch (IOException ex) {
-            log.info("Error while reading file " + filePath);
+            log.info("Error while reading file: {}, {}", filePath, ex.getMessage());
         }
         return null;
     }

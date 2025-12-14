@@ -382,9 +382,10 @@ public class AppConfig implements BeanFactoryPostProcessor {
             final IRelayHandler relayHandler,
             final Map<String, IThermostat> dynamicThermostats,
             final IVoltageMonitor voltageMonitor,
-            final CommandConfig statusCommandConfig) {
+            final CommandConfig statusCommandConfig,
+            final RelayPinsConfig relayPinsConfig) {
 
-        return new StatusCommand(relayHandler, dynamicThermostats, voltageMonitor, statusCommandConfig);
+        return new StatusCommand(relayHandler, dynamicThermostats, voltageMonitor, statusCommandConfig, relayPinsConfig);
     }
 
     @Override

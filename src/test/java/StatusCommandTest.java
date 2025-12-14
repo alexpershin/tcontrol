@@ -2,6 +2,7 @@ import com.pi4j.io.gpio.Pin;
 import com.pi4j.io.gpio.PinState;
 import org.junit.jupiter.api.BeforeEach;
 import org.tcontrol.config.props.CommandConfig;
+import org.tcontrol.config.props.RelayPinsConfig;
 import org.tcontrol.config.props.ThermostatsConfig;
 import org.tcontrol.hardware.ITemperatureMonitor;
 import org.tcontrol.service.IThermostat;
@@ -206,7 +207,7 @@ public class StatusCommandTest {
         final IVoltageMonitor voltageMonitor = () -> Collections.singletonList(new VoltageResult("socket", 220.1, "V"));
 
         CommandConfig statusCommandConfig = new CommandConfig();
-        statusCommandConfig.setThermostats(Arrays.asList("t1","t2","t3","t4"));
+        statusCommandConfig.setThermostats(Arrays.asList("t1", "t2", "t3", "t4"));
 
         Map<String, IThermostat> dynamicThermostats = new HashMap<>();
         dynamicThermostats.put("t1", thermostat1);
@@ -214,7 +215,22 @@ public class StatusCommandTest {
         dynamicThermostats.put("t3", thermostat3);
         dynamicThermostats.put("t4", thermostat4);
 
-        statusCommand = new StatusCommand(relayHandler, dynamicThermostats, voltageMonitor, statusCommandConfig);
+        RelayPinsConfig relayPinsConfig = new RelayPinsConfig();
+        relayPinsConfig.setPins(Arrays.asList(
+                new RelayPinsConfig.RelayPinConfiguration(0, GPIO_00, GPIO_00, "pin0")
+                , new RelayPinsConfig.RelayPinConfiguration(1, GPIO_01, GPIO_01, "pin1")
+                , new RelayPinsConfig.RelayPinConfiguration(2, GPIO_02, GPIO_02, "pin2")
+                , new RelayPinsConfig.RelayPinConfiguration(3, GPIO_03, GPIO_03, "pin3")
+        ));
+
+
+        statusCommand = new StatusCommand(
+                relayHandler,
+                dynamicThermostats,
+                voltageMonitor,
+                statusCommandConfig,
+                relayPinsConfig
+        );
 
     }
 
@@ -227,8 +243,8 @@ public class StatusCommandTest {
         thermostat3.checkTemperature();
 
         CommandResult result = statusCommand.run("");
-        assert(result.getMessage().contains("termo1(12.0): Default, heating: ON"));
-        assertTrue(result.getMessage().contains("termo2(18.0): Default, heating: ON"));
+        assert (result.getMessage().contains("termo1(12.0): Default, heating: pin0(ON)"));
+        assertTrue(result.getMessage().contains("termo2(18.0): Default, heating: pin1(ON)"));
         assertTrue(result.getMessage().contains("socket: 220.1V"));
     }
 }

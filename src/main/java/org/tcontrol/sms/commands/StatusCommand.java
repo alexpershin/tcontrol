@@ -7,6 +7,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.tcontrol.config.props.CommandConfig;
+import org.tcontrol.config.props.RelayPinsConfig;
 import org.tcontrol.service.IThermostat;
 import org.tcontrol.sms.*;
 import org.tcontrol.hardware.IVoltageMonitor;
@@ -16,6 +17,9 @@ import org.tcontrol.handler.IRelayHandler;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Map;
+import java.util.Optional;
+
+import static org.tcontrol.config.props.RelayPinsConfig.RelayPinConfiguration;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -35,6 +39,8 @@ public class StatusCommand implements ISMSCommand {
     @Getter
     private final CommandConfig commandConfig;
 
+    private final RelayPinsConfig relayPinsConfig;
+
     @Override
     public CommandResult run(String par) {
 
@@ -44,32 +50,40 @@ public class StatusCommand implements ISMSCommand {
                 .reduce((a, b) -> a + "\n" + b).orElse("");
 
 
-        res += (res.isEmpty() ? "": "\n" ) + voltageStatus(voltageMonitor);
+        res += (res.isEmpty() ? "" : "\n") + voltageStatus(voltageMonitor);
 
-        res +=  "\n" + simpleDateFormat.format(new Date());
+        res += "\n" + simpleDateFormat.format(new Date());
 
         log.info("Executed");
-        return new CommandResult( STATUS.OK , res);
+        return new CommandResult(STATUS.OK, res);
     }
 
     private String voltageStatus(IVoltageMonitor voltageMonitor) {
-        String res="";
+        String res = "";
         for (VoltageResult vr : voltageMonitor.getVoltageResults()) {
             res = vr.getName() + ": " + vr.getValue() + vr.getUnit();
         }
         return res;
     }
 
-    private static String thermostatStatus(IThermostat thermostat, IRelayHandler relayHandler) {
+    private String thermostatStatus(IThermostat thermostat, IRelayHandler relayHandler) {
 
         StringBuilder resultString = new StringBuilder(" ");
+        boolean first = true;
         for (String heatingPin : thermostat.getHeatingPins()) {
+            Optional<RelayPinConfiguration> relayPinConfigurationOptional
+                    = relayPinsConfig.pinConfigurationByPin(heatingPin);
             Pin pin = RaspiPin.getPinByName(heatingPin);
             PinState heatingState = relayHandler.getPinState(pin);
-            resultString.append(heatingState == null ? "UNDEFINED" : (heatingState.isHigh() ? "ON" : "OFF"));
+            resultString.append(heatingState == null ?
+                    "UNDEFINED" : (first ? "" : ", ")
+                    + relayPinConfigurationOptional.map(RelayPinConfiguration::getUserName).orElse("")
+                    + "(" + (heatingState.isHigh() ? "ON" : "OFF") + ")"
+            );
+            first = false;
         }
 
         return thermostat.getName() + "(" + thermostat.getMediumT() + "): "
-                        + (thermostat.isChanged() ? MODIFIED : DEFAULT) + ", heating:" + resultString;
+                + (thermostat.isChanged() ? MODIFIED : DEFAULT) + ", heating:" + resultString;
     }
 }

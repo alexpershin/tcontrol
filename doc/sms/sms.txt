@@ -1,1 +1,6 @@
 sudo gammu sendsms TEXT +79210972100 -unicode -textutf8 "Привет"
+
+/etc/gammu-smsdrc
+InboxFormat = не надо!
+OutboxFormat = unicode
+TransmitFormat = unicode

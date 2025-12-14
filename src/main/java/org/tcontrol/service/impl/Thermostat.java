@@ -52,13 +52,15 @@ public class Thermostat implements IThermostat {
     private ThermostatsConfig.ThermostatConfig thermostatConfig;
 
     @Getter
-    boolean heatingOn;
+    private boolean heatingOn;
 
     @Getter
-    boolean changed = false;
+    private boolean changed = false;
 
     @Getter
-    float mediumT;
+    private float mediumT;
+
+    private Float sensorTemperature;
 
     private boolean firstTime = true;
 
@@ -82,14 +84,14 @@ public class Thermostat implements IThermostat {
         SensorValue sensorValue = temperatureMonitor.getSensorValueMap().get(thermostatCurrentConfig.getSensor());
         if (sensorValue != null) {
 
-            float currentT = (float) sensorValue.getValue();
+            sensorTemperature = (float) sensorValue.getValue();
 
             float delta = thermostatCurrentConfig.getDelta();
 
             if (heatingOn) {
-                heatingOn = currentT <= mediumT + delta;
+                heatingOn = sensorTemperature <= mediumT + delta;
             } else {
-                heatingOn = currentT <= mediumT - delta;
+                heatingOn = sensorTemperature <= mediumT - delta;
             }
 
             thermostatCurrentConfig.relayPins().forEach(heatingPin -> {
@@ -101,7 +103,7 @@ public class Thermostat implements IThermostat {
             });
 
             log.info("{}> Checked temperature [{},{}], current:{}, state:{}",
-                    thermostatCurrentConfig.getCode(), mediumT - delta, mediumT + delta, currentT, heatingOn);
+                    thermostatCurrentConfig.getCode(), mediumT - delta, mediumT + delta, sensorTemperature, heatingOn);
         } else {
             if (firstTime) {
                 log.info("no sensor value yet");
@@ -134,6 +136,11 @@ public class Thermostat implements IThermostat {
     @Override
     public float currentTemperature() {
         return night() ? thermostatCurrentConfig.getTNight() : thermostatCurrentConfig.getTDay();
+    }
+
+    @Override
+    public Float sensorTemperature() {
+        return sensorTemperature;
     }
 
     @Override

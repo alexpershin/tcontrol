@@ -18,6 +18,8 @@ public interface IThermostat {
 
   float currentTemperature();
 
+  Float sensorTemperature();
+
   Thermostat rollback();
 
   List<String> getHeatingPins();

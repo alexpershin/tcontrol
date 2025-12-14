@@ -180,13 +180,11 @@ public class StatusCommandTest {
         thermostat2.init();
 
         thermostat3 = new Thermostat(3);
-
         thermostat3.setThermostatsConfig(thermostatsConfig);
         thermostat3.setTemperatureMonitor(temperatureMonitor);
         thermostat3.setRelayAggregator(relayHandler);
         thermostat3.setTimer(timer);
         thermostat3.init();
-
 
         thermostat4 = new Thermostat(4);
         thermostat4.setThermostatsConfig(thermostatsConfig);
@@ -194,7 +192,6 @@ public class StatusCommandTest {
         thermostat4.setRelayAggregator(relayHandler);
         thermostat4.setTimer(timer);
         thermostat4.init();
-
 
         sensorConfig = new SensorConfig();
 
@@ -243,8 +240,9 @@ public class StatusCommandTest {
         thermostat3.checkTemperature();
 
         CommandResult result = statusCommand.run("");
-        assert (result.getMessage().contains("termo1(12.0): Default, heating: pin0(ON)"));
-        assertTrue(result.getMessage().contains("termo2(18.0): Default, heating: pin1(ON)"));
+        assertTrue (result.getMessage().contains("termo4: ?(17.0): Default, heating: pin3(ON)"));
+        assertTrue (result.getMessage().contains("termo1: 13.0(12.0): Default, heating: pin0(ON)"));
+        assertTrue(result.getMessage().contains("termo2: 13.0(18.0): Default, heating: pin1(ON)"));
         assertTrue(result.getMessage().contains("socket: 220.1V"));
     }
 }

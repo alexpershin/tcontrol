@@ -83,7 +83,9 @@ public class StatusCommand implements ISMSCommand {
             first = false;
         }
 
-        return thermostat.getName() + "(" + thermostat.getMediumT() + "): "
+        return thermostat.getName() + ": "
+                + (thermostat.sensorTemperature() != null ? thermostat.sensorTemperature() : "?")
+                + "(" + thermostat.currentTemperature() + "): "
                 + (thermostat.isChanged() ? MODIFIED : DEFAULT) + ", heating:" + resultString;
     }
 }

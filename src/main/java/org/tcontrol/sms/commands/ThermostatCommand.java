@@ -30,8 +30,9 @@ public class ThermostatCommand implements ISMSCommand {
     public CommandResult run(String param) {
         float newTemperature;
         try {
-            newTemperature = parseFloat(param);
-            if (newTemperature < MIN_TEMPERATURE || newTemperature > MAX_TEMPERATURE) {
+            if(param == null
+                    || (newTemperature = parseFloat(param)) < MIN_TEMPERATURE
+                    || newTemperature > MAX_TEMPERATURE) {
                 return new CommandResult(STATUS.FAILURE,
                         MessageFormat.format("invalid argument: {0} has to be [{1},{2}]",
                                 param, MIN_TEMPERATURE, MAX_TEMPERATURE));

@@ -1,3 +1,5 @@
+package org.sms;
+
 import com.pi4j.io.gpio.Pin;
 import com.pi4j.io.gpio.PinState;
 import org.junit.jupiter.api.BeforeEach;

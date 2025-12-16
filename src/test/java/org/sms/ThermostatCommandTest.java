@@ -12,7 +12,6 @@ import org.tcontrol.sms.*;
 import org.tcontrol.sms.commands.CommandResult;
 
 import org.junit.jupiter.api.Test;
-import org.tcontrol.handler.IRelayHandler;
 
 import java.util.Collections;
 import java.util.Map;
@@ -22,7 +21,7 @@ import static org.tcontrol.sms.commands.STATUS.FAILURE;
 
 @ContextConfiguration(classes = CommandConfiguration.class, loader = AnnotationConfigContextLoader.class)
 @SpringBootTest
-public class HeatingOnOffCommandsTest {
+public class ThermostatCommandTest {
     @Autowired
     private Map<String,IThermostat> dynamicThermostats;
 
@@ -101,6 +100,11 @@ public class HeatingOnOffCommandsTest {
         assertNotNull(result);
         assertEquals(FAILURE, result.getStatus());
         assertTrue(result.getMessage().contains("invalid argument: abc"));
+
+        result = heatingOffCommand.run(null);
+        assertNotNull(result);
+        assertEquals(FAILURE, result.getStatus());
+        assertTrue(result.getMessage().contains("invalid argument: null"));
 
         assertFalse(thermostat.isChanged());
     }

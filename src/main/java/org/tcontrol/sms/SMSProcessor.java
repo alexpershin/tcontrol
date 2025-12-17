@@ -79,25 +79,25 @@ public class SMSProcessor {
 
             if (inList) {
                 Triple<String, String, String> commandParams = readCommandFromFile(inconingSmsFilePath);
-               if (commandParams != null) {
-                   String commandName = commandParams.getLeft();
-                   String commandParam = commandParams.getMiddle();
-                   log.info("Command: {}", commandName);
-                   CommandResult result = commandExecutor.run(commandName, commandParam);
-                   writeCommandAnswer(fileName, incomingPhoneNumber, result, commandName);
+                if (commandParams != null) {
+                    String commandName = commandParams.getLeft();
+                    String commandParam = commandParams.getMiddle();
+                    log.info("Command: {}", commandName);
+                    CommandResult result = commandExecutor.run(commandName, commandParam);
+                    writeCommandAnswer(fileName, incomingPhoneNumber, result, commandName);
                 } else {
                     CommandResult result = new CommandResult(
                             STATUS.FAILURE,
                             MessageFormat.format("invalid argument: {0}", commandParams.getRight())
                     );
-                    writeCommandAnswer(fileName, incomingPhoneNumber, result,  commandParams.getRight());
+                    writeCommandAnswer(fileName, incomingPhoneNumber, result, commandParams.getRight());
                 }
-            }else{//redirect to first number
+            } else {//redirect to first number
                 List<String> lines = Files.readAllLines(inconingSmsFilePath, Charset.defaultCharset());
                 writeCommandAnswer(fileName, smsConfig.getPhones().get(0).getPhone(), new CommandResult(
                         STATUS.REDIRECT,
-                        lines.stream().reduce((a,b)->a+'\n'+b).orElse("")
-                ),  "not parsed");
+                        lines.stream().reduce((a, b) -> a + '\n' + b).orElse("")
+                ), "not parsed");
             }
 
         }
@@ -163,17 +163,17 @@ public class SMSProcessor {
             List<String> lines = Files.readAllLines(filePath, Charset.defaultCharset());
             if (lines.size() == 1) {
                 commandText = lines.get(0);
-                args = commandText.split(" ");
+                args = StringUtil.trim(commandText).split(" ");
                 if (args.length > 2) {
                     log.info("Error parsing argument of command: {}", commandText);
                 }
-                command = StringUtil.trim(commandText).toUpperCase();
+                command = args[0].toUpperCase();
             } else {
                 log.info("Error while found command: {}", lines);
             }
             return Triple.of(command, args.length > 1 ? args[1] : null, commandText);
         } catch (IOException ex) {
-            log.info("Error while reading file {}, {}",filePath, ex.getMessage());
+            log.info("Error while reading file {}, {}", filePath, ex.getMessage());
         }
         return null;
     }

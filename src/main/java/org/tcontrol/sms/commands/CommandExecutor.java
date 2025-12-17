@@ -17,7 +17,7 @@ public class CommandExecutor {
 
         try {
             return commands.stream()
-                    .filter(c -> c.getCommandConfig().getName().equals(name))
+                    .filter(c -> c.getCommandConfig().getName().equalsIgnoreCase(name))
                     .map(c -> c.run(param))
                     .findAny()
                     .orElseGet(() -> new CommandResult(STATUS.FAILURE, "Unknown command: " + name));

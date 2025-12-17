@@ -104,7 +104,7 @@ public class ThermostatCommandTest {
         result = heatingOffCommand.run(null);
         assertNotNull(result);
         assertEquals(FAILURE, result.getStatus());
-        assertTrue(result.getMessage().contains("invalid argument: null"));
+        assertTrue(result.getMessage().contains("parameter can't be null"));
 
         assertFalse(thermostat.isChanged());
     }

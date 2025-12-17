@@ -83,8 +83,8 @@ public class SMSProcessor {
                    String commandName = commandParams.getLeft();
                    String commandParam = commandParams.getMiddle();
                    log.info("Command: {}", commandName);
-                    CommandResult result = commandExecutor.run(commandName, commandParam);
-                    writeCommandAnswer(fileName, incomingPhoneNumber, result, commandName);
+                   CommandResult result = commandExecutor.run(commandName, commandParam);
+                   writeCommandAnswer(fileName, incomingPhoneNumber, result, commandName);
                 } else {
                     CommandResult result = new CommandResult(
                             STATUS.FAILURE,

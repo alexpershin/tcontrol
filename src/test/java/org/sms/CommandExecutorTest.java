@@ -31,6 +31,6 @@ public class CommandExecutorTest {
         CommandResult res = commandExecutor.run("ABC", "10");
         assertNotNull(res);
         assertEquals(FAILURE, res.getStatus());
-        assertTrue(res.getMessage().contains("unknown command: ABC"));
+        assertTrue(res.getMessage().contains("Unknown command: ABC"));
     }
 }

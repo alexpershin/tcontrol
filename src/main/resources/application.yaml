@@ -242,19 +242,19 @@ thermostats-config:
 
 gas-on-command:
   name: 'GAS_ON'
-  thermostats: ['thermostat-gas']
+  thermostats: ['thermostat-gas', 'thermostat-my-room']
 
 gas-off-command:
   name: 'GAS_OFF'
-  thermostats: ['thermostat-gas']
+  thermostats: ['thermostat-gas', 'thermostat-my-room']
 
 electro-on-command:
   name: 'ELECTRO_ON'
-  thermostats: ['thermostat-electro', 'thermostat-my-room']
+  thermostats: ['thermostat-electro']
 
 electro-off-command:
   name: 'ELECTRO_OFF'
-  thermostats: ['thermostat-electro', 'thermostat-my-room']
+  thermostats: ['thermostat-electro']
 
 status-command:
   name: 'STATUS'

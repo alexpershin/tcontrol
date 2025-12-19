@@ -26,18 +26,24 @@ public class ThermostatCommand implements ISMSCommand {
 
     private final BiFunction<Float, IThermostat, IThermostat> action;
 
+    private final int numberParameters;
+
     @Override
     public CommandResult run(String param) {
-        float newTemperature;
+        final Float newTemperature;
         try {
-            if(param == null){
-                return new CommandResult(STATUS.FAILURE, "parameter can't be null");
-            }
-            newTemperature = parseFloat(param);
-            if(newTemperature  < MIN_TEMPERATURE || newTemperature > MAX_TEMPERATURE) {
-                return new CommandResult(STATUS.FAILURE,
-                        MessageFormat.format("invalid argument: {0} has to be [{1},{2}]",
-                                param, MIN_TEMPERATURE, MAX_TEMPERATURE));
+            if(numberParameters == 1) {
+                if (param == null) {
+                    return new CommandResult(STATUS.FAILURE, "parameter can't be null");
+                }
+                newTemperature = parseFloat(param);
+                if (newTemperature < MIN_TEMPERATURE || newTemperature > MAX_TEMPERATURE) {
+                    return new CommandResult(STATUS.FAILURE,
+                            MessageFormat.format("invalid argument: {0} has to be [{1},{2}]",
+                                    param, MIN_TEMPERATURE, MAX_TEMPERATURE));
+                }
+            }else{
+                newTemperature = null;
             }
         } catch (NumberFormatException e) {
             return new CommandResult(STATUS.FAILURE, MessageFormat.format("invalid argument: {0}", param));

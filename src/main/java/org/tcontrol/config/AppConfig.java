@@ -272,6 +272,11 @@ public class AppConfig implements BeanFactoryPostProcessor {
             public List<SensorValue> load() throws FileNotFoundException {
                 return Collections.emptyList();
             }
+
+            @Override
+            public List<SensorValue> load(long from, long to, Integer sensorId) throws FileNotFoundException {
+                return Collections.emptyList();
+            }
         };
     }
 
@@ -339,7 +344,8 @@ public class AppConfig implements BeanFactoryPostProcessor {
         return new ThermostatCommand(
                 dynamicThermostats,
                 electroOnCommandConfig,
-                (newTemperature, thermostat)-> thermostat.temperature(newTemperature));
+                (newTemperature, thermostat)-> thermostat.temperature(newTemperature),
+                1);
     }
 
     @Bean
@@ -351,7 +357,8 @@ public class AppConfig implements BeanFactoryPostProcessor {
         return new ThermostatCommand(
                 dynamicThermostats,
                 electroOffCommandConfig,
-                (newTemperature, thermostat)-> thermostat.rollback()
+                (newTemperature, thermostat)-> thermostat.rollback(),
+                0
         );
     }
 
@@ -360,9 +367,11 @@ public class AppConfig implements BeanFactoryPostProcessor {
     public ISMSCommand gasOnCommand(
             final Map<String, IThermostat> dynamicThermostats,
             final CommandConfig gasOnCommandConfig) {
-        return new ThermostatCommand(dynamicThermostats,
+        return new ThermostatCommand(
+                dynamicThermostats,
                 gasOnCommandConfig,
-                (newTemperature, thermostat)-> thermostat.temperature(newTemperature)
+                (newTemperature, thermostat)-> thermostat.temperature(newTemperature),
+                1
         );
     }
 
@@ -371,9 +380,11 @@ public class AppConfig implements BeanFactoryPostProcessor {
     public ISMSCommand gasOffCommand(
             final Map<String, IThermostat> dynamicThermostats,
             CommandConfig gasOffCommandConfig) {
-        return new ThermostatCommand(dynamicThermostats,
+        return new ThermostatCommand(
+                dynamicThermostats,
                 gasOffCommandConfig,
-                (newTemperature, thermostat)-> thermostat.rollback()
+                (newTemperature, thermostat)-> thermostat.rollback(),
+                0
         );
     }
 

@@ -79,29 +79,30 @@ public class ThermostatCommandTest {
     public void thermostatInvalidArgumentTest() {
 
         AppConfig appConfig= new AppConfig();
-        ISMSCommand heatingOffCommand = appConfig.heatingOffCommand(
+
+        ISMSCommand heatingOnCommand = appConfig.heatingOnCommand(
                 dynamicThermostats,
-                new CommandConfig("turn off", Collections.singletonList("elect"))
+                new CommandConfig("turn oo", Collections.singletonList("elect"))
         );
 
         assertFalse(thermostat.isChanged());
 
-        CommandResult result = heatingOffCommand.run("35");
+        CommandResult result = heatingOnCommand.run("35");
         assertNotNull(result);
         assertEquals(FAILURE, result.getStatus());
         assertTrue(result.getMessage().contains("invalid argument: 35"));
 
-        result = heatingOffCommand.run("0");
+        result = heatingOnCommand.run("0");
         assertNotNull(result);
         assertEquals(FAILURE, result.getStatus());
         assertTrue(result.getMessage().contains("invalid argument: 0"));
 
-        result = heatingOffCommand.run("abc");
+        result = heatingOnCommand.run("abc");
         assertNotNull(result);
         assertEquals(FAILURE, result.getStatus());
         assertTrue(result.getMessage().contains("invalid argument: abc"));
 
-        result = heatingOffCommand.run(null);
+        result = heatingOnCommand.run(null);
         assertNotNull(result);
         assertEquals(FAILURE, result.getStatus());
         assertTrue(result.getMessage().contains("parameter can't be null"));

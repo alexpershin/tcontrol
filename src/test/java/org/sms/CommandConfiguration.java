@@ -178,7 +178,8 @@ public class CommandConfiguration {
         ThermostatCommand command = new ThermostatCommand(
                 dynamicThermostats,
                 commandConfig,
-                (newTemperature, thermostat)-> thermostat.temperature(newTemperature));
+                (newTemperature, thermostat)-> thermostat.temperature(newTemperature),
+                1);
         List<ISMSCommand> commands = Collections.singletonList(command);
         return new CommandExecutor(commands);
     }

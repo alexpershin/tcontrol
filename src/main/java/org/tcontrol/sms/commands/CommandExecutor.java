@@ -24,7 +24,6 @@ public class CommandExecutor {
         } catch (Exception e) {
             log.error("Error in command: {}", name, e);
             return new CommandResult(STATUS.FAILURE, "Error in command, see logs: " + name);
-
         }
     }
 }

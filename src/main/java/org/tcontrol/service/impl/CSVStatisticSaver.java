@@ -12,10 +12,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static org.tcontrol.service.impl.CSVOptions.*;
 
@@ -52,5 +49,10 @@ public class CSVStatisticSaver implements IStatisticsSaver {
     @Override
     public LinkedList<SensorValue> lastValues(int sensorId) {
         return new LinkedList<>();
+    }
+
+    @Override
+    public Collection<SensorValue> historyValues(long from, long to, Integer sensorId) {
+        return Collections.emptyList();
     }
 }

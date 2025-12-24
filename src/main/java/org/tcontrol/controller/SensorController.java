@@ -25,7 +25,9 @@ import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.bind.annotation.RequestBody;
 
 import javax.annotation.PostConstruct;
+import java.io.FileNotFoundException;
 import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.time.ZoneId;
 import java.util.*;
 import java.util.logging.Level;
@@ -140,7 +142,7 @@ public class SensorController {
     )
     public SensorValuesResult getSensorPrevValues(@RequestParam(name = "sensorId") Integer sensorId) throws SensorServiceException {
         SensorValuesResult result = new SensorValuesResult();
-        List<SensorValue> values = sensorService.getPrevSensorValues(CURRENT_USER_ID, null, sensorId);
+        List<SensorValue> values = sensorService.getPrevSensorValues(CURRENT_USER_ID, sensorId);
         List<SensorValueDto> webValues = sensorValueMapper.map(values);
         result.setValues(webValues.toArray(new SensorValueDto[]{}));
         return result;
@@ -184,15 +186,15 @@ public class SensorController {
     )
     public SensorValuesResult getSensorHistoryValues(
             @RequestParam(name = "sensorId") Integer sensorId,
-            @RequestParam(name = "from")  @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime from,
-            @RequestParam(name = "to") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime  to
-        ) throws SensorServiceException {
+            @RequestParam(name = "from")  @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) OffsetDateTime from,
+            @RequestParam(name = "to") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) OffsetDateTime  to
+        ) throws SensorServiceException, FileNotFoundException {
         SensorValuesResult result = new SensorValuesResult();
         ZoneId zoneId = ZoneId.systemDefault();
         List<SensorValue> values = sensorService.getHistorySensorValues(
                 CURRENT_USER_ID,
-                from.atZone(zoneId).toInstant().toEpochMilli(),
-                to.atZone(zoneId).toInstant().toEpochMilli(),
+                from.toInstant().toEpochMilli(),
+                to.toInstant().toEpochMilli(),
                 sensorId
         );
         List<SensorValueDto> webValues = sensorValueMapper.map(values);

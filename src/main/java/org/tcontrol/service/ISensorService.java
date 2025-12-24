@@ -5,6 +5,7 @@ import org.tcontrol.models.Sensor;
 import org.tcontrol.models.SensorValue;
 import org.tcontrol.models.User;
 
+import java.io.FileNotFoundException;
 import java.sql.Date;
 import java.util.List;
 import java.util.Map;
@@ -125,7 +126,7 @@ public interface ISensorService {
      *
      * @return list of sensor values;
      */
-    List<SensorValue> getPrevSensorValues(final int userId, Date date, final int sensorId);
+    List<SensorValue> getPrevSensorValues(final int userId, final int sensorId);
 
     /**
      * Change thermostats temperature option to start/stop heating;
@@ -158,5 +159,5 @@ public interface ISensorService {
      * @param sensorId идентификатор сенсора;
      * @return list of sensor values;
      */
-    List<SensorValue>  getHistorySensorValues(int currentUserId, long from, long to, Integer sensorId);
+    List<SensorValue>  getHistorySensorValues(int currentUserId, long from, long to, Integer sensorId) throws FileNotFoundException;
 }

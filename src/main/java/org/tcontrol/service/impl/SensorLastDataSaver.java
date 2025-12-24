@@ -136,4 +136,9 @@ public class SensorLastDataSaver implements IStatisticsSaver {
         Deque<SensorValue> sensorValues = cache.get(sensorId);
         return sensorValues != null ? sensorValues : new LinkedList<>();
     }
+
+    @Override
+    public Collection<SensorValue> historyValues(long from, long to, Integer sensorId) throws FileNotFoundException {
+        return statisticsLoader.load(from, to, sensorId);
+    }
 }

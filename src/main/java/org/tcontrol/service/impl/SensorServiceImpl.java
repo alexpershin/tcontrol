@@ -18,6 +18,7 @@ import org.tcontrol.service.IStatisticsSaver;
 import org.tcontrol.config.props.SensorConfig;
 
 import javax.annotation.PostConstruct;
+import java.io.FileNotFoundException;
 import java.text.MessageFormat;
 import java.util.Collections;
 import java.util.List;
@@ -74,8 +75,21 @@ public class SensorServiceImpl implements ISensorService {
     }
 
     @Override
-    public List<SensorValue> getPrevSensorValues(int userId, java.sql.Date date, int sensorId) {
+    public List<SensorValue> getPrevSensorValues(int userId, int sensorId) {
         return sensorLastDataSaver.lastValues(sensorId)
+                .stream()
+                .map(v -> new SensorValue(
+                        v.getSensorId(),
+                        v.getSensorCode(),
+                        v.getTimestamp(),
+                        v.getValue())
+                )
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<SensorValue> getHistorySensorValues(int currentUserId, long from, long to, Integer sensorId) throws FileNotFoundException {
+        return sensorLastDataSaver.historyValues(from,to,sensorId)
                 .stream()
                 .map(v -> new SensorValue(
                         v.getSensorId(),
@@ -122,11 +136,6 @@ public class SensorServiceImpl implements ISensorService {
                 .orElseThrow(() ->
                         new SensorServiceException(MessageFormat.format("No thermostat found: {0}",
                                 sensorId)));
-    }
-
-    @Override
-    public List<SensorValue> getHistorySensorValues(int currentUserId, long from, long to, Integer sensorId) {
-        return Collections.emptyList();
     }
 
     private List<IThermostat> thermostats(int sensorId) {

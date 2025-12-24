@@ -43,6 +43,11 @@ public class CSVStatisticLoader implements IStatisticsLoader {
 
     @Override
     public List<SensorValue> load() throws FileNotFoundException {
+        return load(timer.getCurrentTimeMillis() - expiredMillis, timer.getCurrentTimeMillis(), null);
+    }
+
+    @Override
+    public List<SensorValue> load(long from, long to, Integer sensorId) throws FileNotFoundException {
         List<SensorValue> result = new ArrayList<>(sensorConfig.getSensors().size() * 60 * 24);
 
         boolean fileExist = Files.exists(Paths.get(dataFileName));
@@ -57,28 +62,37 @@ public class CSVStatisticLoader implements IStatisticsLoader {
             CSVFormat csvFormat = CSVFormat.EXCEL.withHeader(SENSOR_ID, SENSOR_CODE, TIMESTAMP, VALUE);
 
             SensorValue value;
+            int exceptionCount = 0;
             do {
                 String csvLine = reader.readLine();
                 value = null;
                 if (StringUtils.isNotBlank(csvLine)) {
-                    value = new SensorValue();
                     try (StringReader stringReader = new StringReader(csvLine)) {
                         CSVParser parser = new CSVParser(stringReader, csvFormat);
                         CSVRecord record = parser.iterator().next();
-
-                        value.setSensorId(Integer.parseInt(record.get(SENSOR_ID)));
-                        value.setSensorCode(record.get(SENSOR_CODE));
-                        value.setTimestamp(Long.parseLong(record.get(TIMESTAMP)));
-                        value.setValue(Double.parseDouble(record.get(VALUE)));
-                        result.add(value);
+                        String valueTimestampString = record.get(TIMESTAMP);
+                        long timestamp = Long.parseLong(valueTimestampString);
+                        if (timestamp <= to) {
+                            value = new SensorValue();
+                            value.setSensorId(Integer.parseInt(record.get(SENSOR_ID)));
+                            value.setSensorCode(record.get(SENSOR_CODE));
+                            value.setTimestamp(Long.parseLong(valueTimestampString));
+                            value.setValue(Double.parseDouble(record.get(VALUE)));
+                            result.add(value);
+                        }
+                    } catch (Exception ex) {//in case of bad file system
+                        log.error("Error while loading CSV line: {}", csvLine, ex);
+                        if(++exceptionCount >= 100){
+                            break;
+                        }
                     }
                 }
-            } while (value != null && timer.getCurrentTimeMillis() - value.getTimestamp() < expiredMillis);
+            } while (value == null || value.getTimestamp() >= from);
 
             log.info("Loaded {} records", result.size());
 
         } catch (IOException ex) {
-            log.error("error while loading CSV", ex);
+            log.error("Error while loading CSV", ex);
         }
         Collections.reverse(result);
         return result;

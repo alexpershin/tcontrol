@@ -2,6 +2,8 @@ package org.tcontrol.service.impl;
 
 import org.apache.commons.csv.CSVFormat;
 
+import java.util.stream.Stream;
+
 public interface CSVOptions {
     public static final CSVFormat EXCEL = CSVFormat.EXCEL;
     public static final String SENSOR_ID = "sensorId";

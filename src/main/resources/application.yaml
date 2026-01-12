@@ -17,7 +17,7 @@ main-config:
 
 w1DevicesPath: /sys/bus/w1/devices
 
-dataFile: data.csv
+dataFile: data_bad.csv
 
 sensor-config:
   schedule: '0 0/1 * * * ?'

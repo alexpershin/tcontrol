@@ -302,6 +302,7 @@ public class AppConfig implements BeanFactoryPostProcessor {
             final SensorConfig sensorConfig,
             final RelayPinsConfig relayPinsConfig,
             final IStatisticsSaver sensorLastDataSaver,
+            final HistoricDataCache historicDataCache,
             final SensorMapper sensorMapper,
             final Map<String, IThermostat> dynamicThermostats,
             final SensorValueMapper sensorValueMapper
@@ -310,6 +311,7 @@ public class AppConfig implements BeanFactoryPostProcessor {
                 thermostatsConfig,
                 sensorConfig,
                 relayPinsConfig,
+                historicDataCache,
                 sensorLastDataSaver,
                 sensorMapper,
                 dynamicThermostats,

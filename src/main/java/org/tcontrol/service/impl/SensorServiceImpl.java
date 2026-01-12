@@ -7,14 +7,11 @@ import org.tcontrol.config.props.RelayPinsConfig;
 import org.tcontrol.config.props.ThermostatsConfig;
 import org.tcontrol.controller.mappers.SensorMapper;
 import org.tcontrol.controller.mappers.SensorValueMapper;
-import org.tcontrol.service.ISensorService;
-import org.tcontrol.service.IThermostat;
-import org.tcontrol.service.SensorServiceException;
+import org.tcontrol.service.*;
 import org.tcontrol.models.Sensor;
 import org.tcontrol.models.SensorValue;
 import org.tcontrol.models.ThermostatTemperature;
 import org.tcontrol.models.User;
-import org.tcontrol.service.IStatisticsSaver;
 import org.tcontrol.config.props.SensorConfig;
 
 import javax.annotation.PostConstruct;
@@ -37,10 +34,12 @@ public class SensorServiceImpl implements ISensorService {
     protected final ThermostatsConfig thermostatsConfig;
     protected final SensorConfig sensorConfig;
     private final RelayPinsConfig relayPinsConfig;
+    private final HistoricDataCache historicDataCache;
     protected final IStatisticsSaver sensorLastDataSaver;
     protected final SensorMapper sensorMapper;
     protected final Map<String, IThermostat> dynamicThermostats;
     protected final SensorValueMapper sensorValueMapper;
+
 
     @PostConstruct
     public void init() {
@@ -89,7 +88,7 @@ public class SensorServiceImpl implements ISensorService {
 
     @Override
     public List<SensorValue> getHistorySensorValues(int currentUserId, long from, long to, Integer sensorId) throws FileNotFoundException {
-        return sensorLastDataSaver.historyValues(from,to,sensorId)
+        return historicDataCache.historyValues(from,to,sensorId)
                 .stream()
                 .map(v -> new SensorValue(
                         v.getSensorId(),

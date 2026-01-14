@@ -19,12 +19,13 @@ public class HistoricDataCacheImp implements HistoricDataCache {
 
     private final IStatisticsLoader csvStatisticsLoader;
 
-    private final RangeSet<Long> rangeSet = TreeRangeSet.create();
+    private final Map<Integer, RangeSet<Long>> rangeSetBySensor = new HashMap<>();
     private final Map<Integer, TreeMap<Long, SensorValue>> cache = new HashMap<>();
 
     @Override
     public Collection<SensorValue> historyValues(long from, long to, Integer sensorId) throws FileNotFoundException {
         Range<Long> range = Range.open(from, to);
+        RangeSet<Long> rangeSet = rangeSetBySensor.computeIfAbsent(sensorId, e->TreeRangeSet.create());
         if (rangeSet.encloses(range)) {
             return cache.get(sensorId).subMap(from, to).values();
         } else {
@@ -35,7 +36,7 @@ public class HistoricDataCacheImp implements HistoricDataCache {
                 addToCache(values, sensorId);
                 rangeSet.add(range);
             } else {
-                for (Range<Long> rangeToLoad : ranges) {
+                for (Range<Long> rangeToLoad :  new ArrayList<>(ranges)) {
                     final List<SensorValue> values = csvStatisticsLoader.load(rangeToLoad.lowerEndpoint(), rangeToLoad.upperEndpoint(), sensorId);
                     addToCache(values, sensorId);
                     rangeSet.add(rangeToLoad);
@@ -49,6 +50,4 @@ public class HistoricDataCacheImp implements HistoricDataCache {
         TreeMap<Long, SensorValue> sensorValues = cache.computeIfAbsent(sensorId, k -> new TreeMap<>());
         values.forEach(value -> sensorValues.put(value.getTimestamp(), value));
     }
-
-
 }

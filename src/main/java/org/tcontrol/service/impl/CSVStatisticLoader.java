@@ -1,11 +1,14 @@
 package org.tcontrol.service.impl;
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.csv.*;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
+import org.checkerframework.checker.units.qual.A;
 import org.springframework.beans.factory.annotation.Value;
 import org.tcontrol.config.Logging;
 import org.tcontrol.config.props.SensorConfig;
@@ -19,6 +22,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
+import java.util.concurrent.*;
+import java.util.stream.Collectors;
 
 import org.apache.commons.io.input.ReversedLinesFileReader;
 import org.apache.commons.csv.CSVParser;
@@ -36,6 +41,7 @@ public class CSVStatisticLoader implements IStatisticsLoader {
     public static final int TIMESTAMP_INDX = 2;
     public static final int SENSOR_CODE_INDX = 1;
     public static final int SENSOR_VALUE_INDX = 3;
+    public static final int NUMBER_CORES = Runtime.getRuntime().availableProcessors();
     private final SensorConfig sensorConfig;
     private final ITimer timer;
 
@@ -60,7 +66,12 @@ public class CSVStatisticLoader implements IStatisticsLoader {
 
     @Override
     public List<SensorValue> load(long from, long to, Integer sensorId) throws FileNotFoundException {
-        List<SensorValue> result = new ArrayList<>(sensorConfig.getSensors().size() * 60 * 24);
+        //return loadSingleThread(from, to, sensorId);
+        return loadMultiThread(from, to, sensorId);
+    }
+
+    public List<SensorValue> loadSingleThread(long from, long to, Integer sensorId) throws FileNotFoundException {
+        List<SensorValue> result = new ArrayList<>(10000);
 
         boolean fileExist = Files.exists(Paths.get(dataFileName));
         if (!fileExist) {
@@ -70,45 +81,31 @@ public class CSVStatisticLoader implements IStatisticsLoader {
 
         try {
             FileInputStream is = new FileInputStream(dataFile);
-            //ищем позицию где начинаются нужные данные
-            long pos = findPositionBeforeFrom(from, dataFile);
+            //find position where required data located
+            long pos = lookForPositionBeforeFrom(from, dataFile);
 
-            //пропускаем части, где точно нет данных
-         //   is.skip(pos);
+            //skip where exactly no required data
+            is.skip(pos);
             Pair<Integer, Long> exceptionsAndTimestamp = Pair.of(0, 0L);
             String lastLine = "";
-            boolean firstChank = true;
 
             byte[] chunk = new byte[1024 * 1024];
-            int chunkLen = 0;
-            int i = 0;
-            long k = pos;
-            //читаем файл частями
+            int chunkLen;
+
+            //read file chunk by chunk
             while ((chunkLen = is.read(chunk)) != -1) {
-                i++;
-                //пропускаем части, где точно нет данных
-                if ((k += chunkLen) < pos) {
-                    continue;
-                }
                 ByteArrayInputStream bais = new ByteArrayInputStream(chunk);
                 long l = 0;
-                // в первой части, где есть нужные данные, пропускаем не нужное начало
-                if (k >= pos && firstChank) {
-                    long toSkip = pos % chunk.length;
-                    bais.skip(toSkip);
-                    firstChank = false;
-                    l = toSkip;
-                }
                 InputStreamReader isr = new InputStreamReader(bais, StandardCharsets.UTF_8);
                 BufferedReader br = new BufferedReader(isr);
                 String line, lineToParse;
                 int j = 0;
-                //парсим нужные данные
+                //parse data line by line
                 while ((line = br.readLine()) != null
-                        && l < chunkLen //обрезаем буфер данных по размеру последней порции
+                        && l < chunkLen //cut buffer according to last chunk
                 ) {
                     if (j++ == 0) {
-                        lineToParse = lastLine + line; //добавляем остаток строки предыдущей порции
+                        lineToParse = lastLine + line; //add previous chunk remains
                     } else {
                         lineToParse = line;
                     }
@@ -116,9 +113,11 @@ public class CSVStatisticLoader implements IStatisticsLoader {
                     if (exceptionsAndTimestamp == null) break;//if too many errors
                     if (exceptionsAndTimestamp.getValue() > to) break;//limit for "TO"
                     lastLine = line;
-                    l += line.length() + 2;//учитываем символ переноса строки
+                    l += line.length() + 2;//add length new line symbols
                 }
+                chunk = new byte[1024 * 1024];
             }
+
             log.info("Loaded {} records", result.size());
         } catch (IOException ex) {
             log.error("Error while loading CSV", ex);
@@ -126,79 +125,141 @@ public class CSVStatisticLoader implements IStatisticsLoader {
             log.error(e.getMessage());
         }
 
-
-      /*  log.info("Loading started");
-        try (RandomAccessFile reader = new RandomAccessFile(dataFile.getPath(), "r")) {
-            try {
-                long pos = findPositionBeforeFrom(from, dataFile);
-                reader.seek(pos);
-
-                int exceptionCount = 0;
-                //long timestamp = 0;
-
-                Pair<Integer, Long> exceptionsAndTimestamp = Pair.of(0,0L);
-                String csvLine;
-                do {
-                    csvLine = reader.readLine();
-                    exceptionsAndTimestamp = parseLine(from, to, sensorId, csvLine, result, exceptionsAndTimestamp);
-                    if (exceptionsAndTimestamp == null) break;
-                } while (csvLine != null && exceptionsAndTimestamp.getValue() <= to);
-            } catch (IllegalArgumentException e) {
-                log.error(e.getMessage());
-            }
-
-            log.info("Loaded {} records", result.size());
-        } catch (IOException ex) {
-            log.error("Error while loading CSV", ex);
-        }
-
-       */
         return result;
     }
 
-   /* private Pair<Integer, Long> parseLine(long from, long to, Integer sensorId, String csvLine, List<SensorValue> result, Pair<Integer, Long> exceptionsAndTimestamp) {
-        if (StringUtils.isNotBlank(csvLine)) {
-            long timestamp = 0;
-            try (CSVParser parser = CSVParser.parse(csvLine, csvFormat)) {
-                CSVRecord record = parser.iterator().next();
-                int recordSensorId = Integer.parseInt(record.get(SENSOR_ID));
-                if (sensorId == null || sensorId.equals(recordSensorId)) {
-                    timestamp = Long.parseLong(record.get(TIMESTAMP));
-                    if (timestamp >= from && timestamp <= to) {
-                        final SensorValue value = new SensorValue();
-                        value.setSensorId(recordSensorId);
-                        value.setSensorCode(record.get(SENSOR_CODE));
-                        value.setTimestamp(timestamp);
-                        value.setValue(Double.parseDouble(record.get(VALUE)));
-                        result.add(value);
-                        exceptionsAndTimestamp = Pair.of(exceptionsAndTimestamp.getKey(), timestamp);
-                    }
-                }
-            } catch (Exception ex) {//in case of bad file system
-                log.error("Error while loading CSV line: {}", csvLine, ex);
-                exceptionsAndTimestamp = Pair.of(exceptionsAndTimestamp.getKey() + 1, exceptionsAndTimestamp.getValue());
-                if (exceptionsAndTimestamp.getKey() >= 100) {
-                    return null;
-                }
-            }
-        }
-        return exceptionsAndTimestamp;
-    }*/
+    public List<SensorValue> loadMultiThread(long from, long to, Integer sensorId) throws FileNotFoundException {
 
-    private Pair<Integer, Long> parseLine(long from, long to, Integer sensorId, String csvLine, List<SensorValue> result, Pair<Integer, Long> exceptionsAndTimestamp) {
+        boolean fileExist = Files.exists(Paths.get(dataFileName));
+        if (!fileExist) {
+            throw new FileNotFoundException(dataFileName);
+        }
+        File dataFile = new File(dataFileName);
+
+        try {
+            FileInputStream is = new FileInputStream(dataFile);
+            //find position where required data located
+            long pos = lookForPositionBeforeFrom(from, dataFile);
+
+            //skip where exactly no required data
+            is.skip(pos);
+
+            byte[] chunk = new byte[1024 * 1024];
+            int chunkLen;
+
+            int threadNumber = 1 + NUMBER_CORES / 2;
+            ThreadPoolExecutor executor = (ThreadPoolExecutor) Executors.newFixedThreadPool(threadNumber);
+            List<CSVParsingTask> taskList = new ArrayList<>();
+            int taskId = 0;
+
+            //read file chunk by chunk
+            while ((chunkLen = is.read(chunk)) != -1) {
+
+                CSVParsingTask task = new CSVParsingTask(chunk, chunkLen, from, to, sensorId, taskId++);
+                taskList.add(task);
+
+                while (executor.getActiveCount() >= threadNumber) {
+                    Thread.sleep(1);
+                }
+                // create threads for each task
+                executor.submit(task);
+
+                chunk = new byte[1024 * 1024];
+            }
+
+            executor.shutdown();
+            boolean r = executor.awaitTermination(5, TimeUnit.SECONDS);
+            if (!r) {
+                log.error("tasks still in progress, active count: {}", executor.getActiveCount());
+            }
+
+            List<SensorValue> commonResult =
+                    taskList.stream().flatMap(t -> t.getResult().stream()).collect(Collectors.toList());
+
+            log.info("Loaded {} records", commonResult.size());
+            return commonResult;
+        } catch (IOException ex) {
+            log.error("Error while loading CSV", ex);
+        } catch (IllegalArgumentException e) {
+            log.error(e.getMessage());
+        } catch (InterruptedException e) {
+            log.error(e.getMessage());
+            throw new RuntimeException(e);
+        }
+
+        return new ArrayList<>();
+    }
+
+    @Getter
+    @RequiredArgsConstructor
+    public static class CSVParsingTask implements Callable<Pair<Integer, Long>> {
+        private final byte[] chunk;
+        private final int chunkLen;
+        private final long from, to;
+        private final Integer sensorId;
+        private final int taskId;
+        private boolean finished = false;
+        private final List<SensorValue> result = new ArrayList<>();
+        String firstLine, lastLine;
+        private Pair<Integer, Long> exceptionsAndTimestamp = Pair.of(0, 0L);
+
+        @Override
+        public Pair<Integer, Long> call() {
+            try {
+
+                ByteArrayInputStream bais = new ByteArrayInputStream(chunk);
+                long l = 0;
+                InputStreamReader isr = new InputStreamReader(bais, StandardCharsets.UTF_8);
+                BufferedReader br = new BufferedReader(isr);
+                String line, prevLine = null;
+                int j = 0;
+                //parse data line by line
+                while ((line = br.readLine()) != null
+                        && l < chunkLen //cut buffer according to last chunk
+                ) {
+                    if (j++ == 0) {
+                        firstLine = line;
+                    } else {
+                        if (prevLine != null) {
+                            exceptionsAndTimestamp = parseLine(from, to, sensorId, prevLine, result, exceptionsAndTimestamp);
+                            if (exceptionsAndTimestamp == null) break;//if too many errors
+                            if (exceptionsAndTimestamp.getValue() > to) break;//limit for "TO"
+                        }
+                        prevLine = line;
+                    }
+                    l += line.length() + 2;
+                }
+                lastLine = line;
+            } catch (IOException ex) {
+                log.error("Error while loading CSV", ex);
+            } catch (IllegalArgumentException e) {
+                log.error(e.getMessage());
+            }
+            finished = true;
+            return exceptionsAndTimestamp;
+        }
+    }
+
+    private static Pair<Integer, Long> parseLine(long from, long to,
+                                                 Integer sensorId,
+                                                 String csvLine,
+                                                 List<SensorValue> result,
+                                                 Pair<Integer, Long> exceptionsAndTimestamp) {
         if (StringUtils.isNotBlank(csvLine)) {
             try {
                 String[] cells = StringUtils.split(csvLine, ",");
                 int recordSensorId = Integer.parseInt(cells[SENSOR_ID_INDX]);
                 if (sensorId == null || sensorId.equals(recordSensorId)) {
                     long timestamp = Long.parseLong(cells[TIMESTAMP_INDX]);
-                    if (timestamp >= from && timestamp <= to) {
-                        final SensorValue value = new SensorValue();
-                        value.setSensorId(recordSensorId);
-                        value.setSensorCode(cells[SENSOR_CODE_INDX]);
-                        value.setTimestamp(timestamp);
-                        value.setValue(Double.parseDouble(cells[SENSOR_VALUE_INDX]));
-                        result.add(value);
+                    if (timestamp >= from) {
+                        if (timestamp <= to) {
+                            final SensorValue value = new SensorValue();
+                            value.setSensorId(recordSensorId);
+                            value.setSensorCode(cells[SENSOR_CODE_INDX]);
+                            value.setTimestamp(timestamp);
+                            value.setValue(Double.parseDouble(cells[SENSOR_VALUE_INDX]));
+                            result.add(value);
+                        }
                         exceptionsAndTimestamp = Pair.of(exceptionsAndTimestamp.getKey(), timestamp);
                     }
                 }
@@ -213,8 +274,8 @@ public class CSVStatisticLoader implements IStatisticsLoader {
         return exceptionsAndTimestamp;
     }
 
-    private long findPositionBeforeFrom(long from, File dataFile) throws FileNotFoundException {
-        log.info("finding position in data file..");
+    private long lookForPositionBeforeFrom(long from, File dataFile) throws FileNotFoundException {
+        log.info("looking for good position in data file..");
         try {
             final Pair<Integer, Long> firstData = calculateAvgLineLengthAndFirstDataTimestamp(dataFile);
             long beginTimestamp = firstData.getValue();
@@ -233,6 +294,7 @@ public class CSVStatisticLoader implements IStatisticsLoader {
             Long timestampOnPos = null, timestampOnPosPrev;
             long newPos;
             Long prevPosDelta, newPosDelta = null;
+            int iterations = 0;
             do {
                 timestampOnPosPrev = timestampOnPos;
                 prevPosDelta = newPosDelta;
@@ -240,9 +302,10 @@ public class CSVStatisticLoader implements IStatisticsLoader {
                 timestampOnPos = timestampOnPosResult.getKey();
                 newPos = timestampOnPosResult.getValue();
                 final long curDelta = timestampOnPos - from;
-                final long posDelta = Math.round(((double) curDelta / 2) / filePeriod * bytes);
+                final long posDelta = Math.round((double) curDelta / filePeriod * bytes);
                 pos -= posDelta;
                 newPosDelta = newPos - pos;
+                iterations++;
             } while (timestampOnPosPrev == null
                     || timestampOnPos <= from && timestampOnPosPrev <= from
                     && Math.abs(prevPosDelta) > Math.abs(newPosDelta)
@@ -250,7 +313,7 @@ public class CSVStatisticLoader implements IStatisticsLoader {
             long res = timestampOnPos < from ?
                     newPos + 1 :
                     timestampOnPos(pos - newPosDelta, path).getValue() + 1;
-            log.info("complete finding position in data file: {}", res);
+            log.info("looking for position complete: pos {}, iterations: {}", res, iterations);
             return res;
         } catch (IOException e) {
             log.error("Error while loading CSV ", e);

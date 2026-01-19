@@ -10,6 +10,7 @@ import org.tcontrol.service.HistoricDataCache;
 import org.tcontrol.service.IStatisticsLoader;
 
 import java.io.FileNotFoundException;
+import java.lang.ref.SoftReference;
 import java.util.*;
 
 @Component
@@ -20,15 +21,25 @@ public class HistoricDataCacheImp implements HistoricDataCache {
     private final IStatisticsLoader csvStatisticsLoader;
 
     private final Map<Integer, RangeSet<Long>> rangeSetBySensor = new HashMap<>();
-    private final Map<Integer, TreeMap<Long, SensorValue>> cache = new HashMap<>();
+    private final Map<Integer, SoftReference<TreeMap<Long, SensorValue>>> cache = new HashMap<>();
 
     @Override
     public Collection<SensorValue> historyValues(long from, long to, Integer sensorId) throws FileNotFoundException {
         Range<Long> range = Range.open(from, to);
-        RangeSet<Long> rangeSet = rangeSetBySensor.computeIfAbsent(sensorId, e->TreeRangeSet.create());
-        if (rangeSet.encloses(range)) {
-            return cache.get(sensorId).subMap(from, to).values();
+        RangeSet<Long> rangeSet = rangeSetBySensor.computeIfAbsent(sensorId, e -> TreeRangeSet.create());
+
+        TreeMap<Long, SensorValue> sensorTree = cache.computeIfAbsent(sensorId, k -> new SoftReference<>(new TreeMap<>())).get();
+
+        if (sensorTree != null) {
+            if (rangeSet.encloses(range)) {
+                return sensorTree.subMap(from, to).values();
+            }
         } else {
+            rangeSetBySensor.remove(sensorId);
+        }
+
+        rangeSet = rangeSetBySensor.computeIfAbsent(sensorId, e -> TreeRangeSet.create());
+        {
             RangeSet<Long> sub = rangeSet.complement().subRangeSet(range);
             Set<Range<Long>> ranges = sub.asRanges();
             if (ranges.size() > MAX_RANGES_TO_LOAD) {
@@ -36,18 +47,33 @@ public class HistoricDataCacheImp implements HistoricDataCache {
                 addToCache(values, sensorId);
                 rangeSet.add(range);
             } else {
-                for (Range<Long> rangeToLoad :  new ArrayList<>(ranges)) {
+                for (Range<Long> rangeToLoad : new ArrayList<>(ranges)) {
                     final List<SensorValue> values = csvStatisticsLoader.load(rangeToLoad.lowerEndpoint(), rangeToLoad.upperEndpoint(), sensorId);
                     addToCache(values, sensorId);
                     rangeSet.add(rangeToLoad);
                 }
             }
-            return cache.get(sensorId).subMap(from, to).values();
+            sensorTree = cache.get(sensorId).get();
+            if (sensorTree == null) {
+                throw new RuntimeException("can't get life cache");
+            }
+
+            return sensorTree.subMap(from, to).values();
         }
     }
 
     private void addToCache(List<SensorValue> values, Integer sensorId) {
-        TreeMap<Long, SensorValue> sensorValues = cache.computeIfAbsent(sensorId, k -> new TreeMap<>());
-        values.forEach(value -> sensorValues.put(value.getTimestamp(), value));
+        TreeMap<Long, SensorValue> longSensorValueTreeMap =
+                cache.computeIfAbsent(sensorId, k -> new SoftReference<>(new TreeMap<>())).get();
+
+        if (longSensorValueTreeMap == null) {
+            longSensorValueTreeMap = new TreeMap<>();
+            SoftReference<TreeMap<Long, SensorValue>> value = new SoftReference<>(longSensorValueTreeMap);
+            cache.put(sensorId, value);
+        }
+
+        for (SensorValue value : values) {
+            longSensorValueTreeMap.put(value.getTimestamp(), value);
+        }
     }
 }

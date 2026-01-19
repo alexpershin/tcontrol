@@ -152,6 +152,7 @@ public class CSVStatisticLoader implements IStatisticsLoader {
             List<CSVParsingTask> taskList = new ArrayList<>();
             int taskId = 0;
 
+            List<SensorValue> commonResult = new ArrayList<>();
             //read file chunk by chunk
             while ((chunkLen = is.read(chunk)) != -1) {
 
@@ -163,6 +164,11 @@ public class CSVStatisticLoader implements IStatisticsLoader {
                 }
                 // create threads for each task
                 executor.submit(task);
+                commonResult.addAll(taskList.stream()
+                        .filter(CSVParsingTask::isFinished)
+                        .flatMap(t -> t.getResult().stream()).collect(Collectors.toList()));
+
+                removeAndClearTask(taskList);
 
                 chunk = new byte[1024 * 1024];
             }
@@ -172,9 +178,6 @@ public class CSVStatisticLoader implements IStatisticsLoader {
             if (!r) {
                 log.error("tasks still in progress, active count: {}", executor.getActiveCount());
             }
-
-            List<SensorValue> commonResult =
-                    taskList.stream().flatMap(t -> t.getResult().stream()).collect(Collectors.toList());
 
             log.info("Loaded {} records", commonResult.size());
             return commonResult;
@@ -188,6 +191,17 @@ public class CSVStatisticLoader implements IStatisticsLoader {
         }
 
         return new ArrayList<>();
+    }
+
+    private static void removeAndClearTask(List<CSVParsingTask> taskList) {
+        ListIterator<CSVParsingTask> csvParsingTaskListIterator = taskList.listIterator();
+        while (csvParsingTaskListIterator.hasNext()) {
+            CSVParsingTask t = csvParsingTaskListIterator.next();
+            if (t.isFinished()) {
+                t.getResult().clear();
+                csvParsingTaskListIterator.remove();
+            }
+        }
     }
 
     @Getter

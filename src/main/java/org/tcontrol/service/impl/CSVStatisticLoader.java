@@ -1,6 +1,5 @@
 package org.tcontrol.service.impl;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
@@ -8,7 +7,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.csv.*;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
-import org.checkerframework.checker.units.qual.A;
 import org.springframework.beans.factory.annotation.Value;
 import org.tcontrol.config.Logging;
 import org.tcontrol.config.props.SensorConfig;
@@ -87,7 +85,7 @@ public class CSVStatisticLoader implements IStatisticsLoader {
             //skip where exactly no required data
             is.skip(pos);
             Pair<Integer, Long> exceptionsAndTimestamp = Pair.of(0, 0L);
-            String lastLine = "";
+            String prevLine = "";
 
             byte[] chunk = new byte[1024 * 1024];
             int chunkLen;
@@ -104,15 +102,17 @@ public class CSVStatisticLoader implements IStatisticsLoader {
                 while ((line = br.readLine()) != null
                         && l < chunkLen //cut buffer according to last chunk
                 ) {
-                    if (j++ == 0) {
-                        lineToParse = lastLine + line; //add previous chunk remains
-                    } else {
-                        lineToParse = line;
+                    if (l + line.length() < chunkLen) {//not last line
+                        if (j++ == 0) {
+                            lineToParse = prevLine + line; //add previous chunk remains
+                        } else {
+                            lineToParse = line;
+                        }
+                        exceptionsAndTimestamp = parseLine(from, to, sensorId, lineToParse, result, exceptionsAndTimestamp, false);
+                        if (exceptionsAndTimestamp == null) break;//if too many errors
+                        if (exceptionsAndTimestamp.getValue() > to) break;//limit for "TO"
                     }
-                    exceptionsAndTimestamp = parseLine(from, to, sensorId, lineToParse, result, exceptionsAndTimestamp);
-                    if (exceptionsAndTimestamp == null) break;//if too many errors
-                    if (exceptionsAndTimestamp.getValue() > to) break;//limit for "TO"
-                    lastLine = line;
+                    prevLine = line;
                     l += line.length() + 2;//add length new line symbols
                 }
                 chunk = new byte[1024 * 1024];
@@ -162,13 +162,16 @@ public class CSVStatisticLoader implements IStatisticsLoader {
                 while (executor.getActiveCount() >= threadNumber) {
                     Thread.sleep(1);
                 }
+                //Thread.sleep(1);
+                log.info("task started: {}", taskList.size() - 1);
                 // create threads for each task
                 executor.submit(task);
-                commonResult.addAll(taskList.stream()
-                        .filter(CSVParsingTask::isFinished)
-                        .flatMap(t -> t.getResult().stream()).collect(Collectors.toList()));
+                join(taskList, commonResult, from, to, sensorId);
 
-                removeAndClearTask(taskList);
+                if (taskList.stream().map(CSVParsingTask::isStopped).reduce((a, b) -> a || b).orElse(false)) {
+                    log.info("stop creating new tasks: {}", taskList.size() - 1);
+                    break;
+                }
 
                 chunk = new byte[1024 * 1024];
             }
@@ -179,8 +182,15 @@ public class CSVStatisticLoader implements IStatisticsLoader {
                 log.error("tasks still in progress, active count: {}", executor.getActiveCount());
             }
 
-            log.info("Loaded {} records", commonResult.size());
-            return commonResult;
+            join(taskList, commonResult, from, to, sensorId);
+            processEdges(taskList, commonResult, from, to, sensorId);
+
+            List<SensorValue> result = commonResult.stream()
+                    .sorted((a, b) -> Comparator.comparingLong(SensorValue::getTimestamp).compare(a, b))
+                    .collect(Collectors.toList());
+
+            log.info("Loaded {} records", result.size());
+            return result;
         } catch (IOException ex) {
             log.error("Error while loading CSV", ex);
         } catch (IllegalArgumentException e) {
@@ -193,15 +203,45 @@ public class CSVStatisticLoader implements IStatisticsLoader {
         return new ArrayList<>();
     }
 
-    private static void removeAndClearTask(List<CSVParsingTask> taskList) {
-        ListIterator<CSVParsingTask> csvParsingTaskListIterator = taskList.listIterator();
-        while (csvParsingTaskListIterator.hasNext()) {
-            CSVParsingTask t = csvParsingTaskListIterator.next();
-            if (t.isFinished()) {
-                t.getResult().clear();
-                csvParsingTaskListIterator.remove();
+    private static void join(List<CSVParsingTask> taskList, List<SensorValue> commonResult,
+                             long from, long to, Integer sensorId) {
+
+        List<CSVParsingTask> finishedTasks = taskList.stream()
+                .filter(t -> t.isFinished() || t.isStopped())
+                .filter(t -> !t.getResult().isEmpty())
+                .collect(Collectors.toList());
+
+        commonResult.addAll(finishedTasks.stream()
+                .flatMap(t -> t.getResult().stream())
+                .collect(Collectors.toList()));
+
+        finishedTasks.forEach(CSVParsingTask::clean);
+        log.info("joined data for tasks: {}", finishedTasks.stream().map(CSVParsingTask::getTaskId).map(Objects::toString).collect(Collectors.joining(",")));
+    }
+
+    private static void processEdges(List<CSVParsingTask> taskList, List<SensorValue> commonResult, long from, long to, Integer sensorId) {
+        int sizeBefore = commonResult.size();
+        CSVParsingTask prevTask = null;
+        for (int i = 0; i < taskList.size(); i++) {
+            CSVParsingTask curTask = taskList.get(i);
+            if (prevTask != null) {
+                if (prevTask.isFinished() && !prevTask.isStopped()
+                        && curTask.isFinished() && !curTask.isStopped()
+                        && StringUtils.isNotBlank(prevTask.getLastLine())
+                        && StringUtils.isNotBlank(curTask.getFirstLine())
+                ) {
+                    final String lineToParse = Objects.toString(prevTask.getLastLine(), "")
+                            + curTask.getFirstLine();
+                    parseLine(from, to, sensorId, lineToParse, commonResult, Pair.of(0, 0L), false);
+                }
+            }else{//first task
+                final String lineToParse = curTask.getFirstLine();
+                parseLine(from, to, sensorId, lineToParse, commonResult, Pair.of(0, 0L), true);
             }
+            prevTask = curTask;
         }
+        int sizeAfter = commonResult.size();
+        log.info("Edge records added: {}", sizeAfter - sizeBefore);
     }
 
     @Getter
@@ -212,9 +252,10 @@ public class CSVStatisticLoader implements IStatisticsLoader {
         private final long from, to;
         private final Integer sensorId;
         private final int taskId;
-        private boolean finished = false;
+        private volatile boolean finished = false;
+        private volatile boolean stopped = false;
         private final List<SensorValue> result = new ArrayList<>();
-        String firstLine, lastLine;
+        private String firstLine, lastLine;
         private Pair<Integer, Long> exceptionsAndTimestamp = Pair.of(0, 0L);
 
         @Override
@@ -235,22 +276,33 @@ public class CSVStatisticLoader implements IStatisticsLoader {
                         firstLine = line;
                     } else {
                         if (prevLine != null) {
-                            exceptionsAndTimestamp = parseLine(from, to, sensorId, prevLine, result, exceptionsAndTimestamp);
-                            if (exceptionsAndTimestamp == null) break;//if too many errors
-                            if (exceptionsAndTimestamp.getValue() > to) break;//limit for "TO"
+                            exceptionsAndTimestamp = parseLine(from, to, sensorId, prevLine, result, exceptionsAndTimestamp, false);
+                            if (exceptionsAndTimestamp == null) { //if too many errors
+                                log.error("task stopped(TOO MANY ERRORS): {}", taskId);
+                                stopped = true;
+                            }
+                            if (exceptionsAndTimestamp.getValue() > to) {//limit for "TO"
+                                log.info("task stopped (reached TO timestamp): {}", taskId);
+                                break;
+                            }
                         }
                         prevLine = line;
                     }
                     l += line.length() + 2;
                 }
-                lastLine = line;
+                lastLine = prevLine;
             } catch (IOException ex) {
                 log.error("Error while loading CSV", ex);
             } catch (IllegalArgumentException e) {
                 log.error(e.getMessage());
             }
             finished = true;
+            log.info("task finished: {}", taskId);
             return exceptionsAndTimestamp;
+        }
+
+        public void clean() {
+            result.clear();
         }
     }
 
@@ -258,7 +310,8 @@ public class CSVStatisticLoader implements IStatisticsLoader {
                                                  Integer sensorId,
                                                  String csvLine,
                                                  List<SensorValue> result,
-                                                 Pair<Integer, Long> exceptionsAndTimestamp) {
+                                                 Pair<Integer, Long> exceptionsAndTimestamp,
+                                                 boolean first) {
         if (StringUtils.isNotBlank(csvLine)) {
             try {
                 String[] cells = StringUtils.split(csvLine, ",");
@@ -278,10 +331,12 @@ public class CSVStatisticLoader implements IStatisticsLoader {
                     }
                 }
             } catch (Exception ex) {//in case of bad file system
-                log.error("Error while loading CSV line: {}", csvLine, ex);
-                exceptionsAndTimestamp = Pair.of(exceptionsAndTimestamp.getKey() + 1, exceptionsAndTimestamp.getValue());
-                if (exceptionsAndTimestamp.getKey() >= 100) {
-                    return null;
+                if(!first) {
+                    log.error("Error while loading CSV line: {}", csvLine, ex);
+                    exceptionsAndTimestamp = Pair.of(exceptionsAndTimestamp.getKey() + 1, exceptionsAndTimestamp.getValue());
+                    if (exceptionsAndTimestamp.getKey() >= 100) {
+                        return null;
+                    }
                 }
             }
         }
@@ -427,7 +482,6 @@ public class CSVStatisticLoader implements IStatisticsLoader {
         } while (timestamp == null && currentLine != null);
         return Pair.of(timestamp, r.getKey());
     }
-
 
     public static Pair<Long, String> getLineFromFile(String filePath, long position) throws IOException {
         String line;

@@ -4,6 +4,7 @@ import com.google.common.collect.Range;
 import com.google.common.collect.RangeSet;
 import com.google.common.collect.TreeRangeSet;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.tcontrol.models.SensorValue;
 import org.tcontrol.service.HistoricDataCache;
@@ -13,6 +14,7 @@ import java.io.FileNotFoundException;
 import java.lang.ref.SoftReference;
 import java.util.*;
 
+@Slf4j
 @Component
 @RequiredArgsConstructor
 public class HistoricDataCacheImp implements HistoricDataCache {
@@ -32,7 +34,8 @@ public class HistoricDataCacheImp implements HistoricDataCache {
 
         if (sensorTree != null) {
             if (rangeSet.encloses(range)) {
-                return sensorTree.subMap(from, to).values();
+                Collection<SensorValue> values = sensorTree.subMap(from, to).values();
+                log.info("values extracted from cache: {}", values.size());
             }
         } else {
             rangeSetBySensor.remove(sensorId);
@@ -46,6 +49,7 @@ public class HistoricDataCacheImp implements HistoricDataCache {
                 final List<SensorValue> values = csvStatisticsLoader.load(from, to, sensorId);
                 addToCache(values, sensorId);
                 rangeSet.add(range);
+                return values;
             } else {
                 for (Range<Long> rangeToLoad : new ArrayList<>(ranges)) {
                     final List<SensorValue> values = csvStatisticsLoader.load(rangeToLoad.lowerEndpoint(), rangeToLoad.upperEndpoint(), sensorId);

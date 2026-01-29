@@ -154,7 +154,7 @@ public class SensorController {
      * @return list of values;
      * @throws SensorServiceException if some exeption;
      */
-    @PostMapping("/sensor_history_values")
+    @GetMapping("/sensor_history_values")
     @CrossOrigin(origins = {"http://localhost:8090", "http://localhost"})
     @Operation(summary = "Получение предыдущих значений сенсора",
             description = "Получение предыдущих значений сенсора",

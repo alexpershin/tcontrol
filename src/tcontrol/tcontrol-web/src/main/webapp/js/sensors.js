@@ -399,6 +399,21 @@ function startPlotDialog(sensorElementId, sensorValue, values, shape){
      closeBtn.addEventListener('click', () => {
          closePlotDialog()
      })
+
+     searchBtn = document.getElementById('search-activate-btn')
+     searchBtn.addEventListener('click', () => {
+         searchDataInRange(sensorElementId)
+     })
+     toDate = new Date()//now
+     fromDate = new Date()
+     fromDate.setDate(fromDate.getDate() - 1)//-1 day
+     const dateFromTimeInputValue = new Date(fromDate.getTime() + fromDate.getTimezoneOffset() * -60 * 1000).toISOString().slice(0, 19)
+     const dateToTimeInputValue = new Date(toDate.getTime() + toDate.getTimezoneOffset() * -60 * 1000).toISOString().slice(0, 19)
+     dateFromField = document.getElementById('plot-dialog-from')
+     dateFromField.value = dateFromTimeInputValue
+     dateToField = document.getElementById('plot-dialog-to')
+     dateToField.value = dateToTimeInputValue
+
      var data = [trace1/*, trace2, trace3*/];
      sensorTitle = $(sensorElementId + ' #sensor_title');
 
@@ -716,6 +731,13 @@ function rollbackHeating(sensorElementId, sensorValue, currentTemperatures){
     });
 }
 
+function searchDataInRange(sensorElementId){
+    dateFrom = new Date(document.getElementById('plot-dialog-from').value).getTime()
+    dateTo = new Date(document.getElementById('plot-dialog-to').value).getTime()
+    if(dateFrom >= dateTo){
+        alert("Задайте правильно диапазоны дат: от < до")
+    }
+}
 
 function validateSensorTemperature(input){
     if(input.value<4 || input.value>30){

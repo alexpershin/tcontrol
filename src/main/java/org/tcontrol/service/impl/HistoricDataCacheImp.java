@@ -13,6 +13,8 @@ import org.tcontrol.service.IStatisticsLoader;
 import java.io.FileNotFoundException;
 import java.lang.ref.SoftReference;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentSkipListMap;
 
 @Slf4j
 @Component
@@ -23,14 +25,14 @@ public class HistoricDataCacheImp implements HistoricDataCache {
     private final IStatisticsLoader csvStatisticsLoader;
 
     private final Map<Integer, RangeSet<Long>> rangeSetBySensor = new HashMap<>();
-    private final Map<Integer, SoftReference<TreeMap<Long, SensorValue>>> cache = new HashMap<>();
+    private final Map<Integer, SoftReference<ConcurrentSkipListMap<Long, SensorValue>>> cache = new ConcurrentHashMap<>();
 
     @Override
     public Collection<SensorValue> historyValues(long from, long to, Integer sensorId) throws FileNotFoundException {
         Range<Long> range = Range.open(from, to);
         RangeSet<Long> rangeSet = rangeSetBySensor.computeIfAbsent(sensorId, e -> TreeRangeSet.create());
 
-        TreeMap<Long, SensorValue> sensorTree = cache.computeIfAbsent(sensorId, k -> new SoftReference<>(new TreeMap<>())).get();
+        ConcurrentSkipListMap<Long, SensorValue> sensorTree = cache.computeIfAbsent(sensorId, k -> new SoftReference<>(new ConcurrentSkipListMap<>())).get();
 
         if (sensorTree != null) {
             if (rangeSet.encloses(range)) {
@@ -67,12 +69,12 @@ public class HistoricDataCacheImp implements HistoricDataCache {
     }
 
     private void addToCache(List<SensorValue> values, Integer sensorId) {
-        TreeMap<Long, SensorValue> longSensorValueTreeMap =
-                cache.computeIfAbsent(sensorId, k -> new SoftReference<>(new TreeMap<>())).get();
+        ConcurrentSkipListMap<Long, SensorValue> longSensorValueTreeMap =
+                cache.computeIfAbsent(sensorId, k -> new SoftReference<>(new ConcurrentSkipListMap<>())).get();
 
         if (longSensorValueTreeMap == null) {
-            longSensorValueTreeMap = new TreeMap<>();
-            SoftReference<TreeMap<Long, SensorValue>> value = new SoftReference<>(longSensorValueTreeMap);
+            longSensorValueTreeMap = new ConcurrentSkipListMap<>();
+            SoftReference<ConcurrentSkipListMap<Long, SensorValue>> value = new SoftReference<>(longSensorValueTreeMap);
             cache.put(sensorId, value);
         }
 

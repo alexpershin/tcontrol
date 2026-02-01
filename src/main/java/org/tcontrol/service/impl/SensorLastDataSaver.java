@@ -15,6 +15,7 @@ import org.tcontrol.models.SensorValue;
 import javax.annotation.PostConstruct;
 import java.io.FileNotFoundException;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 import static java.util.stream.Collectors.toMap;
 import static org.tcontrol.models.SensorValue.SensorState.*;
@@ -32,7 +33,7 @@ public class SensorLastDataSaver implements IStatisticsSaver {
     @Value("${main-config.sensorValuesBufferExpiredMillis:3600000}")
     private int expiredMillis;
 
-    private final Map<Integer, Deque<SensorValue>> cache = new HashMap<>();
+    private final Map<Integer, Deque<SensorValue>> cache =  new ConcurrentHashMap<>();
 
     @PostConstruct
     public void loadPrevData() throws FileNotFoundException {

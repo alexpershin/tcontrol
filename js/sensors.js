@@ -406,7 +406,7 @@ function startPlotDialog(sensorElementId, sensorValue, values, shape){
      })
      toDate = new Date()//now
      fromDate = new Date()
-     fromDate.setDate(fromDate.getDate() - 1)//-1 day
+     fromDate.setTime(fromDate.getTime() - 1*24*60*60*1000)//-1 day
      const dateFromTimeInputValue = new Date(fromDate.getTime() + fromDate.getTimezoneOffset() * -60 * 1000).toISOString().slice(0, 19)
      const dateToTimeInputValue = new Date(toDate.getTime() + toDate.getTimezoneOffset() * -60 * 1000).toISOString().slice(0, 19)
      dateFromField = document.getElementById('plot-dialog-from')
@@ -732,10 +732,19 @@ function rollbackHeating(sensorElementId, sensorValue, currentTemperatures){
 }
 
 function searchDataInRange(sensorElementId){
-    dateFrom = new Date(document.getElementById('plot-dialog-from').value).getTime()
-    dateTo = new Date(document.getElementById('plot-dialog-to').value).getTime()
-    if(dateFrom >= dateTo){
+    dateFrom = new Date(document.getElementById('plot-dialog-from').value)
+    dateTo = new Date(document.getElementById('plot-dialog-to').value)
+    if(dateFrom.getTime() >= dateTo.getTime()){
         alert("Задайте правильно диапазоны дат: от < до")
+    }else{
+        minFromDate = new Date()
+        minFromDate.setTime(dateTo.getTime() - 7*24*60*60*1000) //-7 days
+        console.log(minFromDate)
+
+        if(dateFrom.getTime() < minFromDate.getTime() ){
+             alert("Период должен быть не больше 7 дней")
+        }else{
+        }
     }
 }
 

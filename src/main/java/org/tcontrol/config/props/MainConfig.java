@@ -8,4 +8,5 @@ import lombok.RequiredArgsConstructor;
 public class MainConfig {
     private Integer sensorValuesBufferSize;
     private Boolean sensorsStub;
+    private Boolean historyDataMultiThread;
 }

@@ -14,6 +14,7 @@ springdoc:
 main-config:
   sensorValuesBufferExpiredMillis: 86400000 #24 hours
   sensorsStub: false
+  historyDataMultiThread: true
 
 w1DevicesPath: /sys/bus/w1/devices
 

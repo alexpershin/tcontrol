@@ -6,6 +6,7 @@ import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -29,10 +30,7 @@ import org.tcontrol.controller.mappers.SensorMapper;
 import org.tcontrol.controller.mappers.SensorValueMapper;
 import org.tcontrol.models.SensorValueShort;
 import org.tcontrol.service.*;
-import org.tcontrol.service.impl.CSVStatisticLoader;
-import org.tcontrol.service.impl.CSVStatisticSaver;
-import org.tcontrol.service.impl.SensorServiceImpl;
-import org.tcontrol.service.impl.RelayAggregator;
+import org.tcontrol.service.impl.*;
 import org.tcontrol.config.props.*;
 import org.tcontrol.handler.IRelayHandler;
 import org.tcontrol.models.Sensor;
@@ -253,14 +251,21 @@ public class AppConfig implements BeanFactoryPostProcessor {
             ITemperatureReader temperatureReader,
             SensorConfig sensorConfig,
             CSVStatisticSaver csvWriter,
-            IStatisticsSaver sensorLastDataSaver) {
+            IStatisticsSaver sensorLastDataSaver,
+            MainConfig mainConfig) {
         return new TemperatureMonitor(temperatureReader, sensorConfig, csvWriter, sensorLastDataSaver);
     }
 
     @Bean
-    @ConditionalOnProperty(value = "main-config.sensorsStub", havingValue = "false")
-    public IStatisticsLoader statisticsLoader(SensorConfig sensorConfig, ITimer timer) {
-        return new CSVStatisticLoader(sensorConfig, timer);
+    @ConditionalOnExpression("${main-config.sensorsStub} == false && ${main-config.historyDataMultiThread} == false")
+    public IStatisticsLoader statisticsLoader(ITimer timer) {
+        return new CSVStatisticLoaderSingleThread(timer);
+    }
+
+    @Bean
+    @ConditionalOnExpression("${main-config.sensorsStub} == false && ${main-config.historyDataMultiThread} == true")
+    public IStatisticsLoader statisticsLoaderMultiThread(SensorConfig sensorConfig, ITimer timer) {
+        return new CSVStatisticLoaderMultiThread(timer);
     }
 
     @Bean

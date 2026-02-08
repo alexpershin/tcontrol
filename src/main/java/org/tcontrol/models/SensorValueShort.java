@@ -2,7 +2,8 @@ package org.tcontrol.models;
 
 import lombok.*;
 
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 public class SensorValueShort {

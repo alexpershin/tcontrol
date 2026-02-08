@@ -7,17 +7,13 @@ import org.tcontrol.config.props.RelayPinsConfig;
 import org.tcontrol.config.props.ThermostatsConfig;
 import org.tcontrol.controller.mappers.SensorMapper;
 import org.tcontrol.controller.mappers.SensorValueMapper;
+import org.tcontrol.models.*;
 import org.tcontrol.service.*;
-import org.tcontrol.models.Sensor;
-import org.tcontrol.models.SensorValue;
-import org.tcontrol.models.ThermostatTemperature;
-import org.tcontrol.models.User;
 import org.tcontrol.config.props.SensorConfig;
 
 import javax.annotation.PostConstruct;
 import java.io.FileNotFoundException;
 import java.text.MessageFormat;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -74,10 +70,10 @@ public class SensorServiceImpl implements ISensorService {
     }
 
     @Override
-    public List<SensorValue> getPrevSensorValues(int userId, int sensorId) {
+    public List<SensorValueShort> getPrevSensorValues(int userId, int sensorId) {
         return sensorLastDataSaver.lastValues(sensorId)
                 .stream()
-                .map(v -> new SensorValue(
+                .map(v -> new SensorValueShort(
                         v.getSensorId(),
                         v.getSensorCode(),
                         v.getTimestamp(),
@@ -87,7 +83,7 @@ public class SensorServiceImpl implements ISensorService {
     }
 
     @Override
-    public List<SensorValue> getHistorySensorValues(int currentUserId, long from, long to, Integer sensorId) throws FileNotFoundException {
+    public List<SensorValueShort> getHistorySensorValues(int currentUserId, long from, long to, Integer sensorId) throws FileNotFoundException {
         return historicDataCache.historyValues(from,to,sensorId)
                 .stream()
                 .map(v -> new SensorValue(

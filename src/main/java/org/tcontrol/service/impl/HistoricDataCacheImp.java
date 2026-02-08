@@ -6,7 +6,7 @@ import com.google.common.collect.TreeRangeSet;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
-import org.tcontrol.models.SensorValue;
+import org.tcontrol.models.SensorValueShort;
 import org.tcontrol.service.HistoricDataCache;
 import org.tcontrol.service.IStatisticsLoader;
 
@@ -25,18 +25,18 @@ public class HistoricDataCacheImp implements HistoricDataCache {
     private final IStatisticsLoader csvStatisticsLoader;
 
     private final Map<Integer, RangeSet<Long>> rangeSetBySensor = new HashMap<>();
-    private final Map<Integer, SoftReference<ConcurrentSkipListMap<Long, SensorValue>>> cache = new ConcurrentHashMap<>();
+    private final Map<Integer, SoftReference<ConcurrentSkipListMap<Long, SensorValueShort>>> cache = new ConcurrentHashMap<>();
 
     @Override
-    public Collection<SensorValue> historyValues(long from, long to, Integer sensorId) throws FileNotFoundException {
+    public Collection<SensorValueShort> historyValues(long from, long to, Integer sensorId) throws FileNotFoundException {
         Range<Long> range = Range.open(from, to);
         RangeSet<Long> rangeSet = rangeSetBySensor.computeIfAbsent(sensorId, e -> TreeRangeSet.create());
 
-        ConcurrentSkipListMap<Long, SensorValue> sensorTree = cache.computeIfAbsent(sensorId, k -> new SoftReference<>(new ConcurrentSkipListMap<>())).get();
+        ConcurrentSkipListMap<Long, SensorValueShort> sensorTree = cache.computeIfAbsent(sensorId, k -> new SoftReference<>(new ConcurrentSkipListMap<>())).get();
 
         if (sensorTree != null) {
             if (rangeSet.encloses(range)) {
-                Collection<SensorValue> values = sensorTree.subMap(from, to).values();
+                Collection<SensorValueShort> values = sensorTree.subMap(from, to).values();
                 log.info("values extracted from cache: {}", values.size());
             }
         } else {
@@ -48,13 +48,14 @@ public class HistoricDataCacheImp implements HistoricDataCache {
             RangeSet<Long> sub = rangeSet.complement().subRangeSet(range);
             Set<Range<Long>> ranges = sub.asRanges();
             if (ranges.size() > MAX_RANGES_TO_LOAD) {
-                final List<SensorValue> values = csvStatisticsLoader.load(from, to, sensorId);
+                final List<SensorValueShort> values = csvStatisticsLoader.load(from, to, sensorId);
                 addToCache(values, sensorId);
                 rangeSet.add(range);
                 return values;
             } else {
                 for (Range<Long> rangeToLoad : new ArrayList<>(ranges)) {
-                    final List<SensorValue> values = csvStatisticsLoader.load(rangeToLoad.lowerEndpoint(), rangeToLoad.upperEndpoint(), sensorId);
+                    final List<SensorValueShort> values
+                            = csvStatisticsLoader.load(rangeToLoad.lowerEndpoint(), rangeToLoad.upperEndpoint(), sensorId);
                     addToCache(values, sensorId);
                     rangeSet.add(rangeToLoad);
                 }
@@ -68,17 +69,17 @@ public class HistoricDataCacheImp implements HistoricDataCache {
         }
     }
 
-    private void addToCache(List<SensorValue> values, Integer sensorId) {
-        ConcurrentSkipListMap<Long, SensorValue> longSensorValueTreeMap =
+    private void addToCache(List<SensorValueShort> values, Integer sensorId) {
+        ConcurrentSkipListMap<Long, SensorValueShort> longSensorValueTreeMap =
                 cache.computeIfAbsent(sensorId, k -> new SoftReference<>(new ConcurrentSkipListMap<>())).get();
 
         if (longSensorValueTreeMap == null) {
             longSensorValueTreeMap = new ConcurrentSkipListMap<>();
-            SoftReference<ConcurrentSkipListMap<Long, SensorValue>> value = new SoftReference<>(longSensorValueTreeMap);
+            SoftReference<ConcurrentSkipListMap<Long, SensorValueShort>> value = new SoftReference<>(longSensorValueTreeMap);
             cache.put(sensorId, value);
         }
 
-        for (SensorValue value : values) {
+        for (SensorValueShort value : values) {
             longSensorValueTreeMap.put(value.getTimestamp(), value);
         }
     }

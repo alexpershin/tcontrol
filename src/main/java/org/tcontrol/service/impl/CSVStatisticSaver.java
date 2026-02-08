@@ -5,6 +5,7 @@ import org.apache.commons.csv.CSVPrinter;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.tcontrol.config.Logging;
+import org.tcontrol.models.SensorValueShort;
 import org.tcontrol.service.IStatisticsSaver;
 import org.tcontrol.models.SensorValue;
 
@@ -25,13 +26,13 @@ public class CSVStatisticSaver implements IStatisticsSaver {
     private String dataFileName;
 
     @Override
-    public void write(List<SensorValue> values) {
+    public void write(List<? extends SensorValueShort> values) {
         boolean fileExist = Files.exists(Paths.get(dataFileName));
         try (CSVPrinter printer = new CSVPrinter(new FileWriter(dataFileName, true), EXCEL)) {
             if (!fileExist) {
                 printer.printRecord(SENSOR_ID, SENSOR_CODE, TIMESTAMP, VALUE);
             }
-            for (SensorValue value : values) {
+            for (SensorValueShort value : values) {
                 if (value != null) {
                     printer.printRecord(value.getSensorId(), value.getSensorCode(), value.getTimestamp(), value.getValue());
                 }
@@ -47,12 +48,12 @@ public class CSVStatisticSaver implements IStatisticsSaver {
     }
 
     @Override
-    public LinkedList<SensorValue> lastValues(int sensorId) {
+    public LinkedList<SensorValueShort> lastValues(int sensorId) {
         return new LinkedList<>();
     }
 
     @Override
-    public Collection<SensorValue> historyValues(long from, long to, Integer sensorId) {
+    public Collection<SensorValueShort> historyValues(long from, long to, Integer sensorId) {
         return Collections.emptyList();
     }
 }

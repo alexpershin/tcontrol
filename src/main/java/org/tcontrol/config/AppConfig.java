@@ -27,7 +27,7 @@ import org.tcontrol.hardware.impl.TemperatureMonitor;
 import org.tcontrol.hardware.impl.TemperatureMonitorStub;
 import org.tcontrol.controller.mappers.SensorMapper;
 import org.tcontrol.controller.mappers.SensorValueMapper;
-import org.tcontrol.models.SensorValue;
+import org.tcontrol.models.SensorValueShort;
 import org.tcontrol.service.*;
 import org.tcontrol.service.impl.CSVStatisticLoader;
 import org.tcontrol.service.impl.CSVStatisticSaver;
@@ -219,31 +219,31 @@ public class AppConfig implements BeanFactoryPostProcessor {
 
     @Bean
     @ConfigurationProperties(prefix = "gas-on-command")
-    public CommandConfig gasOnCommandConfig(){
+    public CommandConfig gasOnCommandConfig() {
         return new CommandConfig();
     }
 
     @Bean
     @ConfigurationProperties(prefix = "gas-off-command")
-    public CommandConfig gasOffCommandConfig(){
+    public CommandConfig gasOffCommandConfig() {
         return new CommandConfig();
     }
 
     @Bean
     @ConfigurationProperties(prefix = "electro-on-command")
-    public CommandConfig electroOnCommandConfig(){
+    public CommandConfig electroOnCommandConfig() {
         return new CommandConfig();
     }
 
     @Bean
     @ConfigurationProperties(prefix = "electro-off-command")
-    public CommandConfig electroOffCommandConfig(){
+    public CommandConfig electroOffCommandConfig() {
         return new CommandConfig();
     }
 
     @Bean
     @ConfigurationProperties(prefix = "status-command")
-    public CommandConfig statusCommandConfig(){
+    public CommandConfig statusCommandConfig() {
         return new CommandConfig();
     }
 
@@ -259,27 +259,26 @@ public class AppConfig implements BeanFactoryPostProcessor {
 
     @Bean
     @ConditionalOnProperty(value = "main-config.sensorsStub", havingValue = "false")
-    public IStatisticsLoader statisticsLoader(SensorConfig sensorConfig, ITimer timer){
+    public IStatisticsLoader statisticsLoader(SensorConfig sensorConfig, ITimer timer) {
         return new CSVStatisticLoader(sensorConfig, timer);
     }
 
     @Bean
     @ConditionalOnProperty(value = "main-config.sensorsStub", havingValue = "true")
-    public IStatisticsLoader statisticsLoaderStub(SensorConfig sensorConfig, ITimer timer){
-        return new IStatisticsLoader(){
+    public IStatisticsLoader statisticsLoaderStub(SensorConfig sensorConfig, ITimer timer) {
+        return new IStatisticsLoader() {
 
             @Override
-            public List<SensorValue> load() throws FileNotFoundException {
+            public List<SensorValueShort> loadLast() throws FileNotFoundException {
                 return Collections.emptyList();
             }
 
             @Override
-            public List<SensorValue> load(long from, long to, Integer sensorId) throws FileNotFoundException {
+            public List<SensorValueShort> load(long from, long to, Integer sensorId) throws FileNotFoundException {
                 return Collections.emptyList();
             }
         };
     }
-
 
     @Bean
     public IRelayAggregator relayAggregator(RelayAggregatorConfig relayAggregatorConfig,
@@ -306,7 +305,7 @@ public class AppConfig implements BeanFactoryPostProcessor {
             final SensorMapper sensorMapper,
             final Map<String, IThermostat> dynamicThermostats,
             final SensorValueMapper sensorValueMapper
-            ) {
+    ) {
         return new SensorServiceImpl(
                 thermostatsConfig,
                 sensorConfig,
@@ -346,7 +345,7 @@ public class AppConfig implements BeanFactoryPostProcessor {
         return new ThermostatCommand(
                 dynamicThermostats,
                 electroOnCommandConfig,
-                (newTemperature, thermostat)-> thermostat.temperature(newTemperature),
+                (newTemperature, thermostat) -> thermostat.temperature(newTemperature),
                 1);
     }
 
@@ -359,7 +358,7 @@ public class AppConfig implements BeanFactoryPostProcessor {
         return new ThermostatCommand(
                 dynamicThermostats,
                 electroOffCommandConfig,
-                (newTemperature, thermostat)-> thermostat.rollback(),
+                (newTemperature, thermostat) -> thermostat.rollback(),
                 0
         );
     }
@@ -372,7 +371,7 @@ public class AppConfig implements BeanFactoryPostProcessor {
         return new ThermostatCommand(
                 dynamicThermostats,
                 gasOnCommandConfig,
-                (newTemperature, thermostat)-> thermostat.temperature(newTemperature),
+                (newTemperature, thermostat) -> thermostat.temperature(newTemperature),
                 1
         );
     }
@@ -385,7 +384,7 @@ public class AppConfig implements BeanFactoryPostProcessor {
         return new ThermostatCommand(
                 dynamicThermostats,
                 gasOffCommandConfig,
-                (newTemperature, thermostat)-> thermostat.rollback(),
+                (newTemperature, thermostat) -> thermostat.rollback(),
                 0
         );
     }

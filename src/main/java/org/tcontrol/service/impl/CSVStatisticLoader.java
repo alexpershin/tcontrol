@@ -10,9 +10,9 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.beans.factory.annotation.Value;
 import org.tcontrol.config.Logging;
 import org.tcontrol.config.props.SensorConfig;
+import org.tcontrol.models.SensorValueShort;
 import org.tcontrol.service.IStatisticsLoader;
 import org.tcontrol.service.ITimer;
-import org.tcontrol.models.SensorValue;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
@@ -25,8 +25,6 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.io.input.ReversedLinesFileReader;
 import org.apache.commons.csv.CSVParser;
-
-import javax.annotation.PostConstruct;
 
 import static org.tcontrol.service.impl.CSVOptions.*;
 
@@ -51,32 +49,36 @@ public class CSVStatisticLoader implements IStatisticsLoader {
     @Value("${main-config.sensorValuesBufferExpiredMillis:36000000}")
     private int expiredMillis;
 
-    private CSVFormat csvFormat;
+    private static CSVFormat csvFormat = CSVFormat.EXCEL.withHeader(SENSOR_ID, SENSOR_CODE, TIMESTAMP, VALUE);
 
-    @PostConstruct
-    public void postConstruct() {
-        csvFormat = CSVFormat.EXCEL.withHeader(SENSOR_ID, SENSOR_CODE, TIMESTAMP, VALUE);
+    @Override
+    public List<SensorValueShort> loadLast() throws FileNotFoundException {
+        long from = timer.getCurrentTimeMillis() - expiredMillis;
+        long to = timer.getCurrentTimeMillis();
+        return loadSensorValues(from, to, null);
     }
 
     @Override
-    public List<SensorValue> load() throws FileNotFoundException {
-        return load(timer.getCurrentTimeMillis() - expiredMillis, timer.getCurrentTimeMillis(), null);
+    public List<SensorValueShort> load(long from, long to, Integer sensorId) throws FileNotFoundException {
+        return loadSensorValues(from, to, sensorId);
     }
 
-    @Override
-    public List<SensorValue> load(long from, long to, Integer sensorId) throws FileNotFoundException {
+    private List<SensorValueShort> loadSensorValues(
+            long from, long to,
+            Integer sensorId
+    ) throws FileNotFoundException {
         long t1 = System.currentTimeMillis();
 
         //List<SensorValue> r =  loadSingleThread(from, to, sensorId);
-        List<SensorValue> r = loadMultiThread(from, to, sensorId);
+        List<SensorValueShort> r = loadMultiThread(from, to, sensorId);
 
         long t2 = System.currentTimeMillis();
         log.info("load: {} mc", t2 - t1);
         return r;
     }
 
-    public List<SensorValue> loadSingleThread(long from, long to, Integer sensorId) throws FileNotFoundException {
-        List<SensorValue> result = new ArrayList<>(10000);
+    private List<SensorValueShort> loadSingleThread(long from, long to, Integer sensorId) throws FileNotFoundException {
+        List<SensorValueShort> result = new ArrayList<>(10000);
 
         boolean fileExist = Files.exists(Paths.get(dataFileName));
         if (!fileExist) {
@@ -84,8 +86,8 @@ public class CSVStatisticLoader implements IStatisticsLoader {
         }
         File dataFile = new File(dataFileName);
 
-        try {
-            FileInputStream is = new FileInputStream(dataFile);
+        try(FileInputStream is = new FileInputStream(dataFile)) {
+
             //find position where required data located
             long pos = lookForPositionBeforeFrom(from, dataFile);
 
@@ -116,7 +118,8 @@ public class CSVStatisticLoader implements IStatisticsLoader {
                         } else {
                             lineToParse = line;
                         }
-                        exceptionsAndTimestamp = parseLine(from, to, sensorId, lineToParse, result, exceptionsAndTimestamp, false);
+                        exceptionsAndTimestamp = parseLine(from, to, sensorId, lineToParse,
+                                result, exceptionsAndTimestamp, false);
                         if (exceptionsAndTimestamp == null) {
                             log.error("stopped(TOO MANY ERRORS)");
                             break chunk_circle;//if too many errors
@@ -143,7 +146,9 @@ public class CSVStatisticLoader implements IStatisticsLoader {
         return result;
     }
 
-    public List<SensorValue> loadMultiThread(long from, long to, Integer sensorId) throws FileNotFoundException {
+    private List<SensorValueShort> loadMultiThread(long from, long to,
+                                                   Integer sensorId
+    ) throws FileNotFoundException {
 
         boolean fileExist = Files.exists(Paths.get(dataFileName));
         if (!fileExist) {
@@ -151,8 +156,8 @@ public class CSVStatisticLoader implements IStatisticsLoader {
         }
         File dataFile = new File(dataFileName);
 
-        try {
-            FileInputStream is = new FileInputStream(dataFile);
+        try(FileInputStream is = new FileInputStream(dataFile)) {
+
             //find position where required data located
             long pos = lookForPositionBeforeFrom(from, dataFile);
 
@@ -168,7 +173,7 @@ public class CSVStatisticLoader implements IStatisticsLoader {
             List<CSVParsingTask> taskList = new ArrayList<>();
             int taskId = 0;
 
-            List<SensorValue> commonResult = new ArrayList<>();
+            List<SensorValueShort> commonResult = new ArrayList<>();
             //read file chunk by chunk
             while ((chunkLen = is.read(chunk)) != -1) {
 
@@ -204,8 +209,8 @@ public class CSVStatisticLoader implements IStatisticsLoader {
             aggregate(taskList, commonResult, from, to, sensorId);
             processEdges(taskList, commonResult, from, to, sensorId);
 
-            List<SensorValue> result = commonResult.stream()
-                    .sorted((a, b) -> Comparator.comparingLong(SensorValue::getTimestamp).compare(a, b))
+            List<SensorValueShort> result = commonResult.stream()
+                    .sorted((a, b) -> Comparator.comparingLong(SensorValueShort::getTimestamp).compare(a, b))
                     .collect(Collectors.toList());
 
             log.info("Loaded {} records", result.size());
@@ -222,7 +227,7 @@ public class CSVStatisticLoader implements IStatisticsLoader {
         return new ArrayList<>();
     }
 
-    private static void aggregate(List<CSVParsingTask> taskList, List<SensorValue> commonResult,
+    private static void aggregate(List<CSVParsingTask> taskList, List<SensorValueShort> commonResult,
                                   long from, long to, Integer sensorId) {
 
         List<CSVParsingTask> finishedTasks = taskList.stream()
@@ -245,7 +250,9 @@ public class CSVStatisticLoader implements IStatisticsLoader {
         );
     }
 
-    private static void processEdges(List<CSVParsingTask> taskList, List<SensorValue> commonResult, long from, long to, Integer sensorId) {
+    private static void processEdges(List<CSVParsingTask> taskList, List<SensorValueShort> commonResult,
+                                     long from, long to,
+                                     Integer sensorId) {
         int sizeBefore = commonResult.size();
         CSVParsingTask prevTask = null;
         for (int i = 0; i < taskList.size(); i++) {
@@ -266,13 +273,14 @@ public class CSVStatisticLoader implements IStatisticsLoader {
     public static class CSVParsingTask implements Callable<Pair<Integer, Long>> {
         private byte[] chunk;
         private final int chunkLen;
-        private final long from, to;
+        private final long from;
+        private final long to;
         private final Integer sensorId;
         private final int taskId;
 
         private volatile boolean finished = false;
         private volatile boolean stopped = false;
-        private List<SensorValue> result = new ArrayList<>();
+        private List<SensorValueShort> result = new ArrayList<>();
         private String firstLine, lastLine;
         private Pair<Integer, Long> exceptionsAndTimestamp = Pair.of(0, 0L);
 
@@ -339,7 +347,7 @@ public class CSVStatisticLoader implements IStatisticsLoader {
     private static Pair<Integer, Long> parseLine(long from, long to,
                                                  Integer sensorId,
                                                  String csvLine,
-                                                 List<SensorValue> result,
+                                                 List<SensorValueShort> result,
                                                  Pair<Integer, Long> exceptionsAndTimestamp,
                                                  boolean first) {
         if (StringUtils.isNotBlank(csvLine)) {
@@ -350,11 +358,11 @@ public class CSVStatisticLoader implements IStatisticsLoader {
                     long timestamp = Long.parseLong(cells[TIMESTAMP_INDX]);
                     if (timestamp >= from) {
                         if (timestamp <= to) {
-                            final SensorValue value = new SensorValue();
+                            final SensorValueShort value = new SensorValueShort();
                             value.setSensorId(recordSensorId);
-                            value.setSensorCode(cells[SENSOR_CODE_INDX]);
                             value.setTimestamp(timestamp);
                             value.setValue(Double.parseDouble(cells[SENSOR_VALUE_INDX]));
+                            value.setSensorCode(cells[SENSOR_CODE_INDX]);
                             result.add(value);
                         }
                         exceptionsAndTimestamp = Pair.of(exceptionsAndTimestamp.getKey(), timestamp);
@@ -373,7 +381,7 @@ public class CSVStatisticLoader implements IStatisticsLoader {
         return exceptionsAndTimestamp;
     }
 
-    private long lookForPositionBeforeFrom(long from, File dataFile) throws FileNotFoundException {
+    static long lookForPositionBeforeFrom(long from, File dataFile) throws FileNotFoundException {
         log.info("looking for good position in data file..");
         try {
             final Pair<Integer, Long> firstData = calculateAvgLineLengthAndFirstDataTimestamp(dataFile);
@@ -427,7 +435,7 @@ public class CSVStatisticLoader implements IStatisticsLoader {
         return 0;
     }
 
-    private Pair<Integer, Long> calculateAvgLineLengthAndFirstDataTimestamp(File dataFile) throws IOException {
+    static Pair<Integer, Long> calculateAvgLineLengthAndFirstDataTimestamp(File dataFile) throws IOException {
         String csvLine;
         try (RandomAccessFile randomAccessFile = new RandomAccessFile(dataFile, "r")) {
             csvLine = randomAccessFile.readLine();//read header
@@ -460,7 +468,7 @@ public class CSVStatisticLoader implements IStatisticsLoader {
         }
     }
 
-    private Long readLastDataLineTimestamp(File dataFile) {
+    static Long readLastDataLineTimestamp(File dataFile) {
         Long timestamp = null;
         try (ReversedLinesFileReader reader = new ReversedLinesFileReader.Builder().setFile(dataFile).get()) {
             int exceptionCount = 0;
@@ -494,7 +502,7 @@ public class CSVStatisticLoader implements IStatisticsLoader {
      * @return timestamp and pos;
      * @throws IOException
      */
-    Pair<Long, Long> timestampOnPos(long posArg, Path path) throws IOException {
+    static Pair<Long, Long> timestampOnPos(long posArg, Path path) throws IOException {
         int exceptionCount = 0;
         Long timestamp = 0L;
         Pair<Long, String> r;

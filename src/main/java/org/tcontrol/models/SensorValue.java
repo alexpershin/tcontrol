@@ -11,14 +11,10 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
-public class SensorValue {
+public class SensorValue extends SensorValueShort {
 
     private int sensorValueId;
-    private int sensorId;
     private String pin;
-    private String sensorCode;
-    private long timestamp;
-    private double value;
     private Double gradient;
     private Double minValue;
     private long minValueTimestamp;
@@ -37,39 +33,26 @@ public class SensorValue {
 
     public SensorValue(int sensorId, String sensorCode, Long timestamp,
                        double value, double minValue, double maxValue) {
-        this.sensorId = sensorId;
-        this.sensorCode = sensorCode;
-        this.timestamp = timestamp;
-        this.value = value;
+        super(sensorId, sensorCode, timestamp, value);
         this.minValue = minValue;
         this.maxValue = maxValue;
     }
     
-    public SensorValue(int sensorId, long time,
+    public SensorValue(int sensorId, long timestamp,
             double value) {
-        this.sensorId = sensorId;
-        this.timestamp = time;
-        this.value = value;
-
+        super(sensorId, null, timestamp, value);
     }
 
-    public SensorValue(double value) {
-        this.value = value;
-    }
-
-    public SensorValue(String sensorCode, long time,
+    public SensorValue(String sensorCode, long timestamp,
                        double value) {
-        this.sensorCode = sensorCode;
-        this.timestamp = time;
-        this.value = value;
+        super.setSensorCode(sensorCode);
+        super.setTimestamp(timestamp);
+        super.setValue(value);
     }
 
-    public SensorValue(int sensorId, String sensorCode, long time,
+    public SensorValue(int sensorId, String sensorCode, long timestamp,
                        double value) {
-        this.sensorId = sensorId;
-        this.sensorCode = sensorCode;
-        this.timestamp = time;
-        this.value = value;
+        super(sensorId, sensorCode, timestamp, value);
     }
 
     public enum SensorState {

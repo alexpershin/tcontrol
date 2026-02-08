@@ -7,7 +7,9 @@ import org.springframework.web.bind.annotation.*;
 import org.tcontrol.config.Logging;
 import org.tcontrol.controller.dto.*;
 import org.tcontrol.controller.mappers.SensorValueMapper;
+import org.tcontrol.controller.mappers.SensorValueShortMapper;
 import org.tcontrol.controller.mappers.ThermostatCurrentTemperatureMapper;
+import org.tcontrol.models.SensorValueShort;
 import org.tcontrol.service.SensorServiceException;
 import org.tcontrol.service.ISensorService;
 import org.tcontrol.models.Sensor;
@@ -44,6 +46,7 @@ import static java.net.HttpURLConnection.HTTP_OK;
 public class SensorController {
     private final ISensorService sensorService;
     private final SensorValueMapper sensorValueMapper;
+    private final SensorValueShortMapper sensorValueShortMapper;
     private final ThermostatCurrentTemperatureMapper thermostatCurrentTemperatureMapper;
 
     //Temp user
@@ -140,11 +143,11 @@ public class SensorController {
                             schema = @Schema(maxLength = 4, example = "1"))
             )}
     )
-    public SensorValuesResult getSensorPrevValues(@RequestParam(name = "sensorId") Integer sensorId) throws SensorServiceException {
-        SensorValuesResult result = new SensorValuesResult();
-        List<SensorValue> values = sensorService.getPrevSensorValues(CURRENT_USER_ID, sensorId);
-        List<SensorValueDto> webValues = sensorValueMapper.map(values);
-        result.setValues(webValues.toArray(new SensorValueDto[]{}));
+    public SensorValuesShortResult getSensorPrevValues(@RequestParam(name = "sensorId") Integer sensorId) throws SensorServiceException {
+        SensorValuesShortResult result = new SensorValuesShortResult();
+        List<SensorValueShort> values = sensorService.getPrevSensorValues(CURRENT_USER_ID, sensorId);
+        List<SensorValueShortDto> webValues = sensorValueShortMapper.map(values);
+        result.setValues(webValues.toArray(new SensorValueShortDto[0]));
         return result;
     }
 
@@ -184,21 +187,37 @@ public class SensorController {
                     ),
             }
     )
-    public SensorValuesResult getSensorHistoryValues(
+    public SensorValuesShortResult getSensorHistoryValues(
             @RequestParam(name = "sensorId") Integer sensorId,
             @RequestParam(name = "from")  @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) OffsetDateTime from,
             @RequestParam(name = "to") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) OffsetDateTime  to
         ) throws SensorServiceException, FileNotFoundException {
-        SensorValuesResult result = new SensorValuesResult();
-        ZoneId zoneId = ZoneId.systemDefault();
-        List<SensorValue> values = sensorService.getHistorySensorValues(
+        SensorValuesShortResult result = new SensorValuesShortResult();
+        List<SensorValueShort> values = sensorService.getHistorySensorValues(
                 CURRENT_USER_ID,
                 from.toInstant().toEpochMilli(),
                 to.toInstant().toEpochMilli(),
                 sensorId
         );
-        List<SensorValueDto> webValues = sensorValueMapper.map(values);
-        result.setValues(webValues.toArray(new SensorValueDto[]{}));
+        List<SensorValueShortDto> webValues = sensorValueShortMapper.map(values);
+        result.setValues(webValues.toArray(new SensorValueShortDto[]{}));
+        return result;
+    }
+
+    public SensorValuesShortResult getSensorHistoryShortValues(
+            @RequestParam(name = "sensorId") Integer sensorId,
+            @RequestParam(name = "from")  @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) OffsetDateTime from,
+            @RequestParam(name = "to") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) OffsetDateTime  to
+    ) throws SensorServiceException, FileNotFoundException {
+        SensorValuesShortResult result = new SensorValuesShortResult();
+        List<SensorValueShort> values = sensorService.getHistorySensorValues(
+                CURRENT_USER_ID,
+                from.toInstant().toEpochMilli(),
+                to.toInstant().toEpochMilli(),
+                sensorId
+        );
+        List<SensorValueShortDto> webValues = sensorValueShortMapper.map(values);
+        result.setValues(webValues.toArray(new SensorValueShortDto[]{}));
         return result;
     }
 

@@ -1,6 +1,7 @@
 package org.tcontrol.service;
 
 import org.tcontrol.models.SensorValue;
+import org.tcontrol.models.SensorValueShort;
 
 import java.io.FileNotFoundException;
 import java.util.Collection;
@@ -9,11 +10,11 @@ import java.util.List;
 import java.util.Map;
 
 public interface IStatisticsSaver {
-    void write(List<SensorValue> values);
+    void write(List<? extends SensorValueShort> values);
 
     Map<Integer, SensorValue> currentValues();
 
-    Deque<SensorValue> lastValues(int sensorId);
+    Deque<SensorValueShort> lastValues(int sensorId);
 
-    Collection<SensorValue> historyValues(long from, long to, Integer sensorId) throws FileNotFoundException;
+    Collection<SensorValueShort> historyValues(long from, long to, Integer sensorId) throws FileNotFoundException;
 }

@@ -84,7 +84,7 @@ public class SensorLastDataSaver implements IStatisticsSaver {
     }
 
     private static void calcGradient(long deltaT, SensorValue lastValue, SensorValueShort curValue) {
-        if (lastValue != curValue && deltaT >= 15 * 60 * 1000 && deltaT <= 20 * 60 * 1000) {// 15-20мин
+        if (lastValue.getTimestamp() != curValue.getTimestamp() && deltaT >= 15 * 60 * 1000 && deltaT <= 20 * 60 * 1000) {// 15-20мин
             double gradient = lastValue.getValue() - curValue.getValue();
             lastValue.setGradient(gradient);
         }

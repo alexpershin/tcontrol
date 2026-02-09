@@ -61,7 +61,13 @@ public class SensorLastDataSaver implements IStatisticsSaver {
         return cache.values().stream()
                 .filter(values -> !values.isEmpty())
                 .map(values -> {
-                    SensorValue lastValue = (SensorValue) values.getLast();
+                    SensorValueShort lastValueShort = values.getLast();
+                    SensorValue lastValue = new SensorValue(
+                            lastValueShort.getSensorId(),
+                            lastValueShort.getSensorCode(),
+                            lastValueShort.getTimestamp(),
+                            lastValueShort.getValue()
+                    );
                     Iterator<SensorValueShort> it = values.descendingIterator();
                     lastValue.setState(calcSate(lastValue, sensorConfig));
                     lastValue.setMinValue(null);

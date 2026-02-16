@@ -183,7 +183,7 @@ function timestampToTime(timestamp){
 
 
 function temperatureSensorRenderer(sensorElementId, sensorValue) {
-    console.log('sensorValue: ' + sensorValue);
+    console.log('sensorValue: ' + sensorValue.value.toFixed(1));
     var resValue = sensorValue.value == null ? '--\xB0' : sensorValue.value.toFixed(1) + '\xB0'
     $(sensorElementId + ' .sensor_item_body .sensor_value').text(resValue)
     var sensorBody = $(sensorElementId + ' .sensor_item_body')
@@ -240,8 +240,9 @@ var STATE_BACKGROUND = (function () {
         'WARNING': 'linear-gradient(to bottom, yellow, orange)',
         'OFF': 'linear-gradient(to bottom, white, lightgrey)',
         'ON': 'linear-gradient(to bottom, lightblue, lightskyblue )',
-        'ALARM_ON': 'darkred',
+        'ALARM_ON': 'red',
         'ALARM_OFF': 'lightgreen',
+        'ALARM_WARNING': 'yellow',
         'UNDEFINED': 'gray'
     };
     return {
@@ -579,30 +580,48 @@ function alertSensorRenderer(sensorElementId, value) {
     sensorValue = $(sensorElementId + ' .sensor_item_body .sensor_value');
     sensorValue.text(result.status);
 
-    sensorValue.css('top', '50px');
-    sensorValue.css('left', '-47px');
+    sensorValue.css('top', '45px');
+    sensorValue.css('left', '10px');
     sensorValue.css('position', 'relative');
     sensorValue.css('width', '93px');
     sensorValue.css('height', '93px');
     sensorValue.css('margin', '0px');
 
     sensorBody = $(sensorElementId + ' .sensor_item_body');
-    h = sensorBody.css('height');
-    sensorBody.css('border-radius', 0);
+    sensorBody.css('border-color', 'transparent');
 
-    //See https://css-tricks.com/examples/ShapesOfCSS/
-    sensorBody.css('margin', '0 auto 0px auto');
-    sensorBody.css('width', 0);
-    sensorBody.css('height', 0);
-    sensorBody.css('line-height', 0);
-    sensorBody.css('border-style', 'inset');
-    sensorBody.css('border-width', '0 63px 115px 63px');
-    sensorBody.css('border-color', 'transparent transparent ' + result.background + ' transparent');
-    sensorBody.css('transform', 'rotate(360deg)');
-    sensorBody.css('-ms-transform', 'rotate(360deg)');
-    sensorBody.css('-moz-transform', 'rotate(360deg)');
-    sensorBody.css('-webkit-transform:', 'rotate(360deg)');
-    sensorBody.css('-o-transform', 'rotate(360deg)');
+    drawTriangleWithBorder(sensorElementId, result.background)
+}
+
+function drawTriangleWithBorder(sensorElementId, background) {
+    const canvas = $(sensorElementId + ' .sensor_item_body .sensor_canvas').get(0)
+    ctx = canvas.getContext("2d")
+    sensorBody = $(sensorElementId + ' .sensor_item_body')
+    h = 119*1.3
+    w = 119*1.3
+
+    // Define triangle points (an upward-pointing triangle)
+    const p1X = w*0.95;
+    const p1Y = h*0.1;
+    const p2X = 2*w*0.95;
+    const p2Y = h*0.9;
+    const p3X = 0;
+    const p3Y = h*0.9;
+
+    // Draw the border (stroke)
+    ctx.beginPath();
+    ctx.moveTo(p1X, p1Y);
+    ctx.lineTo(p2X, p2Y);
+    ctx.lineTo(p3X, p3Y);
+    ctx.closePath(); // Connects the last point to the first
+
+    ctx.lineWidth = 5; // Border thickness
+    ctx.strokeStyle = 'darkgrey'; // Border color
+    ctx.stroke();
+
+    // Fill the inside of the triangle (optional)
+    ctx.fillStyle = background;
+    ctx.fill();
 }
 
 function alertSensorStatusBackgroundCalc(value) {
@@ -614,6 +633,9 @@ function alertSensorStatusBackgroundCalc(value) {
     } else if (value.state === 'ALERT') {
         statusText = 'Alarm';
         background = STATE_BACKGROUND.get('ALARM_ON');
+    } else if (value.state === 'WARNING') {
+        statusText = 'Alarm';
+        background = STATE_BACKGROUND.get('ALARM_WARNING');
     }
     return {
         status: statusText,

@@ -125,6 +125,16 @@
     margin: 16px 0 16px 0;
 }
 
+.sensor_item_body .sensor_canvas{
+    color: #999999;
+    position: absolute;
+    width: 115px;
+    height: 115px;
+    z-index: -100;
+    text-align: left;
+    display: flex;
+}
+
 .sensor_item .sensor_caption {
     text-align:center;
     font:normal 16px/16px Arial; 

@@ -34,7 +34,7 @@ public class SensorLastDataSaver implements IStatisticsSaver {
     @Value("${main-config.sensorValuesBufferExpiredMillis:3600000}")
     private int expiredMillis;
 
-    private final Map<Integer, Deque<SensorValueShort>> cache =  new ConcurrentHashMap<>();
+    private final Map<Integer, Deque<SensorValueShort>> cache = new ConcurrentHashMap<>();
 
     @PostConstruct
     public void loadPrevData() throws FileNotFoundException {
@@ -115,10 +115,10 @@ public class SensorLastDataSaver implements IStatisticsSaver {
                 .map(sensorConfiguration -> {
                     double v = value.getValue();
                     SensorValue.SensorState result = NORMAL;
-                    if (Sensor.SensorType.ALARM == sensorConfiguration.getType()
-                            || Sensor.SensorType.ON_OFF == sensorConfiguration.getType()) {
+                    if (Sensor.SensorType.ALARM == sensorConfiguration.getType()) {
+                        result = value.getValue() == 0 ? NORMAL : (value.getValue() < 10 ? WARNING : ALARM);
+                    } else if (Sensor.SensorType.ON_OFF == sensorConfiguration.getType()) {
                         result = value.getValue() == 0 ? NORMAL : ALARM;
-
                     } else //calculate state according to threshold
                         //low threshold
                         if (value.getValue() <= sensorConfiguration.getLowThreshold()) {

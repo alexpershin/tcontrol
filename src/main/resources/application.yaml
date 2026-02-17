@@ -116,6 +116,12 @@ sensor-config:
       type: ON_OFF
       userName: "Газовый котел"
       description: 'Газовый котел'
+    - id: 11
+      code: '102'
+      name: SYSTEM_ALERTS
+      type: ALARM
+      userName: 'Состояние системы'
+      description: 'Список системных ошибок'
 
 relay-pins:
   pins:
@@ -168,6 +174,7 @@ sms-config:
       name: mama
 
 thermostat.schedule: '5 0/1 * * * ?'
+alerts.schedule: '0 0/1 * * * ?'
 
 thermostats-config:
   thermostats:

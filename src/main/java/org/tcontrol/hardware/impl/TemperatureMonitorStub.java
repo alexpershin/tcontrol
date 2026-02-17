@@ -48,7 +48,8 @@ public class TemperatureMonitorStub implements ITemperatureMonitor {
                 new SensorValue(8, "8", timestamp - 300000 * 3, 1.0),
                 new SensorValue(8, "8", timestamp - 300000 * 2, 0.0),
                 new SensorValue(8, "8", timestamp, 1.0),
-                new SensorValue(9, "9", timestamp, 1.0)
+                new SensorValue(9, "9", timestamp, 11.0),
+                new SensorValue(10, "10", timestamp, 0.1)
         );
         for (SensorConfiguration sensor : sensors) {
             int sensorId = sensor.getId();

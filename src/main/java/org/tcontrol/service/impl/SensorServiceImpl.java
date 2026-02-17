@@ -27,15 +27,16 @@ import java.util.stream.Collectors;
 @Logging
 public class SensorServiceImpl implements ISensorService {
 
+    public static final String SYSTEM_ALERTS = "SYSTEM_ALERTS";
     protected final ThermostatsConfig thermostatsConfig;
     protected final SensorConfig sensorConfig;
     private final RelayPinsConfig relayPinsConfig;
     private final HistoricDataCache historicDataCache;
+    private final SystemAlertsAggregator systemAlertsAggregator;
     protected final IStatisticsSaver sensorLastDataSaver;
     protected final SensorMapper sensorMapper;
     protected final Map<String, IThermostat> dynamicThermostats;
     protected final SensorValueMapper sensorValueMapper;
-
 
     @PostConstruct
     public void init() {
@@ -84,7 +85,7 @@ public class SensorServiceImpl implements ISensorService {
 
     @Override
     public List<SensorValueShort> getHistorySensorValues(int currentUserId, long from, long to, Integer sensorId) throws FileNotFoundException {
-        return historicDataCache.historyValues(from,to,sensorId)
+        return historicDataCache.historyValues(from, to, sensorId)
                 .stream()
                 .map(v -> new SensorValue(
                         v.getSensorId(),
@@ -96,11 +97,32 @@ public class SensorServiceImpl implements ISensorService {
     }
 
     @Override
+    public List<SystemAlert> alerts(int sensorId) {
+
+        List<SensorConfig.SensorConfiguration> appropriateSensor = sensorConfig.getSensors().stream()
+                .filter(sensorConfiguration ->
+                        sensorConfiguration.getName().equals(SYSTEM_ALERTS)
+                                && sensorConfiguration.getType() == Sensor.SensorType.ALARM).collect(Collectors.toList());
+
+        if (appropriateSensor.isEmpty()) {
+            String message = MessageFormat.format("No good config for sensor: {0}", sensorId);
+            log.error(message);
+            throw new SensorServiceException(message);
+        } else if (appropriateSensor.size() != 1) {
+            String message = MessageFormat.format("Duplicate config for sensor: {0}", sensorId);
+            log.error(message);
+            throw new SensorServiceException(message);
+        } else {
+            return systemAlertsAggregator.alerts();
+        }
+    }
+
+    @Override
     public int changeThermostatOptions(List<ThermostatTemperature> temperatures) throws SensorServiceException {
         return temperatures.stream()
                 .map(temp -> dynamicThermostats.values().stream()
                         .filter(t -> t.getCode().equals(temp.getThermostatCode())).findFirst()
-                        .map(t -> t.temperature(temp.getTemperature()).checkTemperature() ? 1 : 0)
+                        .map(t -> t.temperature(temp.getDayTemperature()).checkTemperature() ? 1 : 0)
                         .orElseThrow(() ->
                                 new SensorServiceException(MessageFormat.format("Thermostat not found by pin: {0}",
                                         joining(temperatures))))
@@ -119,14 +141,21 @@ public class SensorServiceImpl implements ISensorService {
     @Override
     public List<ThermostatTemperature> thermostatCurrentTemperature(int sensorId) {
         return thermostats(sensorId).stream()
-                .map(t -> new ThermostatTemperature(t.getCode(), t.getName(), t.currentTemperature()))
+                .map(t -> new ThermostatTemperature(
+                        t.getCode(),
+                        t.getName(),
+                        t.currentTemperature(),
+                        t.getThermostatConfig().getTDay(),
+                        t.getThermostatConfig().getTNight(),
+                        t.getThermostatConfig().nightBegin(),
+                        t.getThermostatConfig().nightEnd()))
                 .collect(Collectors.toList());
     }
 
     @Override
     public int thermostatsRollback(Integer sensorId) {
         return thermostats(sensorId).stream()
-                .map(thermostat -> thermostat.rollback().checkTemperature()? 1: 0)
+                .map(thermostat -> thermostat.rollback().checkTemperature() ? 1 : 0)
                 .reduce((a, b) -> a | b)
                 .orElseThrow(() ->
                         new SensorServiceException(MessageFormat.format("No thermostat found: {0}",

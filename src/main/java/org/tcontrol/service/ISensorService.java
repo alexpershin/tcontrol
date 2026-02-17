@@ -157,4 +157,12 @@ public interface ISensorService {
      * @return list of sensor values;
      */
     List<SensorValueShort>  getHistorySensorValues(int currentUserId, long from, long to, Integer sensorId) throws FileNotFoundException;
+
+    /**
+     * Получение списка критических ошибок.
+     *
+     * @param sensorId сенсор;
+     * @return alerts;
+     */
+    List<SystemAlert> alerts(int sensorId);
 }

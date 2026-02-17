@@ -43,6 +43,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static org.tcontrol.config.props.SensorConfig.SensorConfiguration;
+import static org.tcontrol.service.impl.SensorServiceImpl.SYSTEM_ALERTS;
 
 
 @Slf4j
@@ -119,11 +120,26 @@ public class AppConfig implements BeanFactoryPostProcessor {
                 new SensorConfiguration(9, "9", "Doors&Windows",
                         Sensor.SensorType.ALARM,
                         "Двери",
-                        "Doors and windows close circuit")
+                        "Doors and windows are closed"),
+                new SensorConfiguration(10, "10", SYSTEM_ALERTS,
+                        Sensor.SensorType.ALARM,
+                        "Состояние системы",
+                        "Показывает, если ошибки")
         ).collect(Collectors.toList());
         SensorConfig sensorConfig = new SensorConfig();
         sensorConfig.setSensors(sensors);
         return sensorConfig;
+    }
+
+    @Bean
+    @ConditionalOnProperty(value = "main-config.sensorsStub", havingValue = "true")
+    public SystemAlertsAggregator systemAlertsAggregatorStub(
+            SensorConfig sensorConfig,
+            IStatisticsSaver sensorLastDataSaver
+    ) {
+        SystemAlertsAggregatorImpl systemAlertsAggregator = new SystemAlertsAggregatorImpl(sensorConfig, sensorLastDataSaver);
+        systemAlertsAggregator.addAlert("Error while getting temperature via W1 bus");
+        return systemAlertsAggregator;
     }
 
     @Bean
@@ -157,7 +173,6 @@ public class AppConfig implements BeanFactoryPostProcessor {
     public SensorConfig sensorConfig() {
         return new SensorConfig();
     }
-
 
     @Bean
     @ConfigurationProperties(prefix = "relay-pins")
@@ -306,6 +321,7 @@ public class AppConfig implements BeanFactoryPostProcessor {
             final SensorConfig sensorConfig,
             final RelayPinsConfig relayPinsConfig,
             final IStatisticsSaver sensorLastDataSaver,
+            final SystemAlertsAggregator systemAlertsAggregator,
             final HistoricDataCache historicDataCache,
             final SensorMapper sensorMapper,
             final Map<String, IThermostat> dynamicThermostats,
@@ -316,6 +332,7 @@ public class AppConfig implements BeanFactoryPostProcessor {
                 sensorConfig,
                 relayPinsConfig,
                 historicDataCache,
+                systemAlertsAggregator,
                 sensorLastDataSaver,
                 sensorMapper,
                 dynamicThermostats,

@@ -8,8 +8,10 @@ import org.tcontrol.config.Logging;
 import org.tcontrol.controller.dto.*;
 import org.tcontrol.controller.mappers.SensorValueMapper;
 import org.tcontrol.controller.mappers.SensorValueShortMapper;
+import org.tcontrol.controller.mappers.SystemAlertMapper;
 import org.tcontrol.controller.mappers.ThermostatCurrentTemperatureMapper;
 import org.tcontrol.models.SensorValueShort;
+import org.tcontrol.models.SystemAlert;
 import org.tcontrol.service.SensorServiceException;
 import org.tcontrol.service.ISensorService;
 import org.tcontrol.models.Sensor;
@@ -48,6 +50,7 @@ public class SensorController {
     private final SensorValueMapper sensorValueMapper;
     private final SensorValueShortMapper sensorValueShortMapper;
     private final ThermostatCurrentTemperatureMapper thermostatCurrentTemperatureMapper;
+    private final SystemAlertMapper systemAlertMapper;
 
     //Temp user
     private static final int CURRENT_USER_ID = 1;
@@ -174,7 +177,7 @@ public class SensorController {
                     in = ParameterIn.QUERY,
                     content = @Content(mediaType = "application/json",
                             schema = @Schema(maxLength = 4, example = "1"))
-                    ),
+            ),
                     @Parameter(name = "from", description = "Дата и время от",
                             in = ParameterIn.QUERY,
                             content = @Content(mediaType = "application/json",
@@ -189,9 +192,9 @@ public class SensorController {
     )
     public SensorValuesShortResult getSensorHistoryValues(
             @RequestParam(name = "sensorId") Integer sensorId,
-            @RequestParam(name = "from")  @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) OffsetDateTime from,
-            @RequestParam(name = "to") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) OffsetDateTime  to
-        ) throws SensorServiceException, FileNotFoundException {
+            @RequestParam(name = "from") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) OffsetDateTime from,
+            @RequestParam(name = "to") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) OffsetDateTime to
+    ) throws SensorServiceException, FileNotFoundException {
         SensorValuesShortResult result = new SensorValuesShortResult();
         List<SensorValueShort> values = sensorService.getHistorySensorValues(
                 CURRENT_USER_ID,
@@ -206,8 +209,8 @@ public class SensorController {
 
     public SensorValuesShortResult getSensorHistoryShortValues(
             @RequestParam(name = "sensorId") Integer sensorId,
-            @RequestParam(name = "from")  @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) OffsetDateTime from,
-            @RequestParam(name = "to") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) OffsetDateTime  to
+            @RequestParam(name = "from") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) OffsetDateTime from,
+            @RequestParam(name = "to") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) OffsetDateTime to
     ) throws SensorServiceException, FileNotFoundException {
         SensorValuesShortResult result = new SensorValuesShortResult();
         List<SensorValueShort> values = sensorService.getHistorySensorValues(
@@ -252,9 +255,7 @@ public class SensorController {
     )
     public ResponseEntity<List<ThermostatTemperatureDto>> thermostatCurrentTemperature(@RequestParam(name = "sensorId") Integer sensorId) {
         log.info("current temperature for sensor: {}", sensorId);
-        if (sensorId == null || sensorId < 0) {
-            throw new IllegalArgumentException("sensorId has to be not null and positive number");
-        }
+        validateSensorId(sensorId);
         List<ThermostatTemperatureDto> result = thermostatCurrentTemperatureMapper.mapToDto(sensorService.thermostatCurrentTemperature(sensorId));
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
@@ -271,12 +272,25 @@ public class SensorController {
     public ResponseEntity<StartHeatingResult> thermostatRollback(@RequestParam(name = "sensorId") Integer sensorId) throws InterruptedException {
         log.info("thermostats rollback for sensor: {}", sensorId);
         Thread.sleep(1000);
-        if (sensorId == null || sensorId < 0) {
-            throw new IllegalArgumentException("sensorId has to be not null and positive number");
-        }
+        validateSensorId(sensorId);
         int result = sensorService.thermostatsRollback(sensorId);
         return new ResponseEntity<>(new StartHeatingResult(result, "ok", System.currentTimeMillis()),
                 HttpStatus.OK);
+    }
+
+    @PostMapping("/alerts")
+    @CrossOrigin(origins = {"http://localhost:8090", "http://localhost"})
+    @Operation(summary = "Текущие ошибки",
+            description = "Текущие ошибки, на которые нужно обратить внимание",
+            responses = {@ApiResponse(responseCode = "" + HTTP_BAD_REQUEST, content = @Content(mediaType = "application/json"))
+            },
+            requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
+                    description = "Тело запроса для старта отопления", required = true)
+    )
+    public ResponseEntity<List<SystemAlertDto>> alerts(@RequestParam(name = "sensorId") Integer sensorId) {
+        log.info("Current alerts sensor: {}", sensorId);
+        validateSensorId(sensorId);
+        return new ResponseEntity<>(systemAlertMapper.map(sensorService.alerts(sensorId)), HttpStatus.OK);
     }
 
     private ResponseStatusException buildWebApplicationException(SensorServiceException ex) {
@@ -301,4 +315,11 @@ public class SensorController {
         }
         return webSensors;
     }
+
+    private static void validateSensorId(Integer sensorId) {
+        if (sensorId == null || sensorId < 0) {
+            throw new IllegalArgumentException("sensorId has to be not null and positive number");
+        }
+    }
+
 }

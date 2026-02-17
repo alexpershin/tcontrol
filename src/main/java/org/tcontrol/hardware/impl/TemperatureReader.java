@@ -1,24 +1,33 @@
 package org.tcontrol.hardware.impl;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
 import org.tcontrol.config.Logging;
 import org.tcontrol.models.SensorValue;
 import org.tcontrol.hardware.ITemperatureReader;
+import org.tcontrol.service.SystemAlertsAggregator;
 
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.text.MessageFormat;
 import java.util.List;
 
-//@Component //
+@Service
 @Slf4j
 @Logging
+@RequiredArgsConstructor
 public class TemperatureReader implements ITemperatureReader {
 
     private static final String TEMPERATURE_PREFIX = "t=";
+    private static final String CRC_PREFIX = "crc=";
+    private static final String CRC_OK = "YES";
+
+    private final SystemAlertsAggregator systemAlertsAggregator;
 
     @Value("${w1DevicesPath}")
     private String w1DevicesPath;
@@ -38,7 +47,7 @@ public class TemperatureReader implements ITemperatureReader {
                         + "/" + getW1SensorInfoFileName());
     }
 
-    private static double readTemperatureFromFile(Path pathDeviceFile) throws IOException{
+    private double readTemperatureFromFile(Path pathDeviceFile) throws IOException {
         int iniPos, endPos;
         String strTemp;
         double tValue = 0;
@@ -51,6 +60,13 @@ public class TemperatureReader implements ITemperatureReader {
                     endPos = line.length();
                     strTemp = line.substring(iniPos, endPos);
                     tValue = Double.parseDouble(strTemp) / 1000;
+                } else if (line.contains(CRC_PREFIX)) {
+                    String lastWord = line.substring(line.lastIndexOf(" ") + 1);
+                    if (!CRC_OK.equals(lastWord)) {
+                        String errorMessage = MessageFormat.format("CRC for sensor {0} is bad", pathDeviceFile.getFileName());
+                        systemAlertsAggregator.addAlert(errorMessage);
+                        log.error(errorMessage, pathDeviceFile.getFileName());
+                    }
                 }
             }
         } catch (IOException ex) {

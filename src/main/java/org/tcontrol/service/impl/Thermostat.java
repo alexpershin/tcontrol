@@ -49,6 +49,7 @@ public class Thermostat implements IThermostat {
 
     private ThermostatsConfig.ThermostatConfig thermostatCurrentConfig;
 
+    @Getter
     private ThermostatsConfig.ThermostatConfig thermostatConfig;
 
     @Getter

@@ -1,5 +1,6 @@
 package org.tcontrol.service;
 
+import org.tcontrol.config.props.ThermostatsConfig;
 import org.tcontrol.service.impl.Thermostat;
 
 import java.util.List;
@@ -31,4 +32,6 @@ public interface IThermostat {
   String  getCode();
 
   String getSensorCode();
+
+  ThermostatsConfig.ThermostatConfig getThermostatConfig();
 }

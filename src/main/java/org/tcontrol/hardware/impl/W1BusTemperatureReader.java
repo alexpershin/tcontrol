@@ -16,7 +16,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@Service
+//@Service
 @Slf4j
 @Logging
 public class W1BusTemperatureReader implements ITemperatureReader {

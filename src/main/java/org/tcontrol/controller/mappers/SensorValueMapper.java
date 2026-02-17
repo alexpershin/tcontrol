@@ -10,9 +10,9 @@ import java.util.List;
 @Mapper(componentModel = "spring",
         unmappedTargetPolicy = ReportingPolicy.IGNORE)
 public interface SensorValueMapper {
-    SensorValueDto map(SensorValue sc);
+    SensorValueDto map(SensorValue sensorValue);
 
-    SensorValue clone(SensorValue sc);
+    SensorValue clone(SensorValue sensorValue);
 
     List<SensorValueDto> map(List<SensorValue> valueList);
 

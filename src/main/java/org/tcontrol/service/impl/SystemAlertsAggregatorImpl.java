@@ -61,7 +61,11 @@ public class SystemAlertsAggregatorImpl implements SystemAlertsAggregator {
 
             List<SystemAlert> actualAlerts = actualAlerts();
 
-            SensorValueShort sensorValue = new SensorValueShort(sensorConfiguration.getId(), sensorConfiguration.getCode(), System.currentTimeMillis(), actualAlerts.size());
+            SensorValueShort sensorValue = new SensorValueShort(
+                    sensorConfiguration.getId(),
+                    sensorConfiguration.getCode(),
+                    System.currentTimeMillis(),
+                    actualAlerts.size()/10.0);
             sensorLastDataSaver.write(Collections.singletonList(sensorValue));
             log.info("actual alerts: {}", actualAlerts.size());
         } else {

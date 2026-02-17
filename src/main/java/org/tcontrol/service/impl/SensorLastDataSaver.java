@@ -116,7 +116,7 @@ public class SensorLastDataSaver implements IStatisticsSaver {
                     double v = value.getValue();
                     SensorValue.SensorState result = NORMAL;
                     if (Sensor.SensorType.ALARM == sensorConfiguration.getType()) {
-                        result = value.getValue() == 0 ? NORMAL : (value.getValue() < 10 ? WARNING : ALARM);
+                        result = value.getValue() == 0 ? NORMAL : (value.getValue() < 1.0 ? WARNING : ALARM);
                     } else if (Sensor.SensorType.ON_OFF == sensorConfiguration.getType()) {
                         result = value.getValue() == 0 ? NORMAL : ALARM;
                     } else //calculate state according to threshold

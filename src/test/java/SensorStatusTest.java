@@ -104,7 +104,7 @@ public class SensorStatusTest {
                 Arguments.of(
                         new SensorValue(id, time, 0.6),
                         new SensorConfiguration(id, code, "Close", Sensor.SensorType.ALARM, "", ""),
-                        ALARM
+                        WARNING
                 ),
                 Arguments.of(
                         new SensorValue(id, time, 0.0),

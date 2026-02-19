@@ -1,0 +1,35 @@
+<dialog id="pop-up" class="pop-up">Ошибки</dialog>
+
+<dialog id="alerts-dialog" class="common-dialog-style">
+    <div id="alerts-dialog-title" class="common-dialog-title">Системные ошибки</div>
+    <div class="alerts-dialog-form-group">
+        <table id="alerts-table-header" class="alerts-table-header">
+            <tr id="alerts-label-row" class="alerts-row-lable">
+                <td><label for="alerts-time-input-caption"
+                           id="alerts-time-input-caption"
+                           class="alerts-time-input-caption">Время</label></td>
+                <td class="alerts-td"><label for="alerts-message-input-caption"
+                           id="alerts-message-input-caption"
+                           class="alerts-message-input-caption">Сообщение</label></td>
+            </tr>
+        </table>
+        <div class="scrolling-table">
+            <table id="alerts-table" class="alerts-table">
+                <tr id="alerts-row" class="alerts-row">
+                    <td><input
+                            id="alerts-time-input"
+                            type="text"
+                            name="alerts-time-input"
+                            class="alerts-time-input"></td>
+                    <td class="alerts-td"><input
+                            id="alerts-message-input"
+                            type="text"
+                            name="alerts-message-input"
+                            class="alerts-message-input"></td>
+                </tr>
+            </table>
+        </div>
+    </div>
+    <a href="#" id="alerts-dialog-close-btn" class="close-button"></a>
+</dialog>
+

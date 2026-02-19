@@ -181,9 +181,8 @@ function timestampToTime(timestamp){
          return timestamp ? new Date(timestamp).toLocaleTimeString('en-US', dateOpts) : null
 }
 
-
 function temperatureSensorRenderer(sensorElementId, sensorValue) {
-    console.log('sensorValue: ' + sensorValue.value.toFixed(1));
+    console.log('sensorValue: ' + sensorValue.value);
     var resValue = sensorValue.value == null ? '--\xB0' : sensorValue.value.toFixed(1) + '\xB0'
     $(sensorElementId + ' .sensor_item_body .sensor_value').text(resValue)
     var sensorBody = $(sensorElementId + ' .sensor_item_body')
@@ -395,6 +394,47 @@ function startHeatingDialog(sensorElementId, sensorValue, currentTemperatures){
     showHeatingDialog()
 }
 
+function startAlertsDialog(sensorElementId, sensorValue, currentAlerts){
+    const alertsDialog = document.getElementById('alerts-dialog');
+
+    const alertsRow = document.getElementById("alerts-row");
+
+    const alertsRowBaseId = 'alerts-row'
+    $(currentAlerts).each(function (key, currentAlert) {
+        cloneRow = $('#' + alertsRowBaseId).clone()
+        cloneRow.appendTo('.alerts-table')
+        alertsRowId =  cloneRow.attr('id') + '-' + currentAlert.timestamp
+        cloneRow.attr("id", alertsRowId)
+        const alertsTimeInput = $('#' + alertsRowId + ' #alerts-time-input')
+
+        const alertsMessageInput = $('#' + alertsRowId + ' #alerts-message-input')
+
+        date = new Date()
+        date.setTime(currentAlert.timestamp)
+        const dateValue = formatTimestamp(date)
+
+        alertsTimeInput.val(dateValue)
+        alertsTimeInput.attr('readonly', true)
+        alertsMessageInput.val(currentAlert.message)
+        alertsMessageInput.attr('readonly', true)
+        $('#' + alertsRowId).show();
+    })
+
+    closeBtn = document.getElementById('alerts-dialog-close-btn')
+
+    closeBtn.addEventListener('click', () => {
+         closeAlertsDialog()
+    })
+
+    showAlertsDialog()
+}
+
+function formatTimestamp(timestamp) {
+  const date = timestamp.toISOString().split('T')[0]
+  const time = timestamp.toTimeString().split(' ')[0]//.replace(/:/g, '-');
+  return `${date} ${time}`
+}
+
 function startPlotDialog(sensorElementId, sensorValue, values, shape){
      closeBtn = document.getElementById('plot-dialog-close-btn')
      closeBtn.addEventListener('click', () => {
@@ -555,6 +595,18 @@ function closeHeatingDialog(){
     document.getElementById('overlay').style.visibility='hidden'
 }
 
+function showAlertsDialog(){
+    document.getElementById('alerts-dialog').style.visibility='visible'
+    document.getElementById('overlay').style.visibility='visible'
+}
+
+function closeAlertsDialog(){
+    const alertsRow = 'alerts-row'
+    $("[id^='" + alertsRow + "-']").remove()
+    document.getElementById('alerts-dialog').style.visibility='hidden'
+    document.getElementById('overlay').style.visibility='hidden'
+}
+
 function onOffSensorBackgroundCalc(value) {
     var statusText;
     var background = STATE_BACKGROUND.get('UNDEFINED');
@@ -591,6 +643,40 @@ function alertSensorRenderer(sensorElementId, value) {
     sensorBody.css('border-color', 'transparent');
 
     drawTriangleWithBorder(sensorElementId, result.background)
+
+     const sensorElement = $(sensorElementId + ' .sensor_item_body .sensor_value')
+
+        sensorElement.click(function (ev) {
+
+            const currentTemperatureURL =
+                window.location.protocol
+                + "//" + window.location.host
+                + ":/tcontrol/api/alerts?sensorId="
+                + value.sensorId
+
+            $.ajax({
+                    type: 'POST',
+                    dataType: 'json',
+                    contentType: 'application/json',
+                    url: currentTemperatureURL,
+                    beforeSend: function () {
+                        showSensorLoader(sensorElementId)
+                    },
+                    success: function (currentAlerts) {
+                         startAlertsDialog(sensorElementId, sensorValue, currentAlerts)
+                    },
+                    error: function (jqXHR, textStatus, errorThrown) {
+                        hideSensorLoader(sensorElementId)
+                        alert("Error try again later: " + textStatus)
+                    },
+                    complete: function () {
+                        hideSensorLoader(sensorElementId)
+                    }
+                });
+        })
+
+        setupPlot(sensorElementId, value, 'hv')
+
 }
 
 function drawTriangleWithBorder(sensorElementId, background) {
@@ -631,10 +717,10 @@ function alertSensorStatusBackgroundCalc(value) {
         statusText = 'Ok';
         background = STATE_BACKGROUND.get('ALARM_OFF');
     } else if (value.state === 'ALERT') {
-        statusText = 'Alarm';
+        statusText = 'Crit';
         background = STATE_BACKGROUND.get('ALARM_ON');
     } else if (value.state === 'WARNING') {
-        statusText = 'Alarm';
+        statusText = 'Warn';
         background = STATE_BACKGROUND.get('ALARM_WARNING');
     }
     return {

@@ -1,0 +1,48 @@
+.alerts-table-header{
+    width: 400px;
+}
+
+.scrolling-table{
+    height: 250px;
+    width: 400px;
+    overflow: auto;
+}
+
+.alerts-table{
+   background: lightblue;
+   border-spacing: 0;
+}
+
+.alerts-row{
+    visibility: visible;
+    display: none;
+}
+
+.alerts-time-input-caption{
+    width: 8em;
+    font: bold 12px/16px Arial;
+    background: lightgrey;
+}
+.alerts-message-input-caption{
+    font: bold 12px/16px Arial;
+    background: lightgrey;
+}
+
+.alerts-time-input{
+    font: 13px/16px Arial;
+    border: blue;
+    background: aliceblue;
+    width: 10em;
+}
+
+.alerts-message-input{
+    width: 1000%;
+    font: 13px/16px Arial;
+    border: blue;
+    background: aliceblue;
+    color: red;
+}
+.alerts-td{
+    white-space: nowrap;
+}
+

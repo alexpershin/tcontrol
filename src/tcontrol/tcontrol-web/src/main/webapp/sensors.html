@@ -13,6 +13,8 @@
         <link rel="stylesheet" type="text/css" href="sensors-body.css" media="screen" />
         <link rel="stylesheet" type="text/css" href="start-heating.css" media="screen" />
         <link rel="stylesheet" type="text/css" href="plot-dialog.css" media="screen" />
+        <link rel="stylesheet" type="text/css" href="alerts-dialog.css" media="screen" />
+        <link rel="stylesheet" type="text/css" href="dialog.css" media="screen" />
     </head>
 
     <body class="page_body">
@@ -23,22 +25,24 @@
 
     <div id="start-heating-dialog-placeholder"></div>
     <div id="plot-dialog-placeholder"></div>
+    <div id="alerts-dialog-placeholder"></div>
 
     <script>
         $(function(){
-              $("#start-heating-dialog-placeholder").load("start-heating.html");
-              $("#plot-dialog-placeholder").load("plot-dialog.html");
+              $("#start-heating-dialog-placeholder").load("start-heating.html")
+              $("#plot-dialog-placeholder").load("plot-dialog.html")
+              $("#alerts-dialog-placeholder").load("alerts-dialog.html");
         });
         $(function() {
                $("#includedContent").load("sensors-body.html", function() {
                     $.getScript("js/sensors.js")
                         .done( function(script, textStatus){
-                                console.log("Loading sensors.js: "+textStatus);
-                                renderSensorsOnLoad();
+                                console.log("Loading sensors.js: "+textStatus)
+                                renderSensorsOnLoad()
                         })
                         .fail(function( jqxhr, settings, exception ) {
-                             console.error("Exception thrown while loading module sensors.js", exception);
-                        });
+                             console.error("Exception thrown while loading module sensors.js", exception)
+                        })
                })
         })
     </script>

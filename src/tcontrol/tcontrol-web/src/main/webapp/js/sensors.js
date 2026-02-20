@@ -420,6 +420,19 @@ function startAlertsDialog(sensorElementId, sensorValue, currentAlerts){
         $('#' + alertsRowId).show();
     })
 
+    //2 empty rows
+    for (let i = 0; i < 2; i++) {
+            cloneRow = $('#' + alertsRowBaseId).clone()
+            cloneRow.appendTo('.alerts-table')
+            alertsRowId =  cloneRow.attr('id') + '-empty' + (i+1)
+            cloneRow.attr("id", alertsRowId)
+            const alertsTimeInput = $('#' + alertsRowId + ' #alerts-time-input')
+            const alertsMessageInput = $('#' + alertsRowId + ' #alerts-message-input')
+            alertsTimeInput.attr('readonly', true)
+            alertsMessageInput.attr('readonly', true)
+            $('#' + alertsRowId).show();
+    }
+
     closeBtn = document.getElementById('alerts-dialog-close-btn')
 
     closeBtn.addEventListener('click', () => {
@@ -632,7 +645,7 @@ function alertSensorRenderer(sensorElementId, value) {
     sensorValue = $(sensorElementId + ' .sensor_item_body .sensor_value');
     sensorValue.text(result.status);
 
-    sensorValue.css('top', '45px');
+    sensorValue.css('top', '40px');
     sensorValue.css('left', '10px');
     sensorValue.css('position', 'relative');
     sensorValue.css('width', '93px');
@@ -688,11 +701,11 @@ function drawTriangleWithBorder(sensorElementId, background) {
 
     // Define triangle points (an upward-pointing triangle)
     const p1X = w*0.95;
-    const p1Y = h*0.1;
+    const p1Y = h*0.05;
     const p2X = 2*w*0.95;
-    const p2Y = h*0.9;
+    const p2Y = h*0.95;
     const p3X = 0;
-    const p3Y = h*0.9;
+    const p3Y = h*0.95;
 
     // Draw the border (stroke)
     ctx.beginPath();
@@ -896,5 +909,3 @@ function validateSensorTemperature(input){
     }
     return true
 }
-
-

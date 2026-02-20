@@ -138,7 +138,11 @@ public class AppConfig implements BeanFactoryPostProcessor {
             IStatisticsSaver sensorLastDataSaver
     ) {
         SystemAlertsAggregatorImpl systemAlertsAggregator = new SystemAlertsAggregatorImpl(sensorConfig, sensorLastDataSaver);
-        systemAlertsAggregator.addAlert("Error while getting temperature via W1 bus");
+        for(int i=0; i<20; i++) {
+            systemAlertsAggregator.addAlert(System.currentTimeMillis() - 1000 * 3600 +i,
+                    "Error while getting temperature via W1 bus for sensor 28-0317017a6aff");
+            systemAlertsAggregator.addAlert(System.currentTimeMillis() - 1000 * 3600 +i+100,"Error while getting temperature via W1 bus for sensor 28-000002c7c3ee");
+        }
         return systemAlertsAggregator;
     }
 

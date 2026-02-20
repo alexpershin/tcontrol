@@ -5,11 +5,11 @@ import org.mapstruct.ReportingPolicy;
 import org.tcontrol.controller.dto.SystemAlertDto;
 import org.tcontrol.models.SystemAlert;
 
-import java.util.List;
+import java.util.Collection;
 
 @Mapper(componentModel = "spring",
         unmappedTargetPolicy = ReportingPolicy.IGNORE)
 public interface SystemAlertMapper {
     SystemAlertDto map(SystemAlert sa);
-    List<SystemAlertDto> map(List<SystemAlert> alerts);
+    Collection<SystemAlertDto> map(Collection<SystemAlert> alerts);
 }

@@ -287,7 +287,7 @@ public class SensorController {
             requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
                     description = "Тело запроса для старта отопления", required = true)
     )
-    public ResponseEntity<List<SystemAlertDto>> alerts(@RequestParam(name = "sensorId") Integer sensorId) {
+    public ResponseEntity<Collection<SystemAlertDto>> alerts(@RequestParam(name = "sensorId") Integer sensorId) {
         log.info("Current alerts sensor: {}", sensorId);
         validateSensorId(sensorId);
         return new ResponseEntity<>(systemAlertMapper.map(sensorService.alerts(sensorId)), HttpStatus.OK);

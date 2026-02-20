@@ -14,6 +14,7 @@ import org.tcontrol.config.props.SensorConfig;
 import javax.annotation.PostConstruct;
 import java.io.FileNotFoundException;
 import java.text.MessageFormat;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -97,7 +98,7 @@ public class SensorServiceImpl implements ISensorService {
     }
 
     @Override
-    public List<SystemAlert> alerts(int sensorId) {
+    public Collection<SystemAlert> alerts(int sensorId) {
 
         List<SensorConfig.SensorConfiguration> appropriateSensor = sensorConfig.getSensors().stream()
                 .filter(sensorConfiguration ->

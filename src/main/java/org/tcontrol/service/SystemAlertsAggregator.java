@@ -2,12 +2,10 @@ package org.tcontrol.service;
 
 import org.tcontrol.models.SystemAlert;
 
-import java.util.List;
+import java.util.Collection;
 
 public interface SystemAlertsAggregator {
     void addAlert(String message);
     void addAlert(long timestamp, String message);
-    List<SystemAlert> alerts();
-
-    List<SystemAlert> actualAlerts();
+    Collection<SystemAlert> alerts();
 }

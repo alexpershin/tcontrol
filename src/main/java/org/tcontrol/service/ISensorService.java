@@ -4,6 +4,7 @@ import org.tcontrol.models.*;
 
 import java.io.FileNotFoundException;
 import java.sql.Date;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
@@ -164,5 +165,5 @@ public interface ISensorService {
      * @param sensorId сенсор;
      * @return alerts;
      */
-    List<SystemAlert> alerts(int sensorId);
+    Collection<SystemAlert> alerts(int sensorId);
 }

@@ -31,8 +31,6 @@ public class TemperatureMonitor implements ITemperatureMonitor {
 
     private final SensorConfig sensorConfig;
 
-    private final CSVStatisticSaver csvWriter;
-
     private final IStatisticsManager statisticsManager;
 
     @PostConstruct

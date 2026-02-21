@@ -269,10 +269,8 @@ public class AppConfig implements BeanFactoryPostProcessor {
     public ITemperatureMonitor temperatureMonitor(
             ITemperatureReader temperatureReader,
             SensorConfig sensorConfig,
-            CSVStatisticSaver csvWriter,
-            IStatisticsManager statisticsManager,
-            MainConfig mainConfig) {
-        return new TemperatureMonitor(temperatureReader, sensorConfig, csvWriter, statisticsManager);
+            IStatisticsManager statisticsManager) {
+        return new TemperatureMonitor(temperatureReader, sensorConfig,statisticsManager);
     }
 
     @Bean

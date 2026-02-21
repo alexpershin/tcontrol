@@ -48,6 +48,7 @@ public class TemperatureReader implements ITemperatureReader {
     }
 
     private double readTemperatureFromFile(Path pathDeviceFile) throws IOException {
+        log.debug("Read temperature from file: {}", pathDeviceFile.toString());
         int iniPos, endPos;
         String strTemp;
         double tValue = 0;
@@ -60,12 +61,15 @@ public class TemperatureReader implements ITemperatureReader {
                     endPos = line.length();
                     strTemp = line.substring(iniPos, endPos);
                     tValue = Double.parseDouble(strTemp) / 1000;
+                    log.debug("Value: {}", tValue);
                 } else if (line.contains(CRC_PREFIX)) {
-                    String lastWord = line.substring(line.lastIndexOf(" ") + 1);
-                    if (!CRC_OK.equals(lastWord)) {
+                    String crcStatus = line.substring(line.lastIndexOf(" ") + 1);
+                    log.debug("CRC: {}", crcStatus);
+                    if (!CRC_OK.equals(crcStatus)) {
                         String errorMessage = MessageFormat.format("CRC for sensor {0} is bad", pathDeviceFile.getFileName());
                         systemAlertsAggregator.addAlert(errorMessage);
                         log.error(errorMessage, pathDeviceFile.getFileName());
+                        throw new IOException(errorMessage);
                     }
                 }
             }

@@ -344,12 +344,15 @@ function startHeatingDialog(sensorElementId, sensorValue, currentTemperatures){
 
     var applyBtn = document.getElementById('start-heating-apply-btn');
     var rollbackBtn = document.getElementById('start-heating-rollback-btn')
+    var closeBtn = document.getElementById('start-heating-close-btn')
 
     //remove previous listeners
     const applyButtonClone = applyBtn.cloneNode(true);
     applyBtn.parentNode.replaceChild(applyButtonClone, applyBtn);
     const rollbackButtonClone = rollbackBtn.cloneNode(true);
     rollbackBtn.parentNode.replaceChild(rollbackButtonClone, rollbackBtn);
+    const closeButtonClone = closeBtn.cloneNode(true);
+    closeBtn.parentNode.replaceChild(closeButtonClone, closeBtn);
 
     const startHeatingDialogRow = document.getElementById("thermostat-table-row");
 
@@ -369,8 +372,8 @@ function startHeatingDialog(sensorElementId, sensorValue, currentTemperatures){
     })
 
     applyBtn = document.getElementById('start-heating-apply-btn')
-    closeBtn = document.getElementById('start-heating-close-btn')
     rollbackBtn = document.getElementById('start-heating-rollback-btn')
+    closeBtn = document.getElementById('start-heating-close-btn')
     const titleComponent = document.getElementById('start-heating-dialog-title')
     titleComponent.textContent = $(sensorElementId + ' #sensor_title').text()
 
@@ -434,11 +437,12 @@ function startAlertsDialog(sensorElementId, sensorValue, currentAlerts){
     }
 
     closeBtn = document.getElementById('alerts-dialog-close-btn')
-
-    closeBtn.addEventListener('click', () => {
+    //remove previous
+    const closeButtonClone = closeBtn.cloneNode(true);
+    closeBtn.parentNode.replaceChild(closeButtonClone, closeBtn);
+    closeButtonClone.addEventListener('click', () => {
          closeAlertsDialog()
     })
-
     showAlertsDialog()
 }
 
@@ -449,13 +453,20 @@ function formatTimestamp(timestamp) {
 }
 
 function startPlotDialog(sensorElementId, sensorValue, values, shape){
-     closeBtn = document.getElementById('plot-dialog-close-btn')
-     closeBtn.addEventListener('click', () => {
-         closePlotDialog()
-     })
+    closeBtn = document.getElementById('plot-dialog-close-btn')
+    searchBtn = document.getElementById('search-activate-btn')
 
-     searchBtn = document.getElementById('search-activate-btn')
-     searchBtn.addEventListener('click', () => {
+    //remove previous listeners
+    const closeBtnClone = closeBtn.cloneNode(true);
+    closeBtn.parentNode.replaceChild(closeBtnClone, closeBtn);
+    const searchBtnClone = searchBtn.cloneNode(true);
+    searchBtn.parentNode.replaceChild(searchBtnClone, searchBtn);
+
+    closeBtnClone.addEventListener('click', () => {
+         closePlotDialog()
+    })
+
+     searchBtnClone.addEventListener('click', () => {
          searchDataInRange(sensorElementId, sensorValue)
      })
      toDate = new Date()//now
@@ -594,6 +605,7 @@ function showPlotDialog(){
 function closePlotDialog(){
     document.getElementById('plot-dialog').style.visibility='hidden'
     document.getElementById('overlay').style.visibility='hidden'
+    closeBtn = document.getElementById('plot-dialog-close-btn')
 }
 
 function showHeatingDialog(){

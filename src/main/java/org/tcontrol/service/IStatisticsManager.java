@@ -9,7 +9,7 @@ import java.util.Deque;
 import java.util.List;
 import java.util.Map;
 
-public interface IStatisticsSaver {
+public interface IStatisticsManager {
     void write(List<? extends SensorValueShort> values);
 
     Map<Integer, SensorValue> currentValues();

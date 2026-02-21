@@ -5,7 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.tcontrol.config.Logging;
 import org.tcontrol.hardware.ITemperatureMonitor;
-import org.tcontrol.service.IStatisticsSaver;
+import org.tcontrol.service.IStatisticsManager;
 import org.tcontrol.service.impl.CSVStatisticSaver;
 import org.tcontrol.models.Sensor;
 import org.tcontrol.models.SensorValue;
@@ -33,7 +33,7 @@ public class TemperatureMonitor implements ITemperatureMonitor {
 
     private final CSVStatisticSaver csvWriter;
 
-    private final IStatisticsSaver sensorLastDataSaver;
+    private final IStatisticsManager statisticsManager;
 
     @PostConstruct
     public void init() {
@@ -67,8 +67,7 @@ public class TemperatureMonitor implements ITemperatureMonitor {
                 }
             }
         }
-        csvWriter.write(values);
-        sensorLastDataSaver.write(values);
+        statisticsManager.write(values);
 
         log.info("Reading temperature completed(read {} sensors)", successCount);
     }

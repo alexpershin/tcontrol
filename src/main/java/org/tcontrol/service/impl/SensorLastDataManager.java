@@ -8,7 +8,8 @@ import org.tcontrol.config.Logging;
 import org.tcontrol.config.props.SensorConfig;
 import org.tcontrol.models.SensorValueShort;
 import org.tcontrol.service.IStatisticsLoader;
-import org.tcontrol.service.IStatisticsSaver;
+import org.tcontrol.service.ICSVDataSaver;
+import org.tcontrol.service.IStatisticsManager;
 import org.tcontrol.service.ITimer;
 import org.tcontrol.models.Sensor;
 import org.tcontrol.models.SensorValue;
@@ -24,10 +25,11 @@ import static org.tcontrol.models.SensorValue.SensorState.*;
 @Component
 @RequiredArgsConstructor
 @Logging
-public class SensorLastDataSaver implements IStatisticsSaver {
+public class SensorLastDataManager implements IStatisticsManager {
 
     private final SensorConfig sensorConfig;
     private final IStatisticsLoader statisticsLoader;
+    private final ICSVDataSaver csvWriter;
     private final ITimer timer;
 
     @Setter
@@ -38,11 +40,16 @@ public class SensorLastDataSaver implements IStatisticsSaver {
 
     @PostConstruct
     public void loadPrevData() throws FileNotFoundException {
-        write(statisticsLoader.loadLast());
+        fillCache(statisticsLoader.loadLast());
     }
 
     @Override
     public void write(List<? extends SensorValueShort> values) {
+        csvWriter.write(values);
+        fillCache(values);
+    }
+
+    private void fillCache(List<? extends SensorValueShort> values) {
         for (SensorValueShort sensorValue : values) {
             Deque<SensorValueShort> deque = cache.computeIfAbsent(
                     sensorValue.getSensorId(),

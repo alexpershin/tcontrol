@@ -3,8 +3,9 @@ package org.service;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.tcontrol.config.props.SensorConfig;
+import org.tcontrol.service.ICSVDataSaver;
 import org.tcontrol.service.IStatisticsLoader;
-import org.tcontrol.service.impl.SensorLastDataSaver;
+import org.tcontrol.service.impl.SensorLastDataManager;
 import org.tcontrol.models.Sensor;
 import org.tcontrol.models.SensorValue;
 import org.tcontrol.service.ITimer;
@@ -23,7 +24,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 public class SensorLastDataSaverTest {
-    private SensorLastDataSaver sensorLastDataSaver;
+    private SensorLastDataManager sensorLastDataSaver;
     private SensorConfig sensorConfig;
 
     private ITimer timer;
@@ -47,7 +48,8 @@ public class SensorLastDataSaverTest {
         sensorConfig = new SensorConfig();
         sensorConfig.setSensors(sensors);
         IStatisticsLoader statisticsLoader = mock(IStatisticsLoader.class);
-        sensorLastDataSaver = new SensorLastDataSaver(sensorConfig, statisticsLoader, timer);
+        ICSVDataSaver csvDataSaver = mock(ICSVDataSaver.class);
+        sensorLastDataSaver = new SensorLastDataManager(sensorConfig, statisticsLoader, csvDataSaver, timer);
         sensorLastDataSaver.setExpiredMillis(3);
     }
 

@@ -4,9 +4,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.tcontrol.config.props.SensorConfig;
 import org.tcontrol.hardware.ITemperatureMonitor;
-import org.tcontrol.service.IStatisticsSaver;
-import org.tcontrol.service.impl.CSVStatisticSaver;
 import org.tcontrol.models.SensorValue;
+import org.tcontrol.service.IStatisticsManager;
 
 import javax.annotation.PostConstruct;
 import java.util.*;
@@ -21,9 +20,7 @@ public class TemperatureMonitorStub implements ITemperatureMonitor {
 
     private final SensorConfig sensorConfig;
 
-    private final CSVStatisticSaver csvWriter;
-
-    private final IStatisticsSaver sensorLastDataSaver;
+    private final IStatisticsManager statisticsManager;
 
     @PostConstruct
     public void init() {
@@ -63,8 +60,7 @@ public class TemperatureMonitorStub implements ITemperatureMonitor {
             values.add(value);
             successCount++;
         }
-        csvWriter.write(values);
-        sensorLastDataSaver.write(sensorValues);
+        statisticsManager.write(sensorValues);
 
         log.info("Reading temperature completed(read {} sensors)", successCount);
     }

@@ -6,8 +6,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.tcontrol.config.Logging;
 import org.tcontrol.config.props.SensorConfig;
 import org.tcontrol.hardware.IPinFactory;
-import org.tcontrol.service.IStatisticsSaver;
 import org.tcontrol.models.SensorValue;
+import org.tcontrol.service.IStatisticsManager;
 import org.tcontrol.service.impl.CSVStatisticSaver;
 import org.tcontrol.handler.IRelayHandler;
 import org.tcontrol.config.props.RelayPinsConfig;
@@ -26,7 +26,7 @@ public class RelayHandler implements IRelayHandler {
 
     private final CSVStatisticSaver csvStatisticSaver;
 
-    private final IStatisticsSaver sensorLastDataSaver;
+    private final IStatisticsManager statisticsManager;
 
     private final IPinFactory pinFactory;
 
@@ -98,8 +98,7 @@ public class RelayHandler implements IRelayHandler {
             }
 
             List<SensorValue> values = Collections.singletonList(sensorValue);
-            csvStatisticSaver.write(values);
-            sensorLastDataSaver.write(values);
+            statisticsManager.write(values);
 
             log.info("Now {}:{} state is: {} ", pin.getName(), controlPin.getName(), pin.getState());
             return pin.getState();

@@ -43,7 +43,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.tcontrol.config.Logging;
 import org.tcontrol.hardware.IVoltageMonitor;
-import org.tcontrol.service.IStatisticsSaver;
+import org.tcontrol.service.IStatisticsManager;
 import org.tcontrol.service.impl.CSVStatisticSaver;
 import org.tcontrol.models.SensorValue;
 import org.tcontrol.config.props.SensorConfig;
@@ -77,7 +77,7 @@ public class VoltageMonitor implements IVoltageMonitor {
 
     private final CSVStatisticSaver csvWriter;
 
-    private final IStatisticsSaver sensorLastDataSaver;
+    private final IStatisticsManager statisticsManager;
 
     private final List<VoltageResult>  voltageResults = new ArrayList<>();
 
@@ -153,10 +153,9 @@ public class VoltageMonitor implements IVoltageMonitor {
                 }
 
             }
-            csvWriter.write(values);
-            sensorLastDataSaver.write(values);
+            statisticsManager.write(values);
         } else {
-            log.error("Voltage provader was not initialized");
+            log.error("Voltage provider was not initialized");
         }
     }
 

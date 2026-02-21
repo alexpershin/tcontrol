@@ -34,7 +34,7 @@ public class SensorServiceImpl implements ISensorService {
     private final RelayPinsConfig relayPinsConfig;
     private final HistoricDataCache historicDataCache;
     private final SystemAlertsAggregator systemAlertsAggregator;
-    protected final IStatisticsSaver sensorLastDataSaver;
+    protected final IStatisticsManager statisticsManager;
     protected final SensorMapper sensorMapper;
     protected final Map<String, IThermostat> dynamicThermostats;
     protected final SensorValueMapper sensorValueMapper;
@@ -58,7 +58,7 @@ public class SensorServiceImpl implements ISensorService {
 
     @Override
     public List<SensorValue> getCurrentValues(int userId, java.sql.Date date) {
-        final Map<Integer, SensorValue> idToSensorValueMap = sensorLastDataSaver.currentValues();
+        final Map<Integer, SensorValue> idToSensorValueMap = statisticsManager.currentValues();
         return idToSensorValueMap.values().stream()
                 .map(SensorValue::getSensorCode)
                 .map(sensorConfig::sensorConfigByCode)
@@ -73,7 +73,7 @@ public class SensorServiceImpl implements ISensorService {
 
     @Override
     public List<SensorValueShort> getPrevSensorValues(int userId, int sensorId) {
-        return sensorLastDataSaver.lastValues(sensorId)
+        return statisticsManager.lastValues(sensorId)
                 .stream()
                 .map(v -> new SensorValueShort(
                         v.getSensorId(),

@@ -9,7 +9,7 @@ import org.tcontrol.config.props.SensorConfig;
 import org.tcontrol.models.Sensor;
 import org.tcontrol.models.SensorValueShort;
 import org.tcontrol.models.SystemAlert;
-import org.tcontrol.service.IStatisticsSaver;
+import org.tcontrol.service.IStatisticsManager;
 import org.tcontrol.service.SystemAlertsAggregator;
 
 import javax.annotation.PostConstruct;
@@ -27,7 +27,7 @@ public class SystemAlertsAggregatorImpl implements SystemAlertsAggregator {
 
     public static final int WINDOW_PERIOD = 3600 * 24 * 1000;
     private final SensorConfig sensorConfig;
-    private final IStatisticsSaver sensorLastDataSaver;
+    private final IStatisticsManager statisticsManager;
 
     private final Collection<SystemAlert> alerts = new ConcurrentLinkedQueue<>();
 
@@ -58,13 +58,15 @@ public class SystemAlertsAggregatorImpl implements SystemAlertsAggregator {
     public void checkAlerts() {
         long size = actualAlertsSize();
 
+        double value = ((double) size) / 10.0;
         SensorValueShort sensorValue = new SensorValueShort(
                 alertSensor.getId(),
                 alertSensor.getCode(),
                 System.currentTimeMillis(),
-                ((double) size) / 10.0);
-        sensorLastDataSaver.write(Collections.singletonList(sensorValue));
-        log.info("actual alerts: {}", size);
+                value);
+        List<SensorValueShort> values = Collections.singletonList(sensorValue);
+        statisticsManager.write(values);
+        log.info("actual alerts: {}, alert value: {}", size, value);
 
         cleanOld();
     }

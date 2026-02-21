@@ -6,8 +6,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.tcontrol.config.Logging;
 import org.tcontrol.models.SensorValueShort;
-import org.tcontrol.service.IStatisticsSaver;
-import org.tcontrol.models.SensorValue;
+import org.tcontrol.service.ICSVDataSaver;
 
 import java.io.FileWriter;
 import java.io.IOException;
@@ -20,7 +19,7 @@ import static org.tcontrol.service.impl.CSVOptions.*;
 @Component
 @Slf4j
 @Logging
-public class CSVStatisticSaver implements IStatisticsSaver {
+public class CSVStatisticSaver implements ICSVDataSaver {
 
     @Value("${dataFile}")
     private String dataFileName;
@@ -35,6 +34,7 @@ public class CSVStatisticSaver implements IStatisticsSaver {
             for (SensorValueShort value : values) {
                 if (value != null) {
                     printer.printRecord(value.getSensorId(), value.getSensorCode(), value.getTimestamp(), value.getValue());
+                    log.debug("saved: {}, {}, {}, {}", value.getSensorId(), value.getSensorCode(), value.getTimestamp(), value.getValue());
                 }
             }
         } catch (IOException ex) {
@@ -42,18 +42,4 @@ public class CSVStatisticSaver implements IStatisticsSaver {
         }
     }
 
-    @Override
-    public Map<Integer, SensorValue> currentValues() {
-        return new HashMap<>();
-    }
-
-    @Override
-    public LinkedList<SensorValueShort> lastValues(int sensorId) {
-        return new LinkedList<>();
-    }
-
-    @Override
-    public Collection<SensorValueShort> historyValues(long from, long to, Integer sensorId) {
-        return Collections.emptyList();
-    }
 }

@@ -135,9 +135,9 @@ public class AppConfig implements BeanFactoryPostProcessor {
     @ConditionalOnProperty(value = "main-config.sensorsStub", havingValue = "true")
     public SystemAlertsAggregator systemAlertsAggregatorStub(
             SensorConfig sensorConfig,
-            IStatisticsSaver sensorLastDataSaver
+            IStatisticsManager statisticsManager
     ) {
-        SystemAlertsAggregatorImpl systemAlertsAggregator = new SystemAlertsAggregatorImpl(sensorConfig, sensorLastDataSaver);
+        SystemAlertsAggregatorImpl systemAlertsAggregator = new SystemAlertsAggregatorImpl(sensorConfig, statisticsManager);
         for(int i=0; i<20; i++) {
             systemAlertsAggregator.addAlert(System.currentTimeMillis() - 1000 * 3600 +i,
                     "Error while getting temperature via W1 bus for sensor 28-0317017a6aff");
@@ -150,9 +150,9 @@ public class AppConfig implements BeanFactoryPostProcessor {
     @ConditionalOnProperty(value = "main-config.sensorsStub", havingValue = "true")
     public ITemperatureMonitor temperatureMonitorStub(
             SensorConfig sensorConfig,
-            CSVStatisticSaver csvWriter,
-            IStatisticsSaver sensorLastDataSaver) {
-        return new TemperatureMonitorStub(sensorConfig, csvWriter, sensorLastDataSaver);
+            ICSVDataSaver csvWriter,
+            IStatisticsManager statisticsManager) {
+        return new TemperatureMonitorStub(sensorConfig, statisticsManager);
     }
 
     @Bean
@@ -270,9 +270,9 @@ public class AppConfig implements BeanFactoryPostProcessor {
             ITemperatureReader temperatureReader,
             SensorConfig sensorConfig,
             CSVStatisticSaver csvWriter,
-            IStatisticsSaver sensorLastDataSaver,
+            IStatisticsManager statisticsManager,
             MainConfig mainConfig) {
-        return new TemperatureMonitor(temperatureReader, sensorConfig, csvWriter, sensorLastDataSaver);
+        return new TemperatureMonitor(temperatureReader, sensorConfig, csvWriter, statisticsManager);
     }
 
     @Bean
@@ -312,11 +312,11 @@ public class AppConfig implements BeanFactoryPostProcessor {
 
     @Bean
     public IRelayHandler relayHandler(CSVStatisticSaver csvStatisticSaver,
-                                      IStatisticsSaver sensorLastDataSaver,
+                                      IStatisticsManager statisticsManager,
                                       IPinFactory pinFactory,
                                       RelayPinsConfig relayPinsConfig,
                                       SensorConfig sensorConfig) {
-        return new RelayHandler(csvStatisticSaver, sensorLastDataSaver, pinFactory, relayPinsConfig, sensorConfig);
+        return new RelayHandler(csvStatisticSaver, statisticsManager, pinFactory, relayPinsConfig, sensorConfig);
     }
 
     @Bean
@@ -324,7 +324,7 @@ public class AppConfig implements BeanFactoryPostProcessor {
             final ThermostatsConfig thermostatsConfig,
             final SensorConfig sensorConfig,
             final RelayPinsConfig relayPinsConfig,
-            final IStatisticsSaver sensorLastDataSaver,
+            final IStatisticsManager statisticsManager,
             final SystemAlertsAggregator systemAlertsAggregator,
             final HistoricDataCache historicDataCache,
             final SensorMapper sensorMapper,
@@ -337,12 +337,11 @@ public class AppConfig implements BeanFactoryPostProcessor {
                 relayPinsConfig,
                 historicDataCache,
                 systemAlertsAggregator,
-                sensorLastDataSaver,
+                statisticsManager,
                 sensorMapper,
                 dynamicThermostats,
                 sensorValueMapper);
     }
-
 
     @Bean
     public IOnOffHandler electricHeatingOnOfHandler(

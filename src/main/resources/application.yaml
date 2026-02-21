@@ -11,6 +11,10 @@ springdoc:
     path: /swagger
   enable-data-rest: true
 
+logging:
+  level:
+    root: DEBUG
+
 main-config:
   sensorValuesBufferExpiredMillis: 86400000 #24 hours
   sensorsStub: false
@@ -174,7 +178,7 @@ sms-config:
       name: mama
 
 thermostat.schedule: '5 0/1 * * * ?'
-alerts.schedule: '0 0/15 * * * ?'
+alerts.schedule: '0/1 * * * * ?'
 
 thermostats-config:
   thermostats:

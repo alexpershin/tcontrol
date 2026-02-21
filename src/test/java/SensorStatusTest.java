@@ -1,5 +1,5 @@
 import org.tcontrol.config.props.SensorConfig;
-import org.tcontrol.service.impl.SensorLastDataSaver;
+import org.tcontrol.service.impl.SensorLastDataManager;
 import org.tcontrol.models.Sensor;
 import org.tcontrol.models.SensorValue;
 
@@ -140,6 +140,6 @@ public class SensorStatusTest {
                                    SensorConfig.SensorConfiguration sensorConfiguration,
                                    SensorValue.SensorState state) {
 
-        assertEquals(SensorLastDataSaver.calcSate(value, new SensorConfig(singletonList(sensorConfiguration))), state);
+        assertEquals(SensorLastDataManager.calcSate(value, new SensorConfig(singletonList(sensorConfiguration))), state);
     }
 }

@@ -180,7 +180,7 @@ public class CSVStatisticLoaderMultiThread implements IStatisticsLoader {
                         firstLine = line;
                     } else {
                         if (prevLine != null) {
-                            exceptionsAndTimestamp = CSVStatisticLoaderHelper.parseLine(from, to, sensorId, prevLine, result, exceptionsAndTimestamp, false);
+                            exceptionsAndTimestamp = CSVStatisticLoaderHelper.parseLine(from, to, sensorId, prevLine, result, exceptionsAndTimestamp, false, 100);
                             if (exceptionsAndTimestamp == null) { //if too many errors
                                 log.error("task {} stopped(TOO MANY ERRORS) ", taskId);
                                 stopped = true;
@@ -248,7 +248,7 @@ public class CSVStatisticLoaderMultiThread implements IStatisticsLoader {
             final String lineToParse = Objects.toString(prevTask != null ? prevTask.getLastLine() : null, "")
                     + Objects.toString(curTask.getFirstLine(), "");
 
-            CSVStatisticLoaderHelper.parseLine(from, to, sensorId, lineToParse, commonResult, Pair.of(0, 0L), false);
+            CSVStatisticLoaderHelper.parseLine(from, to, sensorId, lineToParse, commonResult, Pair.of(0, 0L), false, 100);
 
             prevTask = curTask;
         }

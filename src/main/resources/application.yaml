@@ -121,7 +121,7 @@ sensor-config:
       userName: "Газовый котел"
       description: 'Газовый котел'
     - id: 11
-      code: '102'
+      code: '126'
       name: SYSTEM_ALERTS
       type: ALARM
       userName: 'Состояние системы'

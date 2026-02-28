@@ -1,5 +1,6 @@
 package org.tcontrol.service.impl;
 
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.csv.CSVPrinter;
 import org.springframework.beans.factory.annotation.Value;
@@ -21,6 +22,7 @@ import static org.tcontrol.service.impl.CSVOptions.*;
 @Logging
 public class CSVStatisticSaver implements ICSVDataSaver {
 
+    @Setter
     @Value("${dataFile}")
     private String dataFileName;
 

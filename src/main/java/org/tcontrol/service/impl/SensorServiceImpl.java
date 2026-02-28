@@ -60,8 +60,8 @@ public class SensorServiceImpl implements ISensorService {
     public List<SensorValue> getCurrentValues(int userId, java.sql.Date date) {
         final Map<Integer, SensorValue> idToSensorValueMap = statisticsManager.currentValues();
         return idToSensorValueMap.values().stream()
-                .map(SensorValue::getSensorCode)
-                .map(sensorConfig::sensorConfigByCode)
+                .map(SensorValue::getSensorId)
+                .map(sensorConfig::sensorConfigById)
                 .filter(Optional::isPresent)
                 .map(Optional::get)
                 .map(sc -> {

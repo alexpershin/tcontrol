@@ -91,7 +91,7 @@ public class CSVStatisticLoaderSingleThread implements IStatisticsLoader {
                             lineToParse = line;
                         }
                         exceptionsAndTimestamp = CSVStatisticLoaderHelper.parseLine(from, to, sensorId, lineToParse,
-                                result, exceptionsAndTimestamp, false);
+                                result, exceptionsAndTimestamp, false, 100);
                         if (exceptionsAndTimestamp == null) {
                             log.error("stopped(TOO MANY ERRORS)");
                             break chunk_circle;//if too many errors

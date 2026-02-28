@@ -17,7 +17,6 @@ import java.util.Date;
 import java.util.List;
 
 import static org.tcontrol.service.impl.CSVOptions.*;
-import static org.tcontrol.service.impl.CSVOptions.VALUE;
 
 @Slf4j
 public class CSVStatisticLoaderHelper {
@@ -26,17 +25,34 @@ public class CSVStatisticLoaderHelper {
     public static final int SENSOR_CODE_INDX = 1;
     public static final int SENSOR_VALUE_INDX = 3;
 
-    private static CSVFormat CSV_FORMAT = CSVFormat.EXCEL.withHeader(SENSOR_ID, SENSOR_CODE, TIMESTAMP, VALUE);
+    public static CSVFormat CSV_FORMAT = CSVFormat.EXCEL.withHeader(SENSOR_ID, SENSOR_CODE, TIMESTAMP, VALUE);
 
-    static Pair<Integer, Long> parseLine(long from, long to,
-                                         Integer sensorId,
-                                         String csvLine,
-                                         List<SensorValueShort> result,
-                                         Pair<Integer, Long> exceptionsAndTimestamp,
-                                         boolean first) {
+    public static Pair<Integer, Long> parseLine(long from, long to,
+                                                Integer sensorId,
+                                                String csvLine,
+                                                List<SensorValueShort> result,
+                                                Pair<Integer, Long> exceptionsAndTimestamp,
+                                                boolean first, int errors) {
+        return parseLine(from, to,
+        sensorId,
+        csvLine,
+        result,
+        exceptionsAndTimestamp,
+        first, errors, false);
+    }
+
+    public static Pair<Integer, Long> parseLine(long from, long to,
+                                                Integer sensorId,
+                                                String csvLine,
+                                                List<SensorValueShort> result,
+                                                Pair<Integer, Long> exceptionsAndTimestamp,
+                                                boolean first, int errors, boolean printError) {
         if (StringUtils.isNotBlank(csvLine)) {
             try {
-                String[] cells = StringUtils.split(csvLine, ",");
+                if(csvLine.equals("1,,1753538821893,22.187")){
+                    System.out.println("c");
+                }
+                String[] cells = csvLine.split(",", -1);
                 int recordSensorId = Integer.parseInt(cells[SENSOR_ID_INDX]);
                 if (sensorId == null || sensorId.equals(recordSensorId)) {
                     long timestamp = Long.parseLong(cells[TIMESTAMP_INDX]);
@@ -54,9 +70,11 @@ public class CSVStatisticLoaderHelper {
                 }
             } catch (Exception ex) {//in case of bad file system
                 if (!first) {
-                    log.error("Error while loading CSV line: {}", csvLine, ex);
+                    if(printError){
+                        log.error("Error while loading CSV line: {}", csvLine, ex);
+                    }
                     exceptionsAndTimestamp = Pair.of(exceptionsAndTimestamp.getKey() + 1, exceptionsAndTimestamp.getValue());
-                    if (exceptionsAndTimestamp.getKey() >= 100) {
+                    if (exceptionsAndTimestamp.getKey() >= errors) {
                         return null;
                     }
                 }
@@ -219,7 +237,7 @@ public class CSVStatisticLoaderHelper {
             do {
                 file.seek(position);
                 file.read(symbol, 0, 1);
-            } while (symbol[0] != '\n' && --position > 0);
+            } while (symbol[0] != 0 && symbol[0] != '\n' && --position > 0);
             line = file.readLine();
         }
         return Pair.of(position, line);

@@ -123,7 +123,17 @@ public class SensorServiceImpl implements ISensorService {
         return temperatures.stream()
                 .map(temp -> dynamicThermostats.values().stream()
                         .filter(t -> t.getCode().equals(temp.getThermostatCode())).findFirst()
-                        .map(t -> t.temperature(temp.getDayTemperature()).checkTemperature() ? 1 : 0)
+                        .map(t->
+                            {
+                                ThermostatsConfig.ThermostatConfig thermostatCurrentConfig = t.getThermostatCurrentConfig();
+                                thermostatCurrentConfig.setTDay(temp.getDayTemperature());
+                                thermostatCurrentConfig.setTNight(temp.getNightTemperature());
+                                thermostatCurrentConfig.setNightBegin(temp.getNightTime().toSecondOfDay());
+                                thermostatCurrentConfig.setNightEnd(temp.getDayTime().toSecondOfDay());
+                                return t;
+                            }
+                        )
+                        .map(t -> t.checkTemperature() ? 1 : 0)
                         .orElseThrow(() ->
                                 new SensorServiceException(MessageFormat.format("Thermostat not found by pin: {0}",
                                         joining(temperatures))))
@@ -146,10 +156,10 @@ public class SensorServiceImpl implements ISensorService {
                         t.getCode(),
                         t.getName(),
                         t.currentTemperature(),
-                        t.getThermostatConfig().getTDay(),
-                        t.getThermostatConfig().getTNight(),
-                        t.getThermostatConfig().nightBegin(),
-                        t.getThermostatConfig().nightEnd()))
+                        t.getThermostatCurrentConfig().getTDay(),
+                        t.getThermostatCurrentConfig().getTNight(),
+                        t.getThermostatCurrentConfig().nightBegin(),
+                        t.getThermostatCurrentConfig().nightEnd()))
                 .collect(Collectors.toList());
     }
 

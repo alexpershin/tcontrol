@@ -199,8 +199,8 @@ thermostats-config:
       tDay: 21.5
       tNight: 18.5
       delta: 0.3
-      nightBegin: 22:00:00
-      nightEnd: 9:00:00
+      nightBegin: 21:00:00
+      nightEnd: 8:00:00
       sensor: 28-000002c7c3ee
       relayPins:
         - 'GPIO 1'
@@ -234,8 +234,8 @@ thermostats-config:
       tDay: 22.0
       tNight: 19.0
       delta: 0.3
-      nightBegin: 22:00:00
-      nightEnd: 9:00:00
+      nightBegin: 21:00:00
+      nightEnd: 8:00:00
       sensor: 28-0317017a6aff
       relayPins:
         - 'GPIO 3'

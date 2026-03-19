@@ -47,6 +47,7 @@ public class Thermostat implements IThermostat {
     @Setter
     private ITimer timer;
 
+    @Getter
     private ThermostatsConfig.ThermostatConfig thermostatCurrentConfig;
 
     @Getter
@@ -82,7 +83,7 @@ public class Thermostat implements IThermostat {
     public boolean checkTemperature() {
         mediumT = currentTemperature();
 
-        SensorValue sensorValue = temperatureMonitor.getSensorValueMap().get(thermostatCurrentConfig.getSensor());
+    SensorValue sensorValue = temperatureMonitor.getSensorValueMap().get(thermostatCurrentConfig.getSensor());
         if (sensorValue != null) {
 
             sensorTemperature = (float) sensorValue.getValue();

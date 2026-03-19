@@ -34,4 +34,6 @@ public interface IThermostat {
   String getSensorCode();
 
   ThermostatsConfig.ThermostatConfig getThermostatConfig();
+
+  ThermostatsConfig.ThermostatConfig getThermostatCurrentConfig();
 }

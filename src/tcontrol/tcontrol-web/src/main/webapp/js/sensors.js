@@ -93,9 +93,14 @@ function loadValuesFromServer() {
 
 function showCurrentDateTimeInTitle() {
     var now = new Date();
-    var dateOut = $.format.date(now, 'yyyy/MM/dd HH:mm:ss');
+    const timeFormatOptions = {
+            hour12: false, // Set to false to use 24-hour format
+            hour: '2-digit',
+            minute: '2-digit'
+        };
+    var dateOut = now.toLocaleDateString() + " " + now.toLocaleTimeString('en-US', timeFormatOptions)
     //show date time
-    $('.refreshed').text("Loaded: " + dateOut);
+    $('.refreshed').text("Loaded: " + dateOut)
 }
 
 function showAlert(title, jqXHR, textStatus) {
@@ -339,63 +344,6 @@ function setupPlot(sensorElementId, sensorValue, shape) {
     })
 }
 
-function startHeatingDialog(sensorElementId, sensorValue, currentTemperatures){
-    const startHeatingDialog = document.getElementById('start-heating');
-
-    var applyBtn = document.getElementById('start-heating-apply-btn');
-    var rollbackBtn = document.getElementById('start-heating-rollback-btn')
-    var closeBtn = document.getElementById('start-heating-close-btn')
-
-    //remove previous listeners
-    const applyButtonClone = applyBtn.cloneNode(true);
-    applyBtn.parentNode.replaceChild(applyButtonClone, applyBtn);
-    const rollbackButtonClone = rollbackBtn.cloneNode(true);
-    rollbackBtn.parentNode.replaceChild(rollbackButtonClone, rollbackBtn);
-    const closeButtonClone = closeBtn.cloneNode(true);
-    closeBtn.parentNode.replaceChild(closeButtonClone, closeBtn);
-
-    const startHeatingDialogRow = document.getElementById("thermostat-table-row");
-
-    const thermostatRowBaseId = 'thermostat-table-row'
-    $(currentTemperatures).each(function (key, currentTemperature) {
-        cloneRow = $('#' + thermostatRowBaseId).clone()
-        cloneRow.appendTo('.thermostat-table')
-        thermostatRowId =  cloneRow.attr('id') + '-' + currentTemperature.thermostatCode
-        cloneRow.attr("id", thermostatRowId)
-        const startHeatingDialogInput = $('#' + thermostatRowId + ' #start-heating-input')
-
-        const startHeatingDialogInputCaption = $('#' + thermostatRowId + ' #start-heating-input-caption')
-
-        startHeatingDialogInput.val(currentTemperature.temperature)
-        startHeatingDialogInputCaption.text(currentTemperature.thermostatName)
-        $('#' + thermostatRowId).show();
-    })
-
-    applyBtn = document.getElementById('start-heating-apply-btn')
-    rollbackBtn = document.getElementById('start-heating-rollback-btn')
-    closeBtn = document.getElementById('start-heating-close-btn')
-    const titleComponent = document.getElementById('start-heating-dialog-title')
-    titleComponent.textContent = $(sensorElementId + ' #sensor_title').text()
-
-    applyBtn.addEventListener('click', () => {
-         $(currentTemperatures).each(function (key, currentTemperature) {
-            thermostatRowId =  thermostatRowBaseId + '-' + currentTemperature.thermostatCode
-            const startHeatingDialogInput = $('#' + thermostatRowId + ' #start-heating-input')
-            if(validateSensorTemperature(startHeatingDialogInput)){
-                currentTemperatures[key].temperature = startHeatingDialogInput.val()
-            }
-         })
-        startHeating(sensorElementId, sensorValue, currentTemperatures)
-    })
-    closeBtn.addEventListener('click', () => {
-         closeHeatingDialog()
-    })
-    rollbackBtn.addEventListener('click', () => {
-        rollbackHeating(sensorElementId, sensorValue, currentTemperatures)
-    })
-
-    showHeatingDialog()
-}
 
 function startAlertsDialog(sensorElementId, sensorValue, currentAlerts){
     const alertsDialog = document.getElementById('alerts-dialog');
@@ -608,18 +556,6 @@ function closePlotDialog(){
     closeBtn = document.getElementById('plot-dialog-close-btn')
 }
 
-function showHeatingDialog(){
-    document.getElementById('start-heating').style.visibility='visible'
-    document.getElementById('overlay').style.visibility='visible'
-}
-
-function closeHeatingDialog(){
-    const thermostatRowBaseId = 'thermostat-table-row'
-    $("[id^='" + thermostatRowBaseId + "-']").remove()
-    document.getElementById('start-heating').style.visibility='hidden'
-    document.getElementById('overlay').style.visibility='hidden'
-}
-
 function showAlertsDialog(){
     document.getElementById('alerts-dialog').style.visibility='visible'
     document.getElementById('overlay').style.visibility='visible'
@@ -773,98 +709,7 @@ function hideSensorLoader(sensorElementId){
    $('.sensor_item').find('.sensor_item_body').css('pointer-events', 'all')
 }
 
-function startHeating(sensorElementId, sensorValue, currentTemperatures){//sensorElementId, sensorValue
-    const sensorElement = $(sensorElementId + ' .sensor_item_body .sensor_value')
-    const startHeatingDialog = document.getElementById('start-heating');
 
-    const popUpElement = document.getElementById("pop-up");
-    popUpElement.style.visibility='visible';
-
-    let onOffUrl = window.location.protocol
-        +'//'+window.location.host
-        +'/tcontrol/api/start_process';
-
-   var changeThermostatTemperatureRequest = {
-        sensorId: sensorValue.sensorId,
-        newTemperatures: currentTemperatures
-    }
-
-    closeHeatingDialog()
-
-    $.ajax({
-        type: 'POST',
-        dataType: 'json',
-        contentType: 'application/json',
-        data: JSON.stringify(changeThermostatTemperatureRequest),
-        url: onOffUrl,
-        beforeSend: function () {
-            showSensorLoader(sensorElementId)
-        },
-        success: function (data) {
-            console.log('on finish: ' + data.value)
-            sensorValue.value = data.value;
-            const backgroundCalcResult = onOffSensorBackgroundCalc(sensorValue)
-            sensorElement.text(backgroundCalcResult.status);
-            const sensorBody = $(sensorElementId + ' .sensor_item_body')
-            sensorBody.css('background', backgroundCalcResult.background);
-            setSensorTime(sensorElementId, data.timestamp)
-        },
-        error: function (jqXHR, textStatus, errorThrown) {
-            hideSensorLoader(sensorElementId)
-            popUpElement.style.visibility='hidden'
-            closeHeatingDialog()
-            alert("Error try again later: " + textStatus)
-        },
-        complete: function () {
-            hideSensorLoader(sensorElementId)
-            popUpElement.style.visibility='hidden'
-            closeHeatingDialog()
-        }
-    });
-}
-
-function rollbackHeating(sensorElementId, sensorValue, currentTemperatures){
-    const sensorElement = $(sensorElementId + ' .sensor_item_body .sensor_value')
-    const startHeatingDialog = document.getElementById('start-heating');
-
-    const popUpElement = document.getElementById("pop-up");
-    popUpElement.style.visibility='visible';
-
-    let rollbackUrl = window.location.protocol
-        + '//' + window.location.host
-        + '/tcontrol/api/thermostat_rollback?sensorId='  + sensorValue.sensorId;
-
-    closeHeatingDialog()
-
-    $.ajax({
-        type: 'PUT',
-        dataType: 'json',
-        contentType: 'application/json',
-        data: sensorValue.sensorId,
-        url: rollbackUrl,
-        beforeSend: function () {
-            showSensorLoader(sensorElementId)
-        },
-        success: function (data) {
-            console.log('rollback success: ' + data.value)
-            sensorValue.value = data.value;
-            const backgroundCalcResult = onOffSensorBackgroundCalc(sensorValue)
-            sensorElement.text(backgroundCalcResult.status);
-            const sensorBody = $(sensorElementId + ' .sensor_item_body')
-            sensorBody.css('background', backgroundCalcResult.background);
-            setSensorTime(sensorElementId, data.timestamp)
-        },
-        error: function (jqXHR, textStatus, errorThrown) {
-            hideSensorLoader(sensorElementId)
-            popUpElement.style.visibility='hidden'
-            alert("Error try again later: " + textStatus)
-        },
-        complete: function () {
-            hideSensorLoader(sensorElementId)
-            popUpElement.style.visibility='hidden'
-        }
-    });
-}
 
 function searchDataInRange(sensorElementId, sensorValue){
     dateFrom = new Date(document.getElementById('plot-dialog-from').value)

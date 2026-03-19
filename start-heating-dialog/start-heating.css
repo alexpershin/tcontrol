@@ -1,0 +1,68 @@
+/* 
+    Created on : Aug 10, 2025, 8:27:18 PM
+    Author     : alexey
+*/
+
+.thermostat-table-row{
+    visibility: visible;
+    display: none;
+}
+
+.heating-temp-input{
+    font:bold 12px/12px Arial;
+    padding-block: 5px;
+    border-radius: 5px;
+    margin-left: 10px;
+    margin-bottom: 10px;
+    width: 5em;
+}
+
+.heating-temp-time-input{
+    font: 12px/12px Arial;
+    padding-block: 5px;
+    border-radius: 5px;
+    margin-left: 10px;
+    margin-bottom: 10px;
+    width: 5em;
+}
+
+.thermostats-name-column-caption{
+    width: 11em;
+    font: bold 12px/12px Arial;
+    background: lightgrey;
+    display: block;
+}
+.thermostats-name-column{
+    width: 10em;
+    font: 12px/12px Arial;
+    background: lightgrey;
+    display: block;
+}
+.day-temp-column-caption{
+    width: 7em;
+    font: bold 12px/12px Arial;
+    background: lightgrey;
+    display: block;
+}
+.day-time-column-caption{
+    font: bold 12px/12px Arial;
+    background: lightgrey;
+    width: 6em;
+    display: block;
+}
+.night-temp-column-caption{
+    font: bold 12px/12px Arial;
+    background: lightgrey;
+    width: 7em;
+    display: block;
+}
+.night-time-column-caption{
+    font: bold 12px/12px Arial;
+    background: lightgrey;
+    width: 6em;
+    display: block;
+}
+
+
+
+

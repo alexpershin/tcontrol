@@ -89,7 +89,8 @@ public class CSVStatisticLoaderHelper {
             final Pair<Integer, Long> firstData = calculateAvgLineLengthAndFirstDataTimestamp(dataFile);
             long beginTimestamp = firstData.getValue();
             if (from < beginTimestamp) {
-                throw new IllegalArgumentException("No data");
+                //throw new IllegalArgumentException("No data");
+                return 0;
             }
             final Long lastTimeStamp = readLastDataLineTimestamp(dataFile);
             if (from > lastTimeStamp) {
@@ -126,7 +127,11 @@ public class CSVStatisticLoaderHelper {
             } else {
                 Pair<Long, Long> longLongPair = timestampOnPos(pos - newPosDelta, path);
                 timestampOnPos = longLongPair.getKey();
-                res = longLongPair.getValue() + 1;
+                if(timestampOnPos < from){
+                    res = 0;
+                }else {
+                    res = longLongPair.getValue() + 1;
+                }
             }
 
             log.info("looking for position complete: pos {}, iterations: {}, pos date: {}", res, iterations, new Date(timestampOnPos));
@@ -210,6 +215,7 @@ public class CSVStatisticLoaderHelper {
         Pair<Long, String> r;
         String currentLine;
         long pos = posArg;
+
         do {
             r = getLineFromFile(path.toString(), pos);
             currentLine = r.getValue();
@@ -234,6 +240,7 @@ public class CSVStatisticLoaderHelper {
         String line;
         byte[] symbol = new byte[1];
         try (RandomAccessFile file = new RandomAccessFile(filePath, "r")) {
+
             do {
                 file.seek(position);
                 file.read(symbol, 0, 1);

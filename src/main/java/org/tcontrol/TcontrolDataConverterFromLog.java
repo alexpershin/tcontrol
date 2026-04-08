@@ -29,7 +29,8 @@ public class TcontrolDataConverterFromLog {
         String resultFileName = "data_log_converted.csv";
         final Pattern pattern = Pattern.compile(regex);
         try (Stream<Path> list = Files.list(Path.of(folder))) {
-            int n = list.map(f -> convert(resultFileName, f.toString(), pattern)).reduce(Integer::sum).orElse(0);
+            Stream<Path> sorted = list.sorted();
+            int n = sorted.map(f -> convert(resultFileName, f.toString(), pattern)).reduce(Integer::sum).orElse(0);
             System.out.println("total: " + n);
         } catch (IOException e) {
             throw new RuntimeException(e);

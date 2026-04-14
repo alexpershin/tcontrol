@@ -16,8 +16,7 @@ import java.util.stream.Stream;
 public class TcontrolDataConverterFromLog {
     static String regex =
             "(?<time>\\d{2}:\\d{2}:\\d{2}\\.\\d{3})" +
-                    "\\s(\\d{9})\\s" +
-                    "(.*):\\s" +
+                    "(.*)saved:\\s" +
                     "(?<id>\\d{1}),\\s" +
                     "(?<code>.*),\\s" +
                     "(?<timestamp>\\d*),\\s" +
@@ -26,7 +25,7 @@ public class TcontrolDataConverterFromLog {
     public static void main(String[] args) {
         String folder = "logs-to-convert";
         String dataFileName = "logs-to-convert/log-2026-02-27.log";
-        String resultFileName = "data_log_converted.csv";
+        String resultFileName = "data_log_converted2.csv";
         final Pattern pattern = Pattern.compile(regex);
         try (Stream<Path> list = Files.list(Path.of(folder))) {
             Stream<Path> sorted = list.sorted();

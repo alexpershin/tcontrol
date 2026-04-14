@@ -178,7 +178,7 @@ sms-config:
       name: mama
 
 thermostat.schedule: '5 0/1 * * * ?'
-alerts.schedule: '0/1 * * * * ?'
+alerts.schedule: '10 0/1  * * * ?'
 
 thermostats-config:
   thermostats:

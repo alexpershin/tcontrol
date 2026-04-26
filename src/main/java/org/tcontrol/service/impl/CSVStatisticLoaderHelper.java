@@ -27,29 +27,14 @@ public class CSVStatisticLoaderHelper {
 
     public static CSVFormat CSV_FORMAT = CSVFormat.EXCEL.withHeader(SENSOR_ID, SENSOR_CODE, TIMESTAMP, VALUE);
 
-    public static Pair<Integer, Long> parseLine(long from, long to,
-                                                Integer sensorId,
-                                                String csvLine,
-                                                List<SensorValueShort> result,
-                                                Pair<Integer, Long> exceptionsAndTimestamp,
-                                                boolean first, int errors) {
-        return parseLine(from, to,
-        sensorId,
-        csvLine,
-        result,
-        exceptionsAndTimestamp,
-        first, errors, false);
+    public static Pair<Integer, Long> parseLine(long from, long to, Integer sensorId, String csvLine, List<SensorValueShort> result, Pair<Integer, Long> exceptionsAndTimestamp, boolean first, int errors) {
+        return parseLine(from, to, sensorId, csvLine, result, exceptionsAndTimestamp, first, errors, false);
     }
 
-    public static Pair<Integer, Long> parseLine(long from, long to,
-                                                Integer sensorId,
-                                                String csvLine,
-                                                List<SensorValueShort> result,
-                                                Pair<Integer, Long> exceptionsAndTimestamp,
-                                                boolean first, int errors, boolean printError) {
+    public static Pair<Integer, Long> parseLine(long from, long to, Integer sensorId, String csvLine, List<SensorValueShort> result, Pair<Integer, Long> exceptionsAndTimestamp, boolean first, int errors, boolean printError) {
         if (StringUtils.isNotBlank(csvLine)) {
             try {
-                if(csvLine.equals("1,,1753538821893,22.187")){
+                if (csvLine.equals("1,,1753538821893,22.187")) {
                     System.out.println("c");
                 }
                 String[] cells = csvLine.split(",", -1);
@@ -70,7 +55,7 @@ public class CSVStatisticLoaderHelper {
                 }
             } catch (Exception ex) {//in case of bad file system
                 if (!first) {
-                    if(printError){
+                    if (printError) {
                         log.error("Error while loading CSV line: {}", csvLine, ex);
                     }
                     exceptionsAndTimestamp = Pair.of(exceptionsAndTimestamp.getKey() + 1, exceptionsAndTimestamp.getValue());
@@ -83,66 +68,87 @@ public class CSVStatisticLoaderHelper {
         return exceptionsAndTimestamp;
     }
 
-    static long lookForPositionBeforeFrom(long from, File dataFile) throws FileNotFoundException {
+    static Long lookForPositionBeforeFrom(long from, File dataFile) throws FileNotFoundException {
         log.info("looking for good position in data file..");
         try {
-            final Pair<Integer, Long> firstData = calculateAvgLineLengthAndFirstDataTimestamp(dataFile);
+            final Pair<Double, Long> firstData = calculateAvgLineLengthAndFirstDataTimestamp(dataFile);
             long beginTimestamp = firstData.getValue();
+            Double avgLineLength = firstData.getKey();
             if (from < beginTimestamp) {
-                //throw new IllegalArgumentException("No data");
-                return 0;
+                log.info("no data");
+                return 0L;
             }
             final Long lastTimeStamp = readLastDataLineTimestamp(dataFile);
             if (from > lastTimeStamp) {
-                throw new IllegalArgumentException("No data");
+                log.info("no data");
+                return null;//no data
             }
             long timestampDelta = from - beginTimestamp;
             long filePeriod = lastTimeStamp - beginTimestamp;
             Path path = Paths.get(dataFile.getPath());
             long bytes = Files.size(path);
             long pos = Math.round((double) timestampDelta / filePeriod * bytes);
-            Long timestampOnPos = null, timestampOnPosPrev;
-            long newPos;
-            Long prevPosDelta, newPosDelta = null;
-            int iterations = 0;
-            do {
-                timestampOnPosPrev = timestampOnPos;
-                prevPosDelta = newPosDelta;
-                final Pair<Long, Long> timestampOnPosResult = timestampOnPos(pos, path);
-                timestampOnPos = timestampOnPosResult.getKey();
-                newPos = timestampOnPosResult.getValue();
-                final long curDelta = timestampOnPos - from;
-                final long posDelta = Math.round((double) curDelta / filePeriod * bytes);
-                pos -= posDelta;
-                newPosDelta = newPos - pos;
-                iterations++;
-            } while (timestampOnPosPrev == null
-                    || timestampOnPos <= from && timestampOnPosPrev <= from
-                    && Math.abs(prevPosDelta) > Math.abs(newPosDelta)
-                    && Math.abs(newPosDelta) > 100);
-            long res;
 
-            if (timestampOnPos < from) {
-                res = newPos + 1;
+            final Pair<Long, Long> timestampOnPosResult = timestampOnPos(pos, path);
+            Long timestampOnPos = timestampOnPosResult.getKey();
+            long newPos = timestampOnPosResult.getValue();
+            long pos1, pos2;
+            if (timestampOnPos > from && !timestampOnPos.equals(lastTimeStamp)) {
+                pos1 = 0;
+                pos2 = newPos;
+            } else if (timestampOnPos.equals(lastTimeStamp)) {
+                pos1 = 0;
+                pos2 = newPos;
             } else {
-                Pair<Long, Long> longLongPair = timestampOnPos(pos - newPosDelta, path);
-                timestampOnPos = longLongPair.getKey();
-                if(timestampOnPos < from){
-                    res = 0;
-                }else {
-                    res = longLongPair.getValue() + 1;
-                }
+                pos1 = newPos;
+                pos2 = bytes;
             }
+            Long res = 0L;
+            Long resTimestamp;
 
-            log.info("looking for position complete: pos {}, iterations: {}, pos date: {}", res, iterations, new Date(timestampOnPos));
+            int iterations = 0;
+            Long timestampResult = null;
+            if (pos1 >= pos2) {
+                res = null;//no data
+            } else {
+                do {
+                    long posDelta = pos2 - pos1;
+                    long middlePos = pos1 + posDelta / 2;
+                    final Pair<Long, Long> timestampOnMiddleResult = timestampOnPos(middlePos, path);
+                    Long timestampMiddle = timestampOnMiddleResult.getKey();
+                    long delta = Math.abs(timestampMiddle - from);
+                    if (delta <= 3600 * 1000 * 2 || posDelta < 1000) {
+                        if (timestampMiddle > from) {
+                            res = pos1;
+                        } else {
+                            res = pos2;
+                        }
+                        break;
+                    }
+                    Long middlePosRes = timestampOnMiddleResult.getValue();
+                    if (timestampMiddle > from) {
+                        pos2 = middlePosRes;
+                        timestampResult = timestampMiddle;
+                    } else if (timestampMiddle < from) {
+                        pos1 = middlePosRes;
+                        timestampResult = timestampMiddle;
+                    } else {
+                        res = pos1;
+                        break;
+                    }
+                } while (iterations++ < 100);
+            }
+            log.info("looking for position complete: pos {}, iterations: {}, pos date: {}", res, iterations,
+                    timestampResult != null ? new Date(timestampResult).toString() : "s");
             return res;
         } catch (IOException e) {
             log.error("Error while loading CSV ", e);
         }
-        return 0;
+        log.info("zero data");
+        return 0L;
     }
 
-    private static Pair<Integer, Long> calculateAvgLineLengthAndFirstDataTimestamp(File dataFile) throws IOException {
+    private static Pair<Double, Long> calculateAvgLineLengthAndFirstDataTimestamp(File dataFile) throws IOException {
         String csvLine;
         try (RandomAccessFile randomAccessFile = new RandomAccessFile(dataFile, "r")) {
             csvLine = randomAccessFile.readLine();//read header
@@ -171,7 +177,7 @@ public class CSVStatisticLoaderHelper {
                     }
                 }
             }
-            return Pair.of(sum / count, firstDataTimestamp);
+            return Pair.of((double) sum / count, firstDataTimestamp);
         }
     }
 
@@ -236,7 +242,13 @@ public class CSVStatisticLoaderHelper {
         return Pair.of(timestamp, r.getKey());
     }
 
-   private  static Pair<Long, String> getLineFromFile(String filePath, long position) throws IOException {
+    /**
+     * @param filePath
+     * @param position
+     * @return <position,line>
+     * @throws IOException
+     */
+    private static Pair<Long, String> getLineFromFile(String filePath, long position) throws IOException {
         String line;
         byte[] symbol = new byte[1];
         try (RandomAccessFile file = new RandomAccessFile(filePath, "r")) {

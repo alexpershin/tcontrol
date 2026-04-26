@@ -61,8 +61,11 @@ public class CSVStatisticLoaderSingleThread implements IStatisticsLoader {
         try(FileInputStream is = new FileInputStream(dataFile)) {
 
             //find position where required data located
-            long pos = CSVStatisticLoaderHelper.lookForPositionBeforeFrom(from, dataFile);
+            Long pos = CSVStatisticLoaderHelper.lookForPositionBeforeFrom(from, dataFile);
 
+            if(pos == null){
+                return new ArrayList<>();
+            }
             //skip where exactly no required data
             is.skip(pos);
             Pair<Integer, Long> exceptionsAndTimestamp = Pair.of(0, 0L);

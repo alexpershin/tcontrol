@@ -8,4 +8,5 @@ public interface SystemAlertsAggregator {
     void addAlert(String message);
     void addAlert(long timestamp, String message);
     Collection<SystemAlert> alerts();
+    void setStatisticsManager(IStatisticsManager statisticsManager);
 }

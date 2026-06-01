@@ -9,6 +9,7 @@ import org.tcontrol.config.Logging;
 import org.tcontrol.models.SensorValueShort;
 import org.tcontrol.service.IStatisticsLoader;
 import org.tcontrol.service.ITimer;
+import org.tcontrol.service.SystemAlertsAggregator;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
@@ -23,6 +24,8 @@ public class CSVStatisticLoaderSingleThread implements IStatisticsLoader {
 
     public static final int CHUNK_SIZE = 1024 * 1024;
     private final ITimer timer;
+
+    private final SystemAlertsAggregator systemAlertsAggregator;
 
     @Value("${dataFile}")
     private String dataFileName;
@@ -61,7 +64,7 @@ public class CSVStatisticLoaderSingleThread implements IStatisticsLoader {
         try(FileInputStream is = new FileInputStream(dataFile)) {
 
             //find position where required data located
-            Long pos = CSVStatisticLoaderHelper.lookForPositionBeforeFrom(from, dataFile);
+            Long pos = CSVStatisticLoaderHelper.lookForPositionBeforeFrom(from, dataFile, systemAlertsAggregator);
 
             if(pos == null){
                 return new ArrayList<>();

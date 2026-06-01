@@ -9,10 +9,7 @@ import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.EnableAspectJAutoProxy;
-import org.springframework.context.annotation.Primary;
+import org.springframework.context.annotation.*;
 import org.springframework.core.env.Environment;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.tcontrol.config.props.ThermostatsConfig.ThermostatConfig;
@@ -137,11 +134,11 @@ public class AppConfig implements BeanFactoryPostProcessor {
             SensorConfig sensorConfig,
             IStatisticsManager statisticsManager
     ) {
-        SystemAlertsAggregatorImpl systemAlertsAggregator = new SystemAlertsAggregatorImpl(sensorConfig, statisticsManager);
-        for(int i=0; i<20; i++) {
-            systemAlertsAggregator.addAlert(System.currentTimeMillis() - 1000 * 3600 +i,
+        SystemAlertsAggregatorImpl systemAlertsAggregator = new SystemAlertsAggregatorImpl(sensorConfig);
+        for (int i = 0; i < 20; i++) {
+            systemAlertsAggregator.addAlert(System.currentTimeMillis() - 1000 * 3600 + i,
                     "Error while getting temperature via W1 bus for sensor 28-0317017a6aff");
-            systemAlertsAggregator.addAlert(System.currentTimeMillis() - 1000 * 3600 +i+100,"Error while getting temperature via W1 bus for sensor 28-000002c7c3ee");
+            systemAlertsAggregator.addAlert(System.currentTimeMillis() - 1000 * 3600 + i + 100, "Error while getting temperature via W1 bus for sensor 28-000002c7c3ee");
         }
         return systemAlertsAggregator;
     }
@@ -270,19 +267,36 @@ public class AppConfig implements BeanFactoryPostProcessor {
             ITemperatureReader temperatureReader,
             SensorConfig sensorConfig,
             IStatisticsManager statisticsManager) {
-        return new TemperatureMonitor(temperatureReader, sensorConfig,statisticsManager);
+        return new TemperatureMonitor(temperatureReader, sensorConfig, statisticsManager);
     }
 
     @Bean
     @ConditionalOnExpression("${main-config.sensorsStub} == false && ${main-config.historyDataMultiThread} == false")
-    public IStatisticsLoader statisticsLoader(ITimer timer) {
-        return new CSVStatisticLoaderSingleThread(timer);
+    public IStatisticsLoader statisticsLoader(ITimer timer,
+                                              SystemAlertsAggregator systemAlertsAggregator) {
+        return new CSVStatisticLoaderSingleThread(timer, systemAlertsAggregator);
     }
 
     @Bean
     @ConditionalOnExpression("${main-config.sensorsStub} == false && ${main-config.historyDataMultiThread} == true")
-    public IStatisticsLoader statisticsLoaderMultiThread(SensorConfig sensorConfig, ITimer timer) {
-        return new CSVStatisticLoaderMultiThread(timer);
+    public IStatisticsLoader statisticsLoaderMultiThread(ITimer timer,
+                                                         SystemAlertsAggregator systemAlertsAggregator) {
+        return new CSVStatisticLoaderMultiThread(timer, systemAlertsAggregator);
+    }
+
+    @Bean
+    public IStatisticsManager statisticsManager(SensorConfig sensorConfig,
+                                                       IStatisticsLoader statisticsLoader,
+                                                       ICSVDataSaver csvWriter,
+                                                       ITimer timer,
+                                                       SystemAlertsAggregator systemAlertsAggregator){
+        return new SensorLastDataManager(sensorConfig, statisticsLoader, csvWriter, timer, systemAlertsAggregator);
+    }
+
+    @Bean
+    @ConditionalOnProperty(value = "main-config.sensorsStub", havingValue = "false")
+    public SystemAlertsAggregator systemAlertsAggregator(SensorConfig sensorConfig) {
+        return new SystemAlertsAggregatorImpl(sensorConfig);
     }
 
     @Bean

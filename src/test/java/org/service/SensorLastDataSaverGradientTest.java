@@ -6,6 +6,7 @@ import org.tcontrol.config.props.SensorConfig;
 import org.tcontrol.service.ICSVDataSaver;
 import org.tcontrol.service.IStatisticsLoader;
 import org.tcontrol.service.ITimer;
+import org.tcontrol.service.SystemAlertsAggregator;
 import org.tcontrol.service.impl.SensorLastDataManager;
 import org.tcontrol.models.Sensor;
 import org.tcontrol.models.SensorValue;
@@ -51,7 +52,8 @@ public class SensorLastDataSaverGradientTest {
         sensorConfig.setSensors(sensors);
         IStatisticsLoader statisticsLoader = mock(IStatisticsLoader.class);
         ICSVDataSaver csvDataSaver = mock(ICSVDataSaver.class);
-        sensorLastDataSaver = new SensorLastDataManager(sensorConfig, statisticsLoader, csvDataSaver, timer);
+        SystemAlertsAggregator systemAlertsAggregator = mock(SystemAlertsAggregator.class);
+        sensorLastDataSaver = new SensorLastDataManager(sensorConfig, statisticsLoader, csvDataSaver, timer, systemAlertsAggregator);
         sensorLastDataSaver.setExpiredMillis(2000000);
     }
 

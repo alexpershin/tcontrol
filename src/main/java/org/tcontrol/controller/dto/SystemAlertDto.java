@@ -8,6 +8,7 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 public class SystemAlertDto {
-    long timestamp;
+    long lastTimestamp;
     String message;
+    int count;
 }

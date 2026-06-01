@@ -7,6 +7,12 @@ import lombok.Setter;
 @Getter
 @AllArgsConstructor
 public final class SystemAlert {
-    final long timestamp;
+    @Setter
+    long lastTimestamp;
     final String message;
+    int count;
+
+    public void increment(){
+        count++;
+    }
 }

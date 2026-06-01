@@ -22,7 +22,9 @@ main-config:
 
 w1DevicesPath: /sys/bus/w1/devices
 
-dataFile: data.csv
+dataFile: data_converted_2026_04_26.csv
+#dataFile: data-2026-04-26.csv
+#dataFile: data_log_converted2.csv
 
 sensor-config:
   schedule: '0 0/1 * * * ?'
@@ -178,7 +180,7 @@ sms-config:
       name: mama
 
 thermostat.schedule: '5 0/1 * * * ?'
-alerts.schedule: '10 0/1  * * * ?'
+alerts.schedule: '10 0/10  * * * ?'
 
 thermostats-config:
   thermostats:

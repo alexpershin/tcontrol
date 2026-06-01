@@ -7,10 +7,7 @@ import org.springframework.stereotype.Component;
 import org.tcontrol.config.Logging;
 import org.tcontrol.config.props.SensorConfig;
 import org.tcontrol.models.SensorValueShort;
-import org.tcontrol.service.IStatisticsLoader;
-import org.tcontrol.service.ICSVDataSaver;
-import org.tcontrol.service.IStatisticsManager;
-import org.tcontrol.service.ITimer;
+import org.tcontrol.service.*;
 import org.tcontrol.models.Sensor;
 import org.tcontrol.models.SensorValue;
 
@@ -22,7 +19,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import static java.util.stream.Collectors.toMap;
 import static org.tcontrol.models.SensorValue.SensorState.*;
 
-@Component
 @RequiredArgsConstructor
 @Logging
 public class SensorLastDataManager implements IStatisticsManager {
@@ -31,6 +27,7 @@ public class SensorLastDataManager implements IStatisticsManager {
     private final IStatisticsLoader statisticsLoader;
     private final ICSVDataSaver csvWriter;
     private final ITimer timer;
+    private final SystemAlertsAggregator systemAlertsAggregator;
 
     @Setter
     @Value("${main-config.sensorValuesBufferExpiredMillis:3600000}")
@@ -40,6 +37,7 @@ public class SensorLastDataManager implements IStatisticsManager {
 
     @PostConstruct
     public void loadPrevData() throws FileNotFoundException {
+        systemAlertsAggregator.setStatisticsManager(this);
         fillCache(statisticsLoader.loadLast());
     }
 

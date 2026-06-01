@@ -8,6 +8,7 @@ import org.apache.commons.io.input.ReversedLinesFileReader;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.tcontrol.models.SensorValueShort;
+import org.tcontrol.service.SystemAlertsAggregator;
 
 import java.io.*;
 import java.nio.file.Files;
@@ -24,6 +25,7 @@ public class CSVStatisticLoaderHelper {
     public static final int TIMESTAMP_INDX = 2;
     public static final int SENSOR_CODE_INDX = 1;
     public static final int SENSOR_VALUE_INDX = 3;
+    public static final String RESULT_POSITION_BEFORE_FROM = "lookForPositionBeforeFrom(): result > from";
 
     public static CSVFormat CSV_FORMAT = CSVFormat.EXCEL.withHeader(SENSOR_ID, SENSOR_CODE, TIMESTAMP, VALUE);
 
@@ -68,12 +70,12 @@ public class CSVStatisticLoaderHelper {
         return exceptionsAndTimestamp;
     }
 
-    static Long lookForPositionBeforeFrom(long from, File dataFile) throws FileNotFoundException {
-        log.info("looking for good position in data file..");
+    static Long lookForPositionBeforeFrom(long from, File dataFile, SystemAlertsAggregator systemAlertsAggregator) throws FileNotFoundException {
+        log.info("looking for good position in data file from {}..", new Date(from));
         try {
             final Pair<Double, Long> firstData = calculateAvgLineLengthAndFirstDataTimestamp(dataFile);
             long beginTimestamp = firstData.getValue();
-            Double avgLineLength = firstData.getKey();
+            //Double avgLineLength = firstData.getKey();
             if (from < beginTimestamp) {
                 log.info("no data");
                 return 0L;
@@ -104,7 +106,7 @@ public class CSVStatisticLoaderHelper {
                 pos2 = bytes;
             }
             Long res = 0L;
-            Long resTimestamp;
+            long prevPos = 0L;
 
             int iterations = 0;
             Long timestampResult = null;
@@ -121,7 +123,7 @@ public class CSVStatisticLoaderHelper {
                         if (timestampMiddle > from) {
                             res = pos1;
                         } else {
-                            res = pos2;
+                            res = prevPos;
                         }
                         break;
                     }
@@ -136,10 +138,17 @@ public class CSVStatisticLoaderHelper {
                         res = pos1;
                         break;
                     }
+                    prevPos = pos1;
                 } while (iterations++ < 100);
             }
             log.info("looking for position complete: pos {}, iterations: {}, pos date: {}", res, iterations,
-                    timestampResult != null ? new Date(timestampResult).toString() : "s");
+                    timestampResult != null ? new Date(timestampOnPos(res, path).getKey()).toString() : "s");
+            if (timestampResult != null && from > timestampResult) {
+                if (systemAlertsAggregator != null) {
+                    systemAlertsAggregator.addAlert(RESULT_POSITION_BEFORE_FROM);
+                }
+                log.error(RESULT_POSITION_BEFORE_FROM);
+            }
             return res;
         } catch (IOException e) {
             log.error("Error while loading CSV ", e);

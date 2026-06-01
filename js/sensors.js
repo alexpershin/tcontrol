@@ -357,15 +357,17 @@ function startAlertsDialog(sensorElementId, sensorValue, currentAlerts){
         alertsRowId =  cloneRow.attr('id') + '-' + currentAlert.timestamp
         cloneRow.attr("id", alertsRowId)
         const alertsTimeInput = $('#' + alertsRowId + ' #alerts-time-input')
-
+        const alertsCountInput = $('#' + alertsRowId + ' #alerts-count-input')
         const alertsMessageInput = $('#' + alertsRowId + ' #alerts-message-input')
 
         date = new Date()
-        date.setTime(currentAlert.timestamp)
+        date.setTime(currentAlert.lastTimestamp)
         const dateValue = formatTimestamp(date)
 
         alertsTimeInput.val(dateValue)
         alertsTimeInput.attr('readonly', true)
+        alertsCountInput.val(currentAlert.count)
+        alertsCountInput.attr('readonly', true)
         alertsMessageInput.val(currentAlert.message)
         alertsMessageInput.attr('readonly', true)
         $('#' + alertsRowId).show();

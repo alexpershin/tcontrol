@@ -351,10 +351,12 @@ function startAlertsDialog(sensorElementId, sensorValue, currentAlerts){
     const alertsRow = document.getElementById("alerts-row");
 
     const alertsRowBaseId = 'alerts-row'
+    var alertId=1;
     $(currentAlerts).each(function (key, currentAlert) {
         cloneRow = $('#' + alertsRowBaseId).clone()
         cloneRow.appendTo('.alerts-table')
-        alertsRowId =  cloneRow.attr('id') + '-' + currentAlert.timestamp
+        alertsRowId =  cloneRow.attr('id') + '-' + alertId
+        alertId = alertId + 1
         cloneRow.attr("id", alertsRowId)
         const alertsTimeInput = $('#' + alertsRowId + ' #alerts-time-input')
         const alertsCountInput = $('#' + alertsRowId + ' #alerts-count-input')

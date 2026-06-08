@@ -40,6 +40,7 @@ public class ThermostatsConfig {
     public static class ThermostatConfig implements Cloneable {
 
         private Integer id;
+        private String schedule;
         private String code;
         private String name;
         private float tDay;

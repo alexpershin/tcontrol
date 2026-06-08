@@ -179,12 +179,13 @@ sms-config:
     - phone: 79119378212
       name: mama
 
-thermostat.schedule: '5 0/1 * * * ?'
+#thermostat.schedule: '5 0/1 * * * ?'
 alerts.schedule: '10 0/10  * * * ?'
 
 thermostats-config:
   thermostats:
     - id: 1
+      schedule: '5 0/15 * * * ?'
       code: 'thermostat-electro'
       name: 'Термостат электро'
       tDay: 14.0
@@ -197,6 +198,7 @@ thermostats-config:
         - 'GPIO 0'
     - id: 2
       code: thermostat-gas
+      schedule: '5 0/15 * * * ?'
       name: 'Термостат коридор'
       tDay: 21.5
       tNight: 18.5
@@ -208,6 +210,7 @@ thermostats-config:
         - 'GPIO 1'
         - 'GPIO 4'
     - id: 3
+      schedule: '5 0/15 * * * ?'
       code: thermostat-veranda
       name: 'Термостат веранда циркуляция'
       tDay: 6.0
@@ -219,6 +222,7 @@ thermostats-config:
       relayPins:
         - 'GPIO 2'
     - id: 4
+      schedule: '5 0/15 * * * ?'
       code: thermostat-veranda-em
       name: 'Термостат веранда'
       tDay: 4.0
@@ -231,6 +235,7 @@ thermostats-config:
         - 'GPIO 1'
         - 'GPIO 2'
     - id: 5
+      schedule: '5 0/15 * * * ?'
       code: thermostat-my-room
       name: 'Термостат комната Алексея'
       tDay: 22.0
@@ -243,6 +248,7 @@ thermostats-config:
         - 'GPIO 3'
         - 'GPIO 1'
     - id: 6
+      schedule: '5 0/1 * * * ?'
       code: thermostat-hot-watter
       name: 'Термостат горячей воды'
       tDay: 38.5

@@ -3,7 +3,8 @@ package org.tcontrol.service.impl;
 import lombok.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.scheduling.TaskScheduler;
+import org.springframework.scheduling.support.CronTrigger;
 import org.tcontrol.config.Logging;
 import org.tcontrol.config.props.ThermostatsConfig;
 import org.tcontrol.hardware.ITemperatureMonitor;
@@ -19,6 +20,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
+import java.util.concurrent.ScheduledFuture;
 
 import static org.tcontrol.config.props.ThermostatsConfig.ThermostatConfig;
 
@@ -47,6 +49,10 @@ public class Thermostat implements IThermostat {
     @Setter
     private ITimer timer;
 
+    @Autowired
+    @Setter
+    TaskScheduler taskScheduler;
+
     @Getter
     private ThermostatsConfig.ThermostatConfig thermostatCurrentConfig;
 
@@ -66,11 +72,21 @@ public class Thermostat implements IThermostat {
 
     private boolean firstTime = true;
 
+    private ScheduledFuture<?> activeTask;
+
+
     @PostConstruct
     public void init() {
         log.trace("init");
         thermostatConfig = thermostatConfig(thermostatsConfig, id);
         thermostatCurrentConfig = thermostatConfig.clone();
+
+        String cronExpression = thermostatConfig.getSchedule();
+        CronTrigger trigger = new CronTrigger(cronExpression);
+        activeTask = taskScheduler.schedule(() -> {
+            log.info("scheduler for thermostat initiated: {}", thermostatConfig.getName());
+            checkTemperature();
+        }, trigger);
     }
 
     public static ThermostatConfig thermostatConfig(ThermostatsConfig thermostatsConfig, Integer id) {
@@ -79,11 +95,11 @@ public class Thermostat implements IThermostat {
     }
 
     @Override
-    @Scheduled(cron = "${thermostat.schedule}")
+    //  @Scheduled(cron = "${thermostat.schedule}")
     public boolean checkTemperature() {
         mediumT = currentTemperature();
 
-    SensorValue sensorValue = temperatureMonitor.getSensorValueMap().get(thermostatCurrentConfig.getSensor());
+        SensorValue sensorValue = temperatureMonitor.getSensorValueMap().get(thermostatCurrentConfig.getSensor());
         if (sensorValue != null) {
 
             sensorTemperature = (float) sensorValue.getValue();
@@ -109,8 +125,7 @@ public class Thermostat implements IThermostat {
         } else {
             if (firstTime) {
                 log.info("no sensor value yet");
-            }
-            else {
+            } else {
                 log.error("temperature sensor value is null");
             }
         }
@@ -124,7 +139,7 @@ public class Thermostat implements IThermostat {
         if (temperature != null) {
             ThermostatConfig clone;
             clone = thermostatCurrentConfig.clone();
-            if(night()){
+            if (night()) {
                 clone.setTNight(temperature);
             } else {
                 clone.setTDay(temperature);

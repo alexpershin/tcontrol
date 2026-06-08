@@ -11,7 +11,9 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.*;
 import org.springframework.core.env.Environment;
+import org.springframework.scheduling.TaskScheduler;
 import org.springframework.scheduling.annotation.EnableScheduling;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import org.tcontrol.config.props.ThermostatsConfig.ThermostatConfig;
 import org.tcontrol.handler.IOnOffHandler;
 import org.tcontrol.handler.impl.ButtonGasOnOffHandler;
@@ -440,5 +442,14 @@ public class AppConfig implements BeanFactoryPostProcessor {
     @Override
     public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) throws BeansException {
 
+    }
+
+    @Bean
+    public TaskScheduler taskScheduler() {
+        ThreadPoolTaskScheduler scheduler = new ThreadPoolTaskScheduler();
+        scheduler.setPoolSize(10); // Allows multiple concurrent tasks
+        scheduler.setThreadNamePrefix("dynamic-sched-");
+        scheduler.initialize();
+        return scheduler;
     }
 }

@@ -3,6 +3,7 @@ package org.tcontrol.service.impl;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -51,7 +52,9 @@ public class SystemAlertsAggregatorImpl implements SystemAlertsAggregator {
     @Override
     public void addAlert(long timestamp, String message) {
         log.info("alert added: {}", message);
-        SystemAlert alert = alerts.computeIfAbsent(message, k -> new SystemAlert(timestamp, message, 0));
+        final String alertMessage = StringUtils.abbreviate(message, 80);
+        SystemAlert alert = alerts.computeIfAbsent(alertMessage,
+                k -> new SystemAlert(timestamp, alertMessage, 0));
         alert.increment();
         alert.setLastTimestamp(timestamp);
         checkAlerts();
@@ -74,8 +77,8 @@ public class SystemAlertsAggregatorImpl implements SystemAlertsAggregator {
 
         if (statisticsManager != null) {
             statisticsManager.write(Collections.singletonList(sensorValue));
-        }else{
-            log.error("Couldn't save alert");
+        } else {
+            log.warn("Couldn't save alert");
         }
         log.info("actual alerts: {}", size);
 

@@ -4,6 +4,7 @@ import com.pi4j.io.gpio.Pin;
 import com.pi4j.io.gpio.PinState;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.scheduling.TaskScheduler;
 import org.tcontrol.config.props.CommandConfig;
 import org.tcontrol.config.props.ThermostatsConfig;
 import org.tcontrol.hardware.ITemperatureMonitor;
@@ -22,6 +23,7 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.*;
 
+import static org.mockito.Mockito.mock;
 import static org.tcontrol.config.props.ThermostatsConfig.ThermostatConfig;
 
 @Configuration
@@ -44,6 +46,7 @@ public class CommandConfiguration {
         thermostatConfig.getRelayPins().add(GPIO_00);
         thermostatConfig.setName("elect");
         thermostatConfig.setCode("elect");
+        thermostatConfig.setSchedule("10 0/10  * * * ?");
         return thermostatConfig;
     }
 
@@ -61,6 +64,7 @@ public class CommandConfiguration {
         thermostatConfig.getRelayPins().add(GPIO_00);
         thermostatConfig.setName("gast");
         thermostatConfig.setCode("gast");
+        thermostatConfig.setSchedule("10 0/10  * * * ?");
         return thermostatConfig;
     }
 
@@ -137,12 +141,14 @@ public class CommandConfiguration {
                                                        IRelayHandler relayHandler,
                                                        ITimer timer) {
         Map<String, IThermostat> thermostatMap = new HashMap<>();
+        TaskScheduler taskScheduler = mock(TaskScheduler.class);
 
         Thermostat t1 = new Thermostat(1);
         t1.setThermostatsConfig(thermostatsConfig);
         t1.setTemperatureMonitor(temperatureMonitor);
         t1.setRelayAggregator(relayHandler);
         t1.setTimer(timer);
+        t1.setTaskScheduler(taskScheduler);
         t1.init();
 
         Thermostat t2 = new Thermostat(1);
@@ -150,6 +156,7 @@ public class CommandConfiguration {
         t2.setTemperatureMonitor(temperatureMonitor);
         t2.setRelayAggregator(relayHandler);
         t2.setTimer(timer);
+        t2.setTaskScheduler(taskScheduler);
         t2.init();
 
         thermostatMap.put("elect", t1);

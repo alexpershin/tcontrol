@@ -3,6 +3,7 @@ import com.pi4j.io.gpio.PinState;
 import com.pi4j.io.gpio.RaspiPin;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.scheduling.TaskScheduler;
 import org.tcontrol.config.props.RelayAggregatorConfig;
 import org.tcontrol.config.props.ThermostatsConfig;
 import org.tcontrol.handler.IRelayHandler;
@@ -40,6 +41,7 @@ public class ThermostatAggregatorTest {
     private ITemperatureMonitor temperatureMonitor;
     private IRelayHandler relayHandler;
     private ITimer timer;
+    private TaskScheduler taskScheduler;
 
     @BeforeEach
     public void before() {
@@ -54,6 +56,7 @@ public class ThermostatAggregatorTest {
         thermostatConfig1.setRelayPins(new ArrayList<>());
         thermostatConfig1.getRelayPins().add(GPIO_00);
         thermostatConfig1.setName("termo1");
+        thermostatConfig1.setSchedule("10 0/10  * * * ?");
 
         thermostatConfig2 = new ThermostatConfig();
         thermostatConfig2.setId(2);
@@ -66,6 +69,7 @@ public class ThermostatAggregatorTest {
         thermostatConfig2.setRelayPins(new ArrayList<>());
         thermostatConfig2.getRelayPins().add(GPIO_00);
         thermostatConfig2.setName("termo2");
+        thermostatConfig2.setSchedule("10 0/10  * * * ?");
 
         thermostatConfig3 = new ThermostatConfig();
         thermostatConfig3.setId(3);
@@ -78,6 +82,7 @@ public class ThermostatAggregatorTest {
         thermostatConfig3.setRelayPins(new ArrayList<>());
         thermostatConfig3.getRelayPins().add(GPIO_01);
         thermostatConfig3.setName("termo3");
+        thermostatConfig3.setSchedule("10 0/10  * * * ?");
 
         ThermostatsConfig thermostatsConfig = new ThermostatsConfig();
         thermostatsConfig.setThermostats(Arrays.asList(thermostatConfig1, thermostatConfig2, thermostatConfig3));
@@ -130,11 +135,14 @@ public class ThermostatAggregatorTest {
         timer = mock(ITimer.class);
         when(timer.getCurrentTime()).thenReturn(LocalDateTime.of(LocalDate.now(), LocalTime.of(12, 0)));
 
+        taskScheduler = mock(TaskScheduler.class);
+
         thermostat1 = new Thermostat(1);
         thermostat1.setThermostatsConfig(thermostatsConfig);
         thermostat1.setTemperatureMonitor(temperatureMonitor);
         thermostat1.setRelayAggregator(relayAggregator);
         thermostat1.setTimer(timer);
+        thermostat1.setTaskScheduler(taskScheduler);
         thermostat1.init();
 
         thermostat2 = new Thermostat(2);
@@ -142,6 +150,7 @@ public class ThermostatAggregatorTest {
         thermostat2.setTemperatureMonitor(temperatureMonitor);
         thermostat2.setRelayAggregator(relayAggregator);
         thermostat2.setTimer(timer);
+        thermostat2.setTaskScheduler(taskScheduler);
         thermostat2.init();
 
         thermostat3 = new Thermostat(3);
@@ -149,6 +158,7 @@ public class ThermostatAggregatorTest {
         thermostat3.setTemperatureMonitor(temperatureMonitor);
         thermostat3.setRelayAggregator(relayAggregator);
         thermostat3.setTimer(timer);
+        thermostat3.setTaskScheduler(taskScheduler);
         thermostat3.init();
     }
 

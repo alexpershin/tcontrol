@@ -3,6 +3,7 @@ package org.sms;
 import com.pi4j.io.gpio.Pin;
 import com.pi4j.io.gpio.PinState;
 import org.junit.jupiter.api.BeforeEach;
+import org.springframework.scheduling.TaskScheduler;
 import org.tcontrol.config.props.CommandConfig;
 import org.tcontrol.config.props.RelayPinsConfig;
 import org.tcontrol.config.props.ThermostatsConfig;
@@ -66,6 +67,7 @@ public class StatusCommandTest {
         thermostatConfig.getRelayPins().add(GPIO_00);
         thermostatConfig.setName("termo1");
         thermostatConfig.setCode("t1");
+        thermostatConfig.setSchedule("10 0/10  * * * ?");
         thermostatConfig.init();
 
         thermostatConfig2 = new ThermostatConfig();
@@ -80,6 +82,7 @@ public class StatusCommandTest {
         thermostatConfig2.getRelayPins().add(GPIO_01);
         thermostatConfig2.setName("termo2");
         thermostatConfig2.setCode("t2");
+        thermostatConfig2.setSchedule("10 0/10  * * * ?");
         thermostatConfig2.init();
 
         thermostatConfig3 = new ThermostatConfig();
@@ -94,6 +97,7 @@ public class StatusCommandTest {
         thermostatConfig3.getRelayPins().add(GPIO_02);
         thermostatConfig3.setName("termo3");
         thermostatConfig3.setCode("t3");
+        thermostatConfig3.setSchedule("10 0/10  * * * ?");
         thermostatConfig3.init();
 
         thermostatConfig4 = new ThermostatConfig();
@@ -108,6 +112,7 @@ public class StatusCommandTest {
         thermostatConfig4.getRelayPins().add(GPIO_03);
         thermostatConfig4.setName("termo4");
         thermostatConfig4.setCode("t4");
+        thermostatConfig4.setSchedule("10 0/10  * * * ?");
         thermostatConfig4.init();
 
         thermostatsConfig = new ThermostatsConfig();
@@ -167,11 +172,14 @@ public class StatusCommandTest {
                 LocalDateTime.of(LocalDate.now(), LocalTime.of(12, 0))
         );
 
+        TaskScheduler taskScheduler = mock(TaskScheduler.class);
+
         thermostat1 = new Thermostat(1);
         thermostat1.setThermostatsConfig(thermostatsConfig);
         thermostat1.setTemperatureMonitor(temperatureMonitor);
         thermostat1.setRelayAggregator(relayHandler);
         thermostat1.setTimer(timer);
+        thermostat1.setTaskScheduler(taskScheduler);
         thermostat1.init();
 
         thermostat2 = new Thermostat(2);
@@ -179,6 +187,7 @@ public class StatusCommandTest {
         thermostat2.setTemperatureMonitor(temperatureMonitor);
         thermostat2.setRelayAggregator(relayHandler);
         thermostat2.setTimer(timer);
+        thermostat2.setTaskScheduler(taskScheduler);
         thermostat2.init();
 
         thermostat3 = new Thermostat(3);
@@ -186,6 +195,7 @@ public class StatusCommandTest {
         thermostat3.setTemperatureMonitor(temperatureMonitor);
         thermostat3.setRelayAggregator(relayHandler);
         thermostat3.setTimer(timer);
+        thermostat3.setTaskScheduler(taskScheduler);
         thermostat3.init();
 
         thermostat4 = new Thermostat(4);
@@ -193,6 +203,7 @@ public class StatusCommandTest {
         thermostat4.setTemperatureMonitor(temperatureMonitor);
         thermostat4.setRelayAggregator(relayHandler);
         thermostat4.setTimer(timer);
+        thermostat4.setTaskScheduler(taskScheduler);
         thermostat4.init();
 
         sensorConfig = new SensorConfig();

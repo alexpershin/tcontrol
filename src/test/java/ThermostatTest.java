@@ -2,6 +2,7 @@ import com.pi4j.io.gpio.Pin;
 import com.pi4j.io.gpio.PinState;
 import com.pi4j.io.gpio.RaspiPin;
 import org.junit.jupiter.api.BeforeEach;
+import org.springframework.scheduling.TaskScheduler;
 import org.tcontrol.config.props.ThermostatsConfig;
 import org.tcontrol.models.SensorValue;
 import org.tcontrol.handler.IRelayHandler;
@@ -32,6 +33,7 @@ public class ThermostatTest {
     private ITemperatureMonitor temperatureMonitor;
     private IRelayHandler relayHandler;
     private ITimer timer;
+    private TaskScheduler taskScheduler;
 
     @BeforeEach
     public void before() {
@@ -46,6 +48,7 @@ public class ThermostatTest {
         thermostatConfig.setRelayPins(new ArrayList<>());
         thermostatConfig.getRelayPins().add(GPIO_00);
         thermostatConfig.setName("termo");
+        thermostatConfig.setSchedule("10 0/10  * * * ?");
 
         ThermostatsConfig thermostatsConfig = new ThermostatsConfig();
         thermostatsConfig.setThermostats(Collections.singletonList(thermostatConfig));
@@ -92,11 +95,14 @@ public class ThermostatTest {
         timer = mock(ITimer.class);
         when(timer.getCurrentTime()).thenReturn(LocalDateTime.of(LocalDate.now(), LocalTime.of(12, 0)));
 
+        taskScheduler = mock(TaskScheduler.class);
+
         thermostat = new Thermostat(1);
         thermostat.setThermostatsConfig(thermostatsConfig);
         thermostat.setTemperatureMonitor(temperatureMonitor);
         thermostat.setRelayAggregator(relayHandler);
         thermostat.setTimer(timer);
+        thermostat.setTaskScheduler(taskScheduler);
         thermostat.init();
     }
 

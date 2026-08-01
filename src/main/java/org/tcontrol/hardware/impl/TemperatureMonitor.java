@@ -74,7 +74,7 @@ public class TemperatureMonitor implements ITemperatureMonitor {
     private SensorValue readSensorValue(String sensorCode) {
         SensorValue sv = temperatureReader.getValue(sensorCode);
         if (sv != null) {
-            sv.setSensorId(sensorConfig.sensorConfigByCode(sensorCode).orElseThrow().getId());
+            sv.setSensorId(sensorConfig.sensorConfigByCode(sensorCode).get().getId());
             sensorCodeToValueMap.put(sensorCode, sv);
             statisticsManager.write(Lists.newArrayList(sv));
         } else {

@@ -37,13 +37,12 @@ public class TemperatureReader implements ITemperatureReader {
 
     @Override
     public SensorValue getValue(String sensorCode)  {
-        double t = 0;
         try {
-            t = readTemperatureFromFile(sensorCode);
+            double t = readTemperatureFromFile(sensorCode);
+            return new SensorValue(sensorCode, System.currentTimeMillis(), t);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-        return new SensorValue(null, System.currentTimeMillis(), t);
     }
 
     private Path getFullPathToDevice(String sensorCode) {

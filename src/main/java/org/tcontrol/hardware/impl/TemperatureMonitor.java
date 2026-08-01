@@ -46,29 +46,19 @@ public class TemperatureMonitor implements ITemperatureMonitor {
         temperatureReader.load();
         int successCount = 0;
         List<SensorConfiguration> sensors = sensorConfig.getSensors();
-        List<SensorValue> values = new ArrayList<>();
 
         for (SensorConfiguration sensorConfiguration : sensors) {
             if (sensorConfiguration.getType() == Sensor.SensorType.TEMPERATURE) {
                 try {
-                    int sensorId = sensorConfiguration.getId();
-                    String sensorCode = sensorConfiguration.getCode();
-                    SensorValue value = temperatureReader.getValue(sensorCode);
+                    SensorValue value = readSensorValue(sensorConfiguration.getCode());
                     if (value != null) {
-                        value.setSensorCode(sensorCode);
-                        value.setSensorId(sensorId);
-                        sensorCodeToValueMap.put(sensorCode, value);
-                        values.add(value);
                         successCount++;
-                    } else {
-                        log.warn("No value found for sensorConfiguration: {}", sensorCode);
                     }
                 } catch (RuntimeException e) {
                     log.warn(e.getMessage());
                 }
             }
         }
-        statisticsManager.write(values);
 
         log.info("Reading temperature completed(read {} sensors)", successCount);
     }
@@ -78,13 +68,18 @@ public class TemperatureMonitor implements ITemperatureMonitor {
         return of(sensorCode)
                 .map(sensorCodeToValueMap::get)
                 .filter(sv -> sv.getTimestamp() > System.currentTimeMillis() - DELAY_TIME)
-                .orElseGet(() ->readSensorValue(sensorCode));
+                .orElseGet(() -> readSensorValue(sensorCode));
     }
 
     private SensorValue readSensorValue(String sensorCode) {
         SensorValue sv = temperatureReader.getValue(sensorCode);
-        sensorCodeToValueMap.put(sensorCode, sv);
-        statisticsManager.write(Lists.newArrayList(sv));
+        if (sv != null) {
+            sv.setSensorId(sensorConfig.sensorConfigByCode(sensorCode).orElseThrow().getId());
+            sensorCodeToValueMap.put(sensorCode, sv);
+            statisticsManager.write(Lists.newArrayList(sv));
+        } else {
+            log.warn("No value found for sensorConfiguration: {}", sensorCode);
+        }
         return sv;
     }
 }

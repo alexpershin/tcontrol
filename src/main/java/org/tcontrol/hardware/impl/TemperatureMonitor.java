@@ -1,11 +1,13 @@
 package org.tcontrol.hardware.impl;
 
+import com.google.common.collect.Lists;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.tcontrol.config.Logging;
 import org.tcontrol.hardware.ITemperatureMonitor;
+import org.tcontrol.models.SensorValueShort;
 import org.tcontrol.service.IStatisticsManager;
 import org.tcontrol.models.Sensor;
 import org.tcontrol.models.SensorValue;
@@ -76,6 +78,13 @@ public class TemperatureMonitor implements ITemperatureMonitor {
         return of(sensorCode)
                 .map(sensorCodeToValueMap::get)
                 .filter(sv -> sv.getTimestamp() > System.currentTimeMillis() - DELAY_TIME)
-                .orElseGet(() -> temperatureReader.getValue(sensorCode));
+                .orElseGet(() ->readSensorValue(sensorCode));
+    }
+
+    private SensorValue readSensorValue(String sensorCode) {
+        SensorValue sv = temperatureReader.getValue(sensorCode);
+        sensorCodeToValueMap.put(sensorCode, sv);
+        statisticsManager.write(Lists.newArrayList(sv));
+        return sv;
     }
 }

@@ -66,7 +66,7 @@ public class TemperatureMonitorStub implements ITemperatureMonitor {
     }
 
     @Override
-    public Map<String, SensorValue> getSensorValueMap() {
+    public Map<String, SensorValue> getSensorCodeToValueMap() {
         return sensorValueMap;
     }
 }

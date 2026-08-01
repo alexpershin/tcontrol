@@ -39,7 +39,7 @@ public class CommandConfiguration {
         thermostatConfig.setDelta(0.5f);
         thermostatConfig.setNightBegin(60 * 60 * 23);
         thermostatConfig.setNightEnd(60 * 60 * 7);
-        thermostatConfig.setSensor(SENSOR_CODE);
+        thermostatConfig.setSensorCode(SENSOR_CODE);
         thermostatConfig.setTDay(12.0f);
         thermostatConfig.setTNight(16.0f);
         thermostatConfig.setRelayPins(new ArrayList<>());
@@ -57,7 +57,7 @@ public class CommandConfiguration {
         thermostatConfig.setDelta(0.5f);
         thermostatConfig.setNightBegin(60 * 60 * 23);
         thermostatConfig.setNightEnd(60 * 60 * 7);
-        thermostatConfig.setSensor(SENSOR_CODE);
+        thermostatConfig.setSensorCode(SENSOR_CODE);
         thermostatConfig.setTDay(18.0f);
         thermostatConfig.setTNight(20.0f);
         thermostatConfig.setRelayPins(new ArrayList<>());
@@ -90,7 +90,7 @@ public class CommandConfiguration {
             }
 
             @Override
-            public Map<String, SensorValue> getSensorValueMap() {
+            public Map<String, SensorValue> getSensorCodeToValueMap() {
                 return map;
             }
         };

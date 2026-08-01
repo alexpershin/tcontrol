@@ -57,7 +57,7 @@ public class W1BusTemperatureReader implements ITemperatureReader {
     }
 
     @Override
-    public SensorValue getValue(String sensorCode) throws IOException {
+    public SensorValue getValue(String sensorCode) {
         return lastValues.get(sensorCode);
     }
 }

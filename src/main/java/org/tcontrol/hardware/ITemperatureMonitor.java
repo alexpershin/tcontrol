@@ -5,5 +5,9 @@ import org.tcontrol.models.SensorValue;
 import java.util.Map;
 
 public interface ITemperatureMonitor {
-    Map<String, SensorValue> getSensorValueMap();
+    Map<String, SensorValue> getSensorCodeToValueMap();
+
+    default SensorValue getValueBySensorCode(String sensorCode) {
+        return getSensorCodeToValueMap().get(sensorCode);
+    }
 }

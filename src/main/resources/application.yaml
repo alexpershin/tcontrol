@@ -27,7 +27,7 @@ dataFile: data.csv
 #dataFile: data_log_converted2.csv
 
 sensor-config:
-  schedule: '0 0/1 * * * ?'
+  schedule: '0 0/15 * * * ?'
   sensors:
     - id: 0
       code: '28-000002c7c3ee'
@@ -195,7 +195,7 @@ thermostats-config:
       delta: 0.5
       nightBegin: 23:10:00
       nightEnd: 7:10:00
-      sensor: 28-000002c7c3ee
+      sensorCode: 28-000002c7c3ee
       relayPins:
         - 'GPIO 0'
     - id: 2
@@ -207,7 +207,7 @@ thermostats-config:
       delta: 0.3
       nightBegin: 21:00:00
       nightEnd: 8:00:00
-      sensor: 28-000002c7c3ee
+      sensorCode: 28-000002c7c3ee
       relayPins:
         - 'GPIO 1'
         - 'GPIO 4'
@@ -220,7 +220,7 @@ thermostats-config:
       delta: 0.5
       nightBegin: 21:00:00
       nightEnd: 9:00:00
-      sensor: 28-0417019b15ff
+      sensorCode: 28-0417019b15ff
       relayPins:
         - 'GPIO 2'
     - id: 4
@@ -232,7 +232,7 @@ thermostats-config:
       delta: 0.3
       nightBegin: 22:00:00
       nightEnd: 9:00:00
-      sensor: 28-0417019b15ff
+      sensorCode: 28-0417019b15ff
       relayPins:
         - 'GPIO 1'
         - 'GPIO 2'
@@ -245,7 +245,7 @@ thermostats-config:
       delta: 0.3
       nightBegin: 21:00:00
       nightEnd: 8:00:00
-      sensor: 28-0317017a6aff
+      sensorCode: 28-0317017a6aff
       relayPins:
         - 'GPIO 3'
         - 'GPIO 1'
@@ -258,7 +258,7 @@ thermostats-config:
       delta: 4.0
       nightBegin: 23:10:00
       nightEnd: 9:10:00
-      sensor: 28-031701e06cff
+      sensorCode: 28-031701e06cff
       relayPins:
         - 'GPIO 6'
 
@@ -283,7 +283,7 @@ status-command:
   thermostats: ['thermostat-electro', 'thermostat-gas', 'thermostat-my-room', 'thermostat-veranda']
 
 voltage-monitor:
-  schedule: '0/30 * * * * ?'
+  schedule: '0 0/1 * * * ?'
   pins:
     - code: 0
       ratio: 0.021788

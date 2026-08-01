@@ -50,7 +50,7 @@ public class ThermostatAggregatorTest {
         thermostatConfig1.setDelta(0.5f);
         thermostatConfig1.setNightBegin(60 * 60 * 23);
         thermostatConfig1.setNightEnd(60 * 60 * 7);
-        thermostatConfig1.setSensor(SENSOR_CODE);
+        thermostatConfig1.setSensorCode(SENSOR_CODE);
         thermostatConfig1.setTDay(12.0f);
         thermostatConfig1.setTNight(16.0f);
         thermostatConfig1.setRelayPins(new ArrayList<>());
@@ -63,7 +63,7 @@ public class ThermostatAggregatorTest {
         thermostatConfig2.setDelta(0.5f);
         thermostatConfig2.setNightBegin(60 * 60 * 23);
         thermostatConfig2.setNightEnd(60 * 60 * 7);
-        thermostatConfig2.setSensor(SENSOR_CODE);
+        thermostatConfig2.setSensorCode(SENSOR_CODE);
         thermostatConfig2.setTDay(12.0f);
         thermostatConfig2.setTNight(16.0f);
         thermostatConfig2.setRelayPins(new ArrayList<>());
@@ -76,7 +76,7 @@ public class ThermostatAggregatorTest {
         thermostatConfig3.setDelta(0.5f);
         thermostatConfig3.setNightBegin(60 * 60 * 23);
         thermostatConfig3.setNightEnd(60 * 60 * 7);
-        thermostatConfig3.setSensor(SENSOR_CODE);
+        thermostatConfig3.setSensorCode(SENSOR_CODE);
         thermostatConfig3.setTDay(12.0f);
         thermostatConfig3.setTNight(16.0f);
         thermostatConfig3.setRelayPins(new ArrayList<>());
@@ -100,7 +100,7 @@ public class ThermostatAggregatorTest {
             }
 
             @Override
-            public Map<String, SensorValue> getSensorValueMap() {
+            public Map<String, SensorValue> getSensorCodeToValueMap() {
                 return map;
             }
         };

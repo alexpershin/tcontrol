@@ -60,7 +60,7 @@ public class StatusCommandTest {
         thermostatConfig.setDelta(0.5f);
         thermostatConfig.setNightBegin(60 * 60 * 23);
         thermostatConfig.setNightEnd(60 * 60 * 7);
-        thermostatConfig.setSensor(SENSOR_CODE);
+        thermostatConfig.setSensorCode(SENSOR_CODE);
         thermostatConfig.setTDay(12.0f);
         thermostatConfig.setTNight(16.0f);
         thermostatConfig.setRelayPins(new ArrayList<>());
@@ -75,7 +75,7 @@ public class StatusCommandTest {
         thermostatConfig2.setDelta(0.5f);
         thermostatConfig2.setNightBegin(60 * 60 * 23);
         thermostatConfig2.setNightEnd(60 * 60 * 7);
-        thermostatConfig2.setSensor(SENSOR_CODE);
+        thermostatConfig2.setSensorCode(SENSOR_CODE);
         thermostatConfig2.setTDay(18.0f);
         thermostatConfig2.setTNight(20.0f);
         thermostatConfig2.setRelayPins(new ArrayList<>());
@@ -90,7 +90,7 @@ public class StatusCommandTest {
         thermostatConfig3.setDelta(0.5f);
         thermostatConfig3.setNightBegin(60 * 60 * 23);
         thermostatConfig3.setNightEnd(60 * 60 * 7);
-        thermostatConfig3.setSensor(SENSOR_CODE);
+        thermostatConfig3.setSensorCode(SENSOR_CODE);
         thermostatConfig3.setTDay(17.0f);
         thermostatConfig3.setTNight(18.0f);
         thermostatConfig3.setRelayPins(new ArrayList<>());
@@ -105,7 +105,7 @@ public class StatusCommandTest {
         thermostatConfig4.setDelta(0.5f);
         thermostatConfig4.setNightBegin(60 * 60 * 23);
         thermostatConfig4.setNightEnd(60 * 60 * 7);
-        thermostatConfig4.setSensor(SENSOR_CODE);
+        thermostatConfig4.setSensorCode(SENSOR_CODE);
         thermostatConfig4.setTDay(17.0f);
         thermostatConfig4.setTNight(18.0f);
         thermostatConfig4.setRelayPins(new ArrayList<>());
@@ -132,7 +132,7 @@ public class StatusCommandTest {
             }
 
             @Override
-            public Map<String, SensorValue> getSensorValueMap() {
+            public Map<String, SensorValue> getSensorCodeToValueMap() {
                 return map;
             }
         };

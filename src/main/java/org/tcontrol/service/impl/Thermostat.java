@@ -95,11 +95,10 @@ public class Thermostat implements IThermostat {
     }
 
     @Override
-    //  @Scheduled(cron = "${thermostat.schedule}")
     public boolean checkTemperature() {
         mediumT = currentTemperature();
 
-        SensorValue sensorValue = temperatureMonitor.getSensorValueMap().get(thermostatCurrentConfig.getSensor());
+        SensorValue sensorValue = temperatureMonitor.getValueBySensorCode(thermostatCurrentConfig.getSensorCode());
         if (sensorValue != null) {
 
             sensorTemperature = (float) sensorValue.getValue();
@@ -185,7 +184,7 @@ public class Thermostat implements IThermostat {
 
     @Override
     public String getSensorCode() {
-        return thermostatCurrentConfig.getSensor();
+        return thermostatCurrentConfig.getSensorCode();
     }
 
     private boolean night() {

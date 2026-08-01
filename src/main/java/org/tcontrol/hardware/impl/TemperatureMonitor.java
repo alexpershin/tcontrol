@@ -1,31 +1,32 @@
 package org.tcontrol.hardware.impl;
 
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.tcontrol.config.Logging;
 import org.tcontrol.hardware.ITemperatureMonitor;
 import org.tcontrol.service.IStatisticsManager;
-import org.tcontrol.service.impl.CSVStatisticSaver;
 import org.tcontrol.models.Sensor;
 import org.tcontrol.models.SensorValue;
 import org.tcontrol.hardware.ITemperatureReader;
 import org.tcontrol.config.props.SensorConfig;
 
 import javax.annotation.PostConstruct;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
+import static java.util.Optional.*;
 import static org.tcontrol.config.props.SensorConfig.SensorConfiguration;
 
 @Slf4j
 @RequiredArgsConstructor
 @Logging
 public class TemperatureMonitor implements ITemperatureMonitor {
-    final private Map<String, SensorValue> sensorValueMap = new HashMap<>();
+    //To return value as new
+    public static final int DELAY_TIME = 30000;
+
+    @Getter
+    final private Map<String, SensorValue> sensorCodeToValueMap = new HashMap<>();
 
     private final ITemperatureReader temperatureReader;
 
@@ -54,13 +55,13 @@ public class TemperatureMonitor implements ITemperatureMonitor {
                     if (value != null) {
                         value.setSensorCode(sensorCode);
                         value.setSensorId(sensorId);
-                        sensorValueMap.put(sensorCode, value);
+                        sensorCodeToValueMap.put(sensorCode, value);
                         values.add(value);
                         successCount++;
                     } else {
                         log.warn("No value found for sensorConfiguration: {}", sensorCode);
                     }
-                } catch (IOException e) {
+                } catch (RuntimeException e) {
                     log.warn(e.getMessage());
                 }
             }
@@ -71,7 +72,10 @@ public class TemperatureMonitor implements ITemperatureMonitor {
     }
 
     @Override
-    public Map<String, SensorValue> getSensorValueMap() {
-        return sensorValueMap;
+    public SensorValue getValueBySensorCode(String sensorCode) {
+        return of(sensorCode)
+                .map(sensorCodeToValueMap::get)
+                .filter(sv -> sv.getTimestamp() > System.currentTimeMillis() - DELAY_TIME)
+                .orElseGet(() -> temperatureReader.getValue(sensorCode));
     }
 }

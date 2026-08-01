@@ -6,5 +6,5 @@ import java.io.IOException;
 
 public interface ITemperatureReader {
     default void load(){}
-    SensorValue getValue(String sensorCode) throws IOException;
+    SensorValue getValue(String sensorCode);
 }

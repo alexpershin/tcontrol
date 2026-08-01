@@ -72,7 +72,7 @@ public class AppConfig implements BeanFactoryPostProcessor {
         thermostatElectroConfigStub.setId(1);
         thermostatElectroConfigStub.setCode("termo1-electro");
         thermostatElectroConfigStub.setName("termo1(electro)");
-        thermostatElectroConfigStub.setSensor("8");
+        thermostatElectroConfigStub.setSensorCode("8");
         thermostatElectroConfigStub.setRelayPins(Collections.singletonList("GPIO 8"));
 
         ThermostatsConfig thermostatsConfig = new ThermostatsConfig();

@@ -48,7 +48,7 @@ public class ThermostatsConfig {
         private float delta;
         private int nightBegin;
         private int nightEnd;
-        private String sensor;
+        private String sensorCode;
         private List<String> relayPins;
 
         @Override

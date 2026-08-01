@@ -42,7 +42,7 @@ public class ThermostatTest {
         thermostatConfig.setDelta(0.5f);
         thermostatConfig.setNightBegin(60 * 60 * 23);
         thermostatConfig.setNightEnd(60 * 60 * 7);
-        thermostatConfig.setSensor(SENSOR_CODE);
+        thermostatConfig.setSensorCode(SENSOR_CODE);
         thermostatConfig.setTDay(12.0f);
         thermostatConfig.setTNight(16.0f);
         thermostatConfig.setRelayPins(new ArrayList<>());
@@ -66,7 +66,7 @@ public class ThermostatTest {
             }
 
             @Override
-            public Map<String, SensorValue> getSensorValueMap() {
+            public Map<String, SensorValue> getSensorCodeToValueMap() {
                 return map;
             }
         };
@@ -134,7 +134,7 @@ public class ThermostatTest {
         assertTrue(thermostat.isHeatingOn());
         assertTrue(relayHandler.getPinState(heatingPin).isHigh());
 
-        SensorValue v = temperatureMonitor.getSensorValueMap().get(SENSOR_CODE);
+        SensorValue v = temperatureMonitor.getSensorCodeToValueMap().get(SENSOR_CODE);
         v.setSensorCode(SENSOR_CODE);
         v.setValue(15.0);
 

@@ -3,6 +3,7 @@ package org.tcontrol.sms;
 import com.pi4j.util.StringUtil;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Triple;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
@@ -29,8 +30,9 @@ import java.util.stream.Stream;
 @AllArgsConstructor
 public class SMSProcessor {
 
-    final private static Pattern patternPhone = Pattern.compile(".*_00_\\+([0-9]*)_00.txt");
-    final private static Pattern patternTime = Pattern.compile("IN([0-9]*)_([0-9]*)_00_.*_(0[0-9]).txt");
+    final public static Pattern PATTERN_PHONE = Pattern.compile(".*_00_\\+([0-9]*)_[0-9]{2}.txt");
+    final public static Pattern PATTERN_NOT_PHONE = Pattern.compile(".*_00_(.*)_[0-9]{2}.txt");
+    final public static Pattern PATTERN_TIME = Pattern.compile("IN([0-9]*)_([0-9]*)_00_.*_(0[0-9]).txt");
 
     private SMSConfig smsConfig;
 
@@ -66,11 +68,11 @@ public class SMSProcessor {
 
     private void processIncomingSmsFile(Path inconingSmsFilePath) throws IOException {
         final String fileName = inconingSmsFilePath.getFileName().toString();
-        final Matcher matcher = patternPhone.matcher(fileName);
+        final Matcher matcher = PATTERN_PHONE.matcher(fileName);
         boolean inList = false;
         String incomingPhoneNumber = "?";
 
-        //processing command
+        //try to recognize sender's phone number
         if (matcher.find()) {
             incomingPhoneNumber = matcher.group(1);
             final String incomingPhoneNumberMatch = incomingPhoneNumber;
@@ -78,20 +80,7 @@ public class SMSProcessor {
                     .anyMatch(phone -> phone.getPhone().equals(incomingPhoneNumberMatch));
 
             if (inList) {
-                Triple<String, String, String> commandParams = readCommandFromFile(inconingSmsFilePath);
-                if (commandParams != null) {
-                    String commandName = commandParams.getLeft();
-                    String commandParam = commandParams.getMiddle();
-                    log.info("Command: {}", commandName);
-                    CommandResult result = commandExecutor.run(commandName, commandParam);
-                    writeCommandAnswer(fileName, incomingPhoneNumber, result, commandName);
-                } else {
-                    CommandResult result = new CommandResult(
-                            STATUS.FAILURE,
-                            MessageFormat.format("invalid argument: {0}", commandParams.getRight())
-                    );
-                    writeCommandAnswer(fileName, incomingPhoneNumber, result, commandParams.getRight());
-                }
+                processingCommand(inconingSmsFilePath, fileName, incomingPhoneNumber);
             } else {//redirect to first number
                 List<String> lines = Files.readAllLines(inconingSmsFilePath, Charset.defaultCharset());
                 writeCommandAnswer(fileName, smsConfig.getPhones().get(0).getPhone(), new CommandResult(
@@ -102,16 +91,48 @@ public class SMSProcessor {
 
         }
 
-        //forwarding
         if (!inList) {
-            String text = "Forwarding from (" + incomingPhoneNumber + "):"
-                    + "\n" + readMessageTextFromFile(inconingSmsFilePath);
-            forward(fileName, incomingPhoneNumber, smsConfig.getForwardingPhone(), text);
+            if (incomingPhoneNumber.equals("?")) {
+                //parse if number has not parsed on previous step
+                Matcher notPhoneMatcher = PATTERN_NOT_PHONE.matcher(fileName);
+                if (notPhoneMatcher.find()) {
+                    String phone = notPhoneMatcher.group(1);
+                    if (StringUtils.isNotBlank(phone)) {
+                        incomingPhoneNumber = phone;
+                    }
+                }
+            }
+            if (!smsConfig.getNotForwardList().contains(incomingPhoneNumber)) {
+                //forwarding sms from unknown senders
+                String text = "Forwarding from (" + incomingPhoneNumber + "):"
+                        + "\n" + readMessageTextFromFile(inconingSmsFilePath);
+                forward(fileName, incomingPhoneNumber, smsConfig.getForwardingPhone(), text);
+            } else {
+                //forwarding is banned
+                log.info("SMS from {} was not forwarded", incomingPhoneNumber);
+            }
         }
 
         //moving to result folder
         Path resultPath = Paths.get(smsConfig.getProcessedFolder(), inconingSmsFilePath.getFileName().toString());
         Files.move(inconingSmsFilePath, resultPath);
+    }
+
+    private void processingCommand(Path inconingSmsFilePath, String fileName, String incomingPhoneNumber) throws IOException {
+        Triple<String, String, String> commandParams = readCommandFromFile(inconingSmsFilePath);
+        if (commandParams != null) {
+            String commandName = commandParams.getLeft();
+            String commandParam = commandParams.getMiddle();
+            log.info("Command: {}", commandName);
+            CommandResult result = commandExecutor.run(commandName, commandParam);
+            writeCommandAnswer(fileName, incomingPhoneNumber, result, commandName);
+        } else {
+            CommandResult result = new CommandResult(
+                    STATUS.FAILURE,
+                    MessageFormat.format("invalid argument: {0}", commandParams.getRight())
+            );
+            writeCommandAnswer(fileName, incomingPhoneNumber, result, commandParams.getRight());
+        }
     }
 
     private void writeCommandAnswer(String fileName, String phoneNumber, CommandResult result, String command)
@@ -124,18 +145,18 @@ public class SMSProcessor {
                         + result.getMessage();
 
         writeOutSmsFile(fileName, phoneNumber, resultText);
-        log.info("Answer ready (status:{}, phone:+{})", result.getStatus(), phoneNumber);
+        log.info("SMS answer ready (status:{}, phone:+{})", result.getStatus(), phoneNumber);
     }
 
     private void forward(String fileName, String incomingNumber, String forwardingPhoneNumber, String resultText)
             throws IOException {
         writeOutSmsFile(fileName, forwardingPhoneNumber, resultText);
-        log.info("Message forwarded (from:{}, to:+{})", incomingNumber, forwardingPhoneNumber);
+        log.info("SMS message forwarded (from:{}, to:+{})", incomingNumber, forwardingPhoneNumber);
     }
 
     private void writeOutSmsFile(String fileName, String phoneNumber, String resultText) throws IOException {
 
-        final Matcher matcher = patternTime.matcher(fileName);
+        final Matcher matcher = PATTERN_TIME.matcher(fileName);
         String date = "";
         String time = "";
         String suffix = "";

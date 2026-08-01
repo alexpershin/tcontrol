@@ -16,6 +16,8 @@ public class SMSConfig {
     private String processedFolder;
     private String forwardingPhone;
 
+    private List<String> notForwardList = new ArrayList<>();
+
     @Data
     @RequiredArgsConstructor
     public static class PhoneInfo

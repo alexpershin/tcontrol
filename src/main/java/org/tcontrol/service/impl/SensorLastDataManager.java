@@ -33,6 +33,10 @@ public class SensorLastDataManager implements IStatisticsManager {
     @Value("${main-config.sensorValuesBufferExpiredMillis:3600000}")
     private int expiredMillis;
 
+    @Setter
+    @Value("${gradientDelta}")
+    private int gradientDelta = 15;
+
     private final Map<Integer, Deque<SensorValueShort>> cache = new ConcurrentHashMap<>();
 
     @PostConstruct
@@ -81,15 +85,16 @@ public class SensorLastDataManager implements IStatisticsManager {
                         SensorValueShort curValue = it.next();
                         long deltaT = timer.getCurrentTimeMillis() - curValue.getTimestamp();
                         double value = curValue.getValue();
-                        calcGradient(deltaT, lastValue, curValue);
+                        calcGradient(deltaT, gradientDelta, lastValue, curValue);
                         calcMinMax(lastValue, value, curValue.getTimestamp(), deltaT);
                     }
                     return lastValue;
                 }).collect(toMap(SensorValue::getSensorId, sv -> sv));
     }
 
-    private static void calcGradient(long deltaT, SensorValue lastValue, SensorValueShort curValue) {
-        if (lastValue.getTimestamp() != curValue.getTimestamp() && deltaT >= 15 * 60 * 1000 && deltaT <= 20 * 60 * 1000) {// 15-20мин
+    private static void calcGradient(long deltaT, int gradientDelta, SensorValue lastValue, SensorValueShort curValue) {
+        if (lastValue.getTimestamp() != curValue.getTimestamp()
+                && deltaT >= (long)gradientDelta * 60 * 1000 && deltaT <= (long)(gradientDelta + 5) * 60 * 1000) {// gradientDelta in мин
             double gradient = lastValue.getValue() - curValue.getValue();
             lastValue.setGradient(gradient);
         }

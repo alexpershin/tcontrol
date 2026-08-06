@@ -54,7 +54,8 @@ public class SensorLastDataSaverGradientTest {
         ICSVDataSaver csvDataSaver = mock(ICSVDataSaver.class);
         SystemAlertsAggregator systemAlertsAggregator = mock(SystemAlertsAggregator.class);
         sensorLastDataSaver = new SensorLastDataManager(sensorConfig, statisticsLoader, csvDataSaver, timer, systemAlertsAggregator);
-        sensorLastDataSaver.setExpiredMillis(2000000);
+        sensorLastDataSaver.setExpiredMillis(4000000);
+        sensorLastDataSaver.setGradientDelta(15);
     }
 
     @Test
@@ -106,13 +107,13 @@ public class SensorLastDataSaverGradientTest {
 
     @Test
     public void testGradient3() {
-        when(timer.getCurrentTimeMillis()).thenReturn(1400021L);
+        when(timer.getCurrentTimeMillis()).thenReturn(2000021L);
         List<SensorValue> values = Arrays.asList(
                 new SensorValue(1, "abc1", 200021L, 1.0),
                 new SensorValue(2, "abc2", 18L, 1.0),
                 new SensorValue(2, "abc2", 200019L, 1.1),
                 new SensorValue(2, "abc2", 300000L, 3.0),
-                new SensorValue(2, "abc2", 1200020L, 4.0)
+                new SensorValue(2, "abc2", 1800020L, 4.0)
         );
         sensorLastDataSaver.write(values);
         Map<Integer, SensorValue> integerSensorValueMap = sensorLastDataSaver.currentValues();
@@ -129,12 +130,12 @@ public class SensorLastDataSaverGradientTest {
 
     @Test
     public void testGradient4() {
-        when(timer.getCurrentTimeMillis()).thenReturn(1300000L);
+        when(timer.getCurrentTimeMillis()).thenReturn(1900000L);
         List<SensorValue> values = Arrays.asList(
                 new SensorValue(1, "abc1", 1L, 1.0),
                 new SensorValue(2, "abc2", 20L, 1.0),
-                new SensorValue(2, "abc2", 100000L, 3.0),
-                new SensorValue(2, "abc2", 1300000L, 4.0)
+                new SensorValue(2, "abc2", 200000L, 3.0),
+                new SensorValue(2, "abc2", 1900000L, 4.0)
         );
         sensorLastDataSaver.write(values);
         Map<Integer, SensorValue> integerSensorValueMap = sensorLastDataSaver.currentValues();
@@ -147,12 +148,12 @@ public class SensorLastDataSaverGradientTest {
 
     @Test
     public void testGradient5() {
-        when(timer.getCurrentTimeMillis()).thenReturn(1300001L);
+        when(timer.getCurrentTimeMillis()).thenReturn(3700001L);
         List<SensorValue> values = Arrays.asList(
                 new SensorValue(1, "abc1", 1L, 1.0),
                 new SensorValue(2, "abc2", 20L, 1.0),
                 new SensorValue(2, "abc2", 100000L, 3.0),
-                new SensorValue(2, "abc2", 1300001L, 4.0)
+                new SensorValue(2, "abc2", 3700001L, 4.0)
         );
         sensorLastDataSaver.write(values);
         Map<Integer, SensorValue> integerSensorValueMap = sensorLastDataSaver.currentValues();
@@ -165,13 +166,13 @@ public class SensorLastDataSaverGradientTest {
 
     @Test
     public void testGradient6() {//descending
-        when(timer.getCurrentTimeMillis()).thenReturn(1400021L);
+        when(timer.getCurrentTimeMillis()).thenReturn(2100021L);
         List<SensorValue> values = Arrays.asList(
                 new SensorValue(1, "abc1", 200021L, 1.0),
                 new SensorValue(2, "abc2", 18L, 4.0),
                 new SensorValue(2, "abc2", 200019L, 3.1),
-                new SensorValue(2, "abc2", 300000L, 2.0),
-                new SensorValue(2, "abc2", 1200020L, 1.0)
+                new SensorValue(2, "abc2", 400000L, 2.0),
+                new SensorValue(2, "abc2", 2100020L, 1.0)
         );
         sensorLastDataSaver.write(values);
         Map<Integer, SensorValue> integerSensorValueMap = sensorLastDataSaver.currentValues();

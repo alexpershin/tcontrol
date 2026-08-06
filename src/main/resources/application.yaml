@@ -26,7 +26,7 @@ dataFile: data.csv
 #dataFile: data-2026-04-26.csv
 #dataFile: data_log_converted2.csv
 
-gradientDelta: 30
+gradientDelta: 15
 
 sensor-config:
   schedule: '0 0/15 * * * ?'

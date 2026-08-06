@@ -94,7 +94,7 @@ public class SensorLastDataManager implements IStatisticsManager {
 
     private static void calcGradient(long deltaT, int gradientDelta, SensorValue lastValue, SensorValueShort curValue) {
         if (lastValue.getTimestamp() != curValue.getTimestamp()
-                && deltaT >= (long)gradientDelta * 60 * 1000 && deltaT <= (long)(gradientDelta + 5) * 60 * 1000) {// gradientDelta in мин
+                && deltaT >= (long) gradientDelta * 60 * 1000 && deltaT <= (long) (gradientDelta) * 2 * 60 * 1000) {// gradientDelta in мин
             double gradient = lastValue.getValue() - curValue.getValue();
             lastValue.setGradient(gradient);
         }

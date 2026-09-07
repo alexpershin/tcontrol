@@ -44,12 +44,39 @@ function hideGlobalLoader(){
     $("#loader").hide();
 }
 
+function checkIfTokenSet(){
+      const token = localStorage.getItem('auth_token')
+      if (!token) {
+            // 1. Capture the current page path and query parameters
+            const currentPath = window.location.pathname + window.location.search
+
+            // 2. Encode the path to ensure it safely passes through the URL
+            const redirectParam = encodeURIComponent(currentPath)
+
+            // 3. Redirect to login page with the return destination attached
+            window.location.href = `/tcontrol/login-dialog/login-dialog.html?redirectTo=${redirectParam}`
+        }
+}
+
+function headers(){
+    return {
+           "Content-Type": "application/json",
+           "Accept": "application/json",
+           "Authorization": "Bearer " + localStorage.getItem('auth_token')
+    }
+}
+
 function loadDataFromServer() {
+
+   checkIfTokenSet()
+
    $.ajax({
         type: 'POST',
         dataType: 'json',
         contentType: 'application/json',
         url: window.location.protocol+"//"+window.location.host+"/tcontrol/api/sensors",
+        method: "POST",
+        headers: headers(),
         beforeSend: function () {
             showGlobalLoader()
         },
@@ -74,21 +101,32 @@ function loadDataFromServer() {
 }
 
 function loadValuesFromServer() {
-    $.post(window.location.protocol+"//"+window.location.host+":/tcontrol/api/sensor_values",
-        function (valuesJsonData) {
-            console.log('sensor values processing start');
-            valuesMap = convertValuesJsonToMap(valuesJsonData.values)
-            renderSensorValues(sensorMap, valuesMap);
-        },
-        'json').done(function () {
-        console.log("sensor values loaded");
+    checkIfTokenSet()
 
-        showCurrentDateTimeInTitle();
-    }).fail(function (jqXHR, textStatus) {
-        showAlert("Sensor values loading failed!", jqXHR, textStatus);
-    }).always(function () {
-        console.log("sensor values loading complete");
-    });
+     $.ajax({
+            type: 'POST',
+            dataType: 'json',
+            contentType: 'application/json',
+            url: window.location.protocol+"//"+window.location.host+":/tcontrol/api/sensor_values",
+            method: "POST",
+            headers: headers(),
+            beforeSend: function () {
+                showGlobalLoader()
+            },
+            success: function (valuesJsonData) {
+                hideGlobalLoader()
+                console.log('sensor values processing start');
+                valuesMap = convertValuesJsonToMap(valuesJsonData.values)
+                renderSensorValues(sensorMap, valuesMap);
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+                hideGlobalLoader()
+                showAlert("Sensor values loading failed!", jqXHR, textStatus);
+            },
+            complete: function () {
+                 console.log("sensor values loading complete");
+            }
+        });
 }
 
 function showCurrentDateTimeInTitle() {
@@ -277,6 +315,8 @@ function onOffSensorRenderer(sensorElementId, sensorValue) {
 
     sensorElement.click(function (ev) {
 
+        checkIfTokenSet()
+
         const currentTemperatureURL =
             window.location.protocol
             + "//" + window.location.host
@@ -287,6 +327,7 @@ function onOffSensorRenderer(sensorElementId, sensorValue) {
                 type: 'POST',
                 dataType: 'json',
                 contentType: 'application/json',
+                headers: headers(),
                 url: currentTemperatureURL,
                 beforeSend: function () {
                     showSensorLoader(sensorElementId)
@@ -315,6 +356,8 @@ function setupPlot(sensorElementId, sensorValue, shape) {
  const sensorPlot = $(sensorElementId + ' .sensor_item_body .sensor_indicator_panel .sensor_plot')
     sensorPlot.click(function (ev) {
 
+        checkIfTokenSet()
+
         const lastValueURL =
             window.location.protocol
             + "//" + window.location.host
@@ -326,6 +369,7 @@ function setupPlot(sensorElementId, sensorValue, shape) {
                 dataType: 'json',
                 contentType: 'application/json',
                 url: lastValueURL,
+                headers: headers(),
                 beforeSend: function () {
                     showSensorLoader(sensorElementId)
                 },
@@ -623,6 +667,7 @@ function alertSensorRenderer(sensorElementId, value) {
                     type: 'POST',
                     dataType: 'json',
                     contentType: 'application/json',
+                    headers: headers(),
                     url: currentTemperatureURL,
                     beforeSend: function () {
                         showSensorLoader(sensorElementId)
@@ -713,8 +758,6 @@ function hideSensorLoader(sensorElementId){
    $('.sensor_item').find('.sensor_item_body').css('pointer-events', 'all')
 }
 
-
-
 function searchDataInRange(sensorElementId, sensorValue){
     dateFrom = new Date(document.getElementById('plot-dialog-from').value)
     dateTo = new Date(document.getElementById('plot-dialog-to').value)
@@ -728,6 +771,9 @@ function searchDataInRange(sensorElementId, sensorValue){
         if(dateFrom.getTime() < minFromDate.getTime() ){
              alert("Период должен быть не больше 7 дней")
         } else {
+
+              checkIfTokenSet()
+
               const historyURL =
                     window.location.protocol
                     + "//" + window.location.host
@@ -736,10 +782,12 @@ function searchDataInRange(sensorElementId, sensorValue){
                     + "&from=" + dateFrom.toISOString()
                     + "&to=" + dateTo.toISOString()
 
+
                 $.ajax({
                         type: 'GET',
                         dataType: 'json',
                         contentType: 'application/json',
+                        headers: headers(),
                         url: historyURL,
                         beforeSend: function () {
                             showGlobalLoader()

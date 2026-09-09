@@ -47,15 +47,19 @@ function hideGlobalLoader(){
 function checkIfTokenSet(){
       const token = localStorage.getItem('auth_token')
       if (!token) {
-            // 1. Capture the current page path and query parameters
-            const currentPath = window.location.pathname + window.location.search
+            redirectToLogin()
+      }
+}
 
-            // 2. Encode the path to ensure it safely passes through the URL
-            const redirectParam = encodeURIComponent(currentPath)
+function redirectToLogin(){
+    // 1. Capture the current page path and query parameters
+    const currentPath = window.location.pathname + window.location.search
 
-            // 3. Redirect to login page with the return destination attached
-            window.location.href = `/tcontrol/login-dialog/login-dialog.html?redirectTo=${redirectParam}`
-        }
+    // 2. Encode the path to ensure it safely passes through the URL
+    const redirectParam = encodeURIComponent(currentPath)
+
+    // 3. Redirect to login page with the return destination attached
+    window.location.href = `/tcontrol/login-dialog/login-dialog.html?redirectTo=${redirectParam}`
 }
 
 function headers(){
@@ -90,14 +94,28 @@ function loadDataFromServer() {
 
         },
         error: function (jqXHR, textStatus, errorThrown) {
-            hideGlobalLoader()
-            showAlert("Sensors loading failed!", jqXHR, textStatus);
+            requestErrorProcessing(jqXHR, textStatus, errorThrown, "Sensors loading failed!")
         },
         complete: function () {
             hideGlobalLoader()
             console.log("sensors loading complete");
         }
     });
+}
+
+function requestErrorProcessing(jqXHR, textStatus, errorThrown, logMessage) {
+    hideGlobalLoader()
+    console.log(jqXHR.status)
+    if(jqXHR.status == 403){
+        const userConfirmed = confirm("Authorization error! Login?")
+        if (userConfirmed) {
+            redirectToLogin()
+        } else {
+            console.log("Action canceled by user.");
+        }
+    } else {
+        showAlert(logMessage, jqXHR, textStatus)
+    }
 }
 
 function loadValuesFromServer() {
@@ -120,8 +138,7 @@ function loadValuesFromServer() {
                 renderSensorValues(sensorMap, valuesMap);
             },
             error: function (jqXHR, textStatus, errorThrown) {
-                hideGlobalLoader()
-                showAlert("Sensor values loading failed!", jqXHR, textStatus);
+               requestErrorProcessing(jqXHR, textStatus, errorThrown, "Sensor values loading failed!")
             },
             complete: function () {
                  console.log("sensor values loading complete");
@@ -336,8 +353,7 @@ function onOffSensorRenderer(sensorElementId, sensorValue) {
                      startHeatingDialog(sensorElementId, sensorValue, currentTemperatures)
                 },
                 error: function (jqXHR, textStatus, errorThrown) {
-                    hideSensorLoader(sensorElementId)
-                    alert("Error try again later: " + textStatus)
+                    requestErrorProcessing(jqXHR, textStatus, errorThrown, "Error try again later: " + textStatus )
                 },
                 complete: function () {
                     hideSensorLoader(sensorElementId)
@@ -377,8 +393,7 @@ function setupPlot(sensorElementId, sensorValue, shape) {
                      startPlotDialog(sensorElementId, sensorValue, data.values, shape)
                 },
                 error: function (jqXHR, textStatus, errorThrown) {
-                    hideSensorLoader(sensorElementId)
-                    alert("Error try again later: " + textStatus)
+                    requestErrorProcessing(jqXHR, textStatus, errorThrown, "Error try again later: " + textStatus)
                 },
                 complete: function () {
                    // close inside startPlotDialog()
@@ -676,8 +691,7 @@ function alertSensorRenderer(sensorElementId, value) {
                          startAlertsDialog(sensorElementId, sensorValue, currentAlerts)
                     },
                     error: function (jqXHR, textStatus, errorThrown) {
-                        hideSensorLoader(sensorElementId)
-                        alert("Error try again later: " + textStatus)
+                        requestErrorProcessing(jqXHR, textStatus, errorThrown, "Error try again later: " + textStatus)
                     },
                     complete: function () {
                         hideSensorLoader(sensorElementId)
@@ -799,8 +813,7 @@ function searchDataInRange(sensorElementId, sensorValue){
                             });
                         },
                         error: function (jqXHR, textStatus, errorThrown) {
-                            hideGlobalLoader()
-                            alert("Error try again later: " + textStatus)
+                            requestErrorProcessing(jqXHR, textStatus, errorThrown, "Error try again later: " + textStatus)
                         },
                         complete: function () {
 

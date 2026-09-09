@@ -49,10 +49,9 @@ function startHeating(sensorElementId, sensorValue, currentTemperatures){//senso
             setSensorTime(sensorElementId, data.timestamp)
         },
         error: function (jqXHR, textStatus, errorThrown) {
-            hideSensorLoader(sensorElementId)
             popUpElement.style.visibility='hidden'
             closeHeatingDialog()
-            alert("Error try again later: " + textStatus)
+            requestErrorProcessing(jqXHR, textStatus, errorThrown, "Error try again later: " + textStatus)
         },
         complete: function () {
             hideSensorLoader(sensorElementId)

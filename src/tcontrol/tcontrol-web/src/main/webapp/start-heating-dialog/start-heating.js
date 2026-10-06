@@ -27,11 +27,13 @@ function startHeating(sensorElementId, sensorValue, currentTemperatures){//senso
     }
 
     closeHeatingDialog()
+    checkIfTokenSet()
 
     $.ajax({
         type: 'POST',
         dataType: 'json',
         contentType: 'application/json',
+        headers: headers(),
         data: JSON.stringify(changeThermostatTemperatureRequest),
         url: onOffUrl,
         beforeSend: function () {
@@ -47,10 +49,9 @@ function startHeating(sensorElementId, sensorValue, currentTemperatures){//senso
             setSensorTime(sensorElementId, data.timestamp)
         },
         error: function (jqXHR, textStatus, errorThrown) {
-            hideSensorLoader(sensorElementId)
             popUpElement.style.visibility='hidden'
             closeHeatingDialog()
-            alert("Error try again later: " + textStatus)
+            requestErrorProcessing(jqXHR, textStatus, errorThrown, "Error try again later: " + textStatus)
         },
         complete: function () {
             hideSensorLoader(sensorElementId)
@@ -73,10 +74,13 @@ function rollbackHeating(sensorElementId, sensorValue, currentTemperatures){
 
     closeHeatingDialog()
 
+    checkIfTokenSet()
+
     $.ajax({
         type: 'PUT',
         dataType: 'json',
         contentType: 'application/json',
+        headers: headers(),
         data: sensorValue.sensorId,
         url: rollbackUrl,
         beforeSend: function () {

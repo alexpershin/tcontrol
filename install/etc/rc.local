@@ -1,4 +1,3 @@
-
 #!/bin/sh -e
 #
 # rc.local
@@ -12,16 +11,22 @@
 #
 # By default this script does nothing.
 
+/sbin/iwconfig wlan0 power off &
+
 # Print the IP address
 _IP=$(hostname -I) || true
 if [ "$_IP" ]; then
   printf "My IP address is %s\n" "$_IP"
 fi
 
-/home/pi/3g/umtskeeper --sakisoperators "USBINTERFACE='0' OTHER='USBMODEM' USBMODEM='12d1:1001' APN='CUSTOM_APN' CUSTOM_APN='FixedIP.nw' SIM_PIN='' APN_USER='megafon' APN_PASS='megafon'" --sakisswitches "--sudo --console" --devicename 'Huawei' --log --silent --nat 'no' & 
-
-sleep 120 && java -cp /home/pi/apache-tomee-plus-1.7.1/lib/h2*.jar org.h2.tools.Server -webAllowOthers &
-
-cd /home/pi/apache-tomee-plus-1.7.1/bin && sleep 180 && /home/pi/apache-tomee-plus-1.7.1/bin/startup.sh & 
+sleep 10 && gammu-smsd &
+#sleep 30 && cd /home/pi/sms && java -Dspring.config.location=/home/pi/sms/application.yml -jar sms-module-1.1-SNAPSHOT.jar &
+sleep 30 && cd /home/pi/tcontrol-boot && java \
+    -Dspring.config.location=/home/pi/tcontrol-boot/application.yaml \
+    -Dcom.sun.management.jmxremote -Dcom.sun.management.jmxremote.port=1888 \
+    -Dcom.sun.management.jmxremote.rmi.port=9010 -Dcom.sun.management.jmxremote.local.only=false \
+    -Dcom.sun.management.jmxremote.authenticate=false \
+    -Dcom.sun.management.jmxremote.ssl=false \
+    -jar tcontrol-boot-0.0.2-SNAPSHOT.jar &
 
 exit 0

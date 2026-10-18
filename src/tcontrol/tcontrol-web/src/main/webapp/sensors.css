@@ -20,6 +20,12 @@
     animation: spin 1s linear infinite;
 }
 
+@keyframes spin {
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
 .loader-center {
     position: absolute;
     top: 0;
@@ -39,13 +45,6 @@
     background-color: grey;
     opacity: 0.7;
     visibility: hidden;
-}
-
-
-@keyframes spin {
-    100% {
-        transform: rotate(360deg);
-    }
 }
 
 .request-overlay {

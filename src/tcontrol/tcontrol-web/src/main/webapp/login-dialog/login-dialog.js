@@ -34,6 +34,7 @@ function arrayBufferToBase64Sync(buffer) {
 async function handleLogin(e, user, pass) {
   e.preventDefault();
 
+  showGlobalLoader()
   const preSignInResponse = await fetch(window.location.protocol
                                          + '//' + window.location.host
                                          + "/tcontrol/auth/pre-sign-in?login="+user,
@@ -65,7 +66,6 @@ async function handleLogin(e, user, pass) {
   );
 
   base64Password = arrayBufferToBase64Sync(encryptedBuffer)
-
   // 1. Perform your authentication API call
   const response = await fetch(window.location.protocol
                                        + '//' + window.location.host
@@ -77,17 +77,35 @@ async function handleLogin(e, user, pass) {
                                              },
                                        body: JSON.stringify({login: user, password: base64Password})
                                });
+  hideGlobalLoader()
   const data = await response.json();
 
-  if (data.token) {
-    // 2. Save the token
-    localStorage.setItem('auth_token', data.token);
+  if(data.status == 403){
+        alert("Bad login or password");
+  }else{
+        if (data.token) {
+        // 2. Save the token
+        localStorage.setItem('auth_token', data.token);
 
-    // 3. Read the 'redirectTo' parameter from URL
-    const urlParams = new URLSearchParams(window.location.search);
-    const redirectTo = urlParams.get("redirectTo");
+        // 3. Read the 'redirectTo' parameter from URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const redirectTo = urlParams.get("redirectTo");
 
-    // 4. Redirect back to the original page or fallback to the home dashboard
-    window.location.href = redirectTo ? decodeURIComponent(redirectTo) : "/tcontrol/sensors.html";
+        // 4. Redirect back to the original page or fallback to the home dashboard
+        window.location.href = redirectTo ? decodeURIComponent(redirectTo) : "/tcontrol/sensors.html";
+        }
   }
+}
+
+function showGlobalLoader(){
+     $('body').append('<div id="requestOverlay" class="request-overlay"></div>'); /*Create overlay on demand*/
+     $("#requestOverlay").show();/*Show overlay*/
+     $("#loader").show();
+     document.getElementById('loader').style.visibility='visible'
+}
+
+function hideGlobalLoader(){
+    $("#requestOverlay").remove();/*Remove overlay*/
+    $("#loader").hide();
+     document.getElementById('loader').style.visibility='hidden'
 }

@@ -40,8 +40,9 @@ async function handleLogin(e, user, pass) {
                                          + "/tcontrol/auth/pre-sign-in?login="+user,
                                          { method: "POST"});
 
-  const publicKeyBytes = await preSignInResponse.bytes();
-  const keyBuffer = new Uint8Array(publicKeyBytes);
+  const buffer = await preSignInResponse.arrayBuffer()
+  const publicKeyBytes = new Uint8Array(buffer)
+  const keyBuffer = new Uint8Array(publicKeyBytes)
 
   console.log("public key:")
   console.log(keyBuffer)

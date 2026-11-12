@@ -160,7 +160,9 @@ function setupPlot(sensorElementId, sensorValue, shape) {
  const sensorPlot = $(sensorElementId + ' .sensor_item_body .sensor_indicator_panel .sensor_plot')
     sensorPlot.click(function (ev) {
 
-        checkIfTokenSet()
+        if(checkIfTokenSet()==false){
+            return;
+        }
 
         const lastValueURL =
             window.location.protocol
@@ -205,7 +207,9 @@ function searchDataInRange(sensorElementId, sensorValue){
              alert("Период должен быть не больше 7 дней")
         } else {
 
-              checkIfTokenSet()
+             if(checkIfTokenSet()==false){
+                    return;
+             }
 
               const historyURL =
                     window.location.protocol

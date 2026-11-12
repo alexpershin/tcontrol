@@ -48,7 +48,9 @@ function checkIfTokenSet(){
       const token = localStorage.getItem('auth_token')
       if (!token) {
             redirectToLogin()
+            return false
       }
+      return true
 }
 
 function redirectToLogin(){
@@ -72,7 +74,9 @@ function headers(){
 
 function loadDataFromServer() {
 
-   checkIfTokenSet()
+   if(checkIfTokenSet()==false){
+        return;
+   }
 
    $.ajax({
         type: 'POST',
@@ -119,7 +123,10 @@ function requestErrorProcessing(jqXHR, textStatus, errorThrown, logMessage) {
 }
 
 function loadValuesFromServer() {
-    checkIfTokenSet()
+     if(checkIfTokenSet()==false){
+            return;
+     }
+
 
      $.ajax({
             type: 'POST',
@@ -332,7 +339,9 @@ function onOffSensorRenderer(sensorElementId, sensorValue) {
 
     sensorElement.click(function (ev) {
 
-        checkIfTokenSet()
+        if(checkIfTokenSet()==false){
+            return;
+        }
 
         const currentTemperatureURL =
             window.location.protocol

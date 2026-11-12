@@ -27,7 +27,9 @@ function startHeating(sensorElementId, sensorValue, currentTemperatures){//senso
     }
 
     closeHeatingDialog()
-    checkIfTokenSet()
+    if(checkIfTokenSet()==false){
+         return;
+    }
 
     $.ajax({
         type: 'POST',
@@ -74,7 +76,9 @@ function rollbackHeating(sensorElementId, sensorValue, currentTemperatures){
 
     closeHeatingDialog()
 
-    checkIfTokenSet()
+     if(checkIfTokenSet()==false){
+            return;
+     }
 
     $.ajax({
         type: 'PUT',

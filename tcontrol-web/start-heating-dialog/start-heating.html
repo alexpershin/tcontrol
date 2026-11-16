@@ -1,0 +1,65 @@
+<dialog id="pop-up" class="pop-up">Включается отопление</dialog>
+
+<dialog id="start-heating" class="common-dialog-style">
+    <div id="start-heating-dialog-title" class="dialog-title"></div>
+    <div class="start-heating-form-group">
+
+        <table id="thermostats-table-header" class="thermostats-table-header">
+            <tr id="thermostats-label-row" class="thermostats-row-lable">
+                <td><label for="thermostats-name-column"
+                           id="thermostats-name-column-caption"
+                           class="thermostats-name-column-caption">Термостаты</label></td>
+                <td><label for="day-temp-column-caption"
+                           id="day-temp-column-caption"
+                           class="day-temp-column-caption">Дневная t</label></td>
+                <td><label for="day-time-column-caption"
+                           id="day-time-column-caption"
+                           class="day-time-column-caption">Начало</label></td>
+                <td><label for="night-temp-column-caption"
+                           id="night-temp-column-caption"
+                           class="night-temp-column-caption">Ночная t</label></td>
+                <td><label for="night-time-column-caption"
+                           id="night-time-column-caption"
+                           class="night-time-column-caption">Начало</label></td>
+            </tr>
+        </table>
+        <table id="thermostat-table" class="thermostat-table">
+            <tr id="thermostat-table-row" class="thermostat-table-row">
+                <td><label for="day-heating-temp-input"
+                           id="thermostats-name-column"
+                           class="thermostats-name-column"
+                >
+                    Целевая температура:
+                </label></td>
+                <td><input
+                        id="day-heating-temp-input"
+                        type="number"
+                        name="day-heating-temp-input"
+                        class="heating-temp-input"
+                        min="4" max="30" value="20" maxlength="2" pattern="\d*"></td>
+                <td><input
+                        id="day-heating-time-input"
+                        type="time"
+                        name="day-heating-time-input"
+                        class="heating-temp-time-input"
+                        min="4" max="30" value="20" maxlength="2" pattern="\d*"></td>
+                <td><input
+                        id="night-heating-temp-input"
+                        type="number"
+                        name="night-heating-temp-input"
+                        class="heating-temp-input"
+                        min="4" max="30" value="20" maxlength="2" pattern="\d*"></td>
+                <td><input
+                        id="night-heating-time-input"
+                        type="time"
+                        name="night-heating-time-input"
+                        class="heating-temp-time-input"
+                        min="4" max="30" value="20" maxlength="2" pattern="\d*"></td>
+            </tr>
+        </table>
+    </div>
+    <a href="#" id="start-heating-close-btn" class="close-button"></a>
+    <button id="start-heating-rollback-btn" class="dialog-button">По умолчанию</button>
+    <button id="start-heating-apply-btn" class="dialog-button">Применить</button>
+</dialog>
+

@@ -1,0 +1,70 @@
+.alerts-table-header{
+    width: 400px;
+}
+
+.scrolling-table{
+    height: 250px;
+    width: 400px;
+    overflow: auto;
+}
+
+.alerts-table{
+   background: lightblue;
+   border-spacing: 0;
+}
+
+.alerts-row{
+    visibility: visible;
+    display: none;
+}
+
+.alert-column-time{
+    white-space: nowrap;
+    width: 8em;
+}
+.alert-column-count{
+    white-space: nowrap;
+    width: 6em;
+}
+.alert-column-message{
+    white-space: nowrap;
+}
+
+.alerts-time-caption{
+    width: 10em;
+    font: bold 12px/16px Arial;
+    background: lightgrey;
+}
+.alerts-count-caption{
+    width: 6em;
+    font: bold 12px/16px Arial;
+    background: lightgrey;
+}
+.alerts-message-caption{
+    font: bold 12px/16px Arial;
+    background: lightgrey;
+}
+
+.alerts-time-input{
+    font: 13px/16px Arial;
+    border: blue;
+    background: aliceblue;
+    width: 10em;
+}
+.alerts-count-input{
+    width: 1000%;
+    font: 13px/16px Arial;
+    border: blue;
+    background: aliceblue;
+    color: blue;
+    width: 6em;
+}
+.alerts-message-input{
+    width: 1000%;
+    font: 13px/16px Arial;
+    border: blue;
+    background: aliceblue;
+    color: red;
+}
+
+

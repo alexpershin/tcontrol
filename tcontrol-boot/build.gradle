@@ -1,0 +1,70 @@
+plugins {
+	id 'java'
+	id 'org.springframework.boot' version '2.7.18'
+	id 'io.spring.dependency-management' version '1.1.7'
+}
+
+group = 'com.example'
+version = '0.0.2-SNAPSHOT'
+
+java {
+	toolchain {
+	//	languageVersion = JavaLanguageVersion.of(21)
+		sourceCompatibility = '11'
+		targetCompatibility = '11'
+	}
+}
+
+configurations {
+	compileOnly {
+		extendsFrom annotationProcessor
+	}
+}
+
+repositories {
+	mavenCentral()
+}
+
+dependencies {
+	implementation 'org.springframework.boot:spring-boot-starter-web'
+	implementation 'org.springframework.boot:spring-boot-starter-aop'
+	implementation 'org.springdoc:springdoc-openapi-ui:1.8.0'
+	implementation 'io.swagger.core.v3:swagger-annotations:2.2.23'
+	implementation("com.pi4j:pi4j-gpio-extension:1.2")
+	implementation("com.pi4j:pi4j-device:1.2")
+	implementation("org.apache.commons:commons-csv:1.7")
+	implementation("org.apache.commons:commons-collections4:4.5.0")
+	implementation("org.apache.commons:commons-lang3:3.19.0")
+	implementation("commons-io:commons-io:2.20.0")
+	implementation 'org.mapstruct:mapstruct:1.5.5.Final'
+
+	implementation("com.github.ben-manes.caffeine:caffeine:2.9.3")
+	implementation("com.google.guava:guava:33.5.0-jre")
+
+	compileOnly 'org.projectlombok:lombok'
+	annotationProcessor 'org.projectlombok:lombok'
+	annotationProcessor 'org.mapstruct:mapstruct-processor:1.5.5.Final'
+
+	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+	testImplementation("org.junit.jupiter:junit-jupiter:5.11.4")
+}
+
+tasks.named('test') {
+	useJUnitPlatform()
+}
+//
+//openApiGenerate {
+//	generatorName = "java"
+//	inputSpec = "$projectDir/api/history/api.yml"
+//	outputDir = "$projectDir/build/generated/history/src/main/java"
+//	apiPackage = "ru.vtb.vip.prime.szpm.history.api"
+//	invokerPackage = "ru.vtb.vip.prime.szpm.history.invoker"
+//	modelPackage = "ru.vtb.vip.prime.szpm.history.api.model"
+//	configOptions = [
+//			library: 'native'
+//	]
+//
+//}
+//
+//compileJava.dependsOn tasks.openApiGenerate
+//processResources.dependsOn tasks.openApiGenerate

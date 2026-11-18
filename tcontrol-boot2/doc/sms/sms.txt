@@ -1,0 +1,12 @@
+sudo gammu sendsms TEXT +79210972100 -unicode -textutf8 "Привет"
+
+/etc/gammu-smsdrc
+InboxFormat = не надо!
+OutboxFormat = unicode
+TransmitFormat = unicode
+
+port = /dev/ttyUSB0
+
+
+systemctl status gammu-smsd.service
+sudo systemctl restart gammu-smsd.service
